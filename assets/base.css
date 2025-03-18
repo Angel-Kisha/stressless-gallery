@@ -852,11 +852,11 @@ summary::-webkit-details-marker {
 
 .title-wrapper--no-top-margin {
   margin-top: 0;
-  jus
 }
 
 .title-wrapper--no-top-margin > .title {
   margin-top: 0;
+  justify-self: center;
 }
 
 .top-collection {
