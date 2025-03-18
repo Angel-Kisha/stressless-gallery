@@ -107,9 +107,9 @@
             {%- if card_collection.description != blank -%}
               <p class="card__caption">
                 {{- card_collection.description | strip_html | truncatewords: 12 -}}
-                {% comment %} <span class="icon-wrap">
+                <span class="icon-wrap">
                   {{- 'icon-arrow.svg' | inline_asset_content -}}
-                </span> {% endcomment %}
+                </span>
               </p>
             {%- endif -%}
           </div>
