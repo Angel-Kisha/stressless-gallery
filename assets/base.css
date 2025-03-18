@@ -854,6 +854,11 @@ summary::-webkit-details-marker {
   margin-top: 0;
 }
 
+.title-flex {
+  display: flex;
+  
+}
+
 .title-wrapper--no-top-margin > .title {
   margin-top: 0;
   justify-self: center;
