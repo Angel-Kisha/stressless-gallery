@@ -210,10 +210,10 @@
               <span class="h2">{{ shop.name }}</span>
             {%- endif -%}
           </a>
+          {%- if section.settings.newsletter_heading != blank -%}
+            <h2 class="footer-block__heading inline-richtext">{{ section.settings.newsletter_heading }}</h2>
+          {%- endif -%}
       <div class="footer__column footer__column--info">
-        {%- if section.settings.newsletter_heading != blank -%}
-          <h2 class="footer-block__heading inline-richtext">{{ section.settings.newsletter_heading }}</h2>
-        {%- endif -%}
         {%- if section.settings.payment_enable -%}
           <div class="footer__payment">
             <span class="visually-hidden">{{ 'sections.footer.payment' | t }}</span>
