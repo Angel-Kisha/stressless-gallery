@@ -886,7 +886,8 @@ summary::-webkit-details-marker {
 }
 
 .subtitle--custom{
-  
+  font-size: 1.25rem;
+  margin: 0;
 }
 
 .subtitle--medium {
