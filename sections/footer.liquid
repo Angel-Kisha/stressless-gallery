@@ -239,6 +239,10 @@
           >&copy; {{ 'now' | date: '%Y' }}, {{ shop.name | link_to: routes.root_url -}}
         </small>
         <small class="copyright__content">{{ powered_by_link }}</small> {% endcomment %}
+
+        <small class="copyright__content">
+          Site Terms of Use / <a href="/pages/privacy-policy">Privacy Policy</a> / <a href="/pages/faq">Frequently Asked Questions</a> / <a href="/pages/shopping-guide">Shopping Guide</a> / Information Based on the Specified Commercial Transactions Act / Terms of Use
+        </small>
         {%- if section.settings.show_policy -%}
           <ul class="policies list-unstyled full-unstyled-link">
             {%- for policy in shop.policies -%}
