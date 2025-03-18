@@ -856,7 +856,7 @@ summary::-webkit-details-marker {
 
 .title-flex {
   display: flex;
-  
+  flex-direction: column;
 }
 
 .title-wrapper--no-top-margin > .title {
