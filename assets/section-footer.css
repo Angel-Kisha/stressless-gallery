@@ -51,7 +51,7 @@
 
 .footer__content-bottom-wrapper {
   display: flex;
-  flex-direction: column;
+  text-align: column;
   width: 100%;
 }
 
