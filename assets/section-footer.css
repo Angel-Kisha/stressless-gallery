@@ -8,6 +8,7 @@
 
 .footer__content-top {
   padding-bottom: 5rem;
+  place-items: start;
 }
 
 @media screen and (max-width: 749px) {
