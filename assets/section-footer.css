@@ -64,6 +64,11 @@
   text-align: center;
 }
 
+.footer-padding-left{
+
+}
+
+
 @media screen and (max-width: 749px) {
   .footer__content-bottom {
     flex-wrap: wrap;
