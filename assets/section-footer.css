@@ -375,7 +375,9 @@
     padding-bottom: 1rem;
   }
 
-  .
+  .footer-padding-left{
+    padding-left: 0;
+  }
 }
 
 @media screen and (min-width: 750px) {
