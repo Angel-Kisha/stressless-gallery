@@ -57,7 +57,7 @@
 
 .footer__content-logo{
   width: max-content ;
-  
+  place-items: center;
 }
 
 @media screen and (max-width: 749px) {
