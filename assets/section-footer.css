@@ -46,7 +46,12 @@
 }
 
 .footer__content-bottom:only-child {
-  border-top: solid 0.2rem linear-gradient(to right, #1A5FA7, #FFFFFF, #1A5FA7);
+  border-top: none;
+  background-image: linear-gradient(to right, #1A5FA7, #FFFFFF, #1A5FA7);
+  background-size: 100% 0.2rem;
+  background-repeat: no-repeat;
+  background-position: top;
+  padding-top: calc(3rem + 0.2rem);
 }
 
 .footer__content-bottom-wrapper {
