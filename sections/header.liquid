@@ -142,7 +142,7 @@
       {%- if request.page_type == 'index' -%}
         <h1 class="header__heading">
       {%- endif -%}
-          <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
+          {% comment %} <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
             {%- if settings.logo != blank -%}
               <div class="header__heading-logo-wrapper">
                 {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
@@ -162,7 +162,7 @@
             {%- else -%}
               <span class="h2">{{ shop.name }}</span>
             {%- endif -%}
-          </a>
+          </a> {% endcomment %}
       {%- if request.page_type == 'index' -%}
         </h1>
       {%- endif -%}
@@ -270,7 +270,7 @@
         {%- endcase -%}
       {%- endfor -%}
 
-      {% comment %} <a href="{{ routes.cart_url }}" class="header__icon header__icon--cart link focus-inset" id="cart-icon-bubble">
+      <a href="{{ routes.cart_url }}" class="header__icon header__icon--cart link focus-inset" id="cart-icon-bubble">
           {% if cart == empty %}
             <span class="svg-wrapper">{{'icon-cart-empty.svg' | inline_asset_content }}</span>
           {% else %}
@@ -285,7 +285,7 @@
             <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
           </div>
         {%- endif -%}
-      </a> {% endcomment %}
+      </a>
     </div>
   </header>
 </{{ header_tag }}>
