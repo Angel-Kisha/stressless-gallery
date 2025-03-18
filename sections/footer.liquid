@@ -243,7 +243,7 @@
         <small class="copyright__content">
           サイト利用規約  / <a href="/pages/privacy-policy">プライバシーポリシー</a> / <a href="/pages/faq">よくあるご質問</a> / <a href="/pages/shopping-guide">ショッピングガイド</a> / 特定商取引法に基づく表記 / 利用規約
         </small>
-        {%- if section.settings.show_policy -%}
+        {% comment %} {%- if section.settings.show_policy -%}
           <ul class="policies list-unstyled full-unstyled-link">
             {%- for policy in shop.policies -%}
               {%- if policy != blank -%}
@@ -255,7 +255,7 @@
               {%- endif -%}
             {%- endfor -%}
           </ul>
-        {%- endif -%}
+        {%- endif -%} {% endcomment %}
       </div>
     </div>
   </div>
