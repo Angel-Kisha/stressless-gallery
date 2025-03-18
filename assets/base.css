@@ -885,6 +885,10 @@ summary::-webkit-details-marker {
   letter-spacing: 0.1rem;
 }
 
+.subtitle--custom{
+
+}
+
 .subtitle--medium {
   font-size: 1.6rem;
   letter-spacing: 0.08rem;
