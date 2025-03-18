@@ -46,7 +46,7 @@
 }
 
 .footer__content-bottom:only-child {
-  border-top: solid 0.8rem rgba(var(--color-foreground), 0.08);
+  border-top: solid 0.5rem rgba(var(--color-foreground), 0.08);
 }
 
 .footer__content-bottom-wrapper {
