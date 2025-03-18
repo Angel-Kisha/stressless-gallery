@@ -854,7 +854,7 @@ summary::-webkit-details-marker {
   margin-top: 0;
 }
 
-.title-flex {
+.title-flex-col {
   display: flex;
   flex-direction: column;
 }
