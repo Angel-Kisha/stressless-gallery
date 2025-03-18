@@ -860,6 +860,7 @@ summary::-webkit-details-marker {
 
 .top-collection {
   text-align: center;
+  place-items: center;
 }
 
 .subtitle {
