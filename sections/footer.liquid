@@ -48,7 +48,7 @@
     and has_social_icons == true
     or section.settings.enable_follow_on_shop
   -%}
-    {%- unless only_empty_brand -%}
+    {% comment %} {%- unless only_empty_brand -%}
       <div class="footer__content-top page-width">
         {%- if section.blocks.size > 0 -%}
           {%- liquid
@@ -178,7 +178,7 @@
           {%- endif -%}
         </div>
       </div>
-    {%- endunless -%}
+    {%- endunless -%} {% endcomment %}
   {%- endif -%}
 
   <div
