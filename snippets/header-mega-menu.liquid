@@ -79,13 +79,13 @@
               aria-current="page"
             {% endif %}
           >
-            <span
+            {% comment %} <span
               {%- if link.current %}
                 class="header__active-menu-item"
               {% endif %}
             >
               {{- link.title | escape -}}
-            </span>
+            </span> {% endcomment %}
           </a>
         {%- endif -%}
       </li>
