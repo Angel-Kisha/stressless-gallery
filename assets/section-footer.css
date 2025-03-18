@@ -55,6 +55,10 @@
   width: 100%;
 }
 
+.footer__content-logo{
+  width: auto;
+}
+
 @media screen and (max-width: 749px) {
   .footer__content-bottom {
     flex-wrap: wrap;
