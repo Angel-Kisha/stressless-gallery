@@ -426,7 +426,7 @@
 .card--standard > .card__content .card__information {
   padding-left: 0;
   padding-right: 0;
-  place-items: center;
+  place-self: center;
 }
 
 .card--card.card--media .card__inner .card__information,
