@@ -1,1 +1,108 @@
-sche
+{% schema %}
+    {
+      "name": "Header Title",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Your Title Here"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Your description text goes here"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_description",
+          "label": "Show Description",
+          "default": true
+        },
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Text Alignment",
+          "options": [
+            {
+              "value": "text-left",
+              "label": "Left"
+            },
+            {
+              "value": "text-center",
+              "label": "Center"
+            },
+            {
+              "value": "text-right",
+              "label": "Right"
+            }
+          ],
+          "default": "text-center"
+        },
+        {
+          "type": "range",
+          "id": "padding_top",
+          "label": "Top Padding",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "default": 40
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom",
+          "label": "Bottom Padding",
+          "min": 0,
+          "max": 100,
+          "step": 4,
+          "unit": "px",
+          "default": 40
+        }
+      ],
+      "presets": [
+        {
+          "name": "Header Title",
+          "category": "Text"
+        }
+      ]
+    }
+    {% endschema %}
+    
+    <div class="page-width">
+      <div class="section-header header-title {{ section.settings.alignment }}" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+        {% if section.settings.title != blank %}
+          <h1 class="header-title__heading">{{ section.settings.title }}</h1>
+        {% endif %}
+        
+        {% if section.settings.show_description and section.settings.description != blank %}
+          <div class="header-title__description rte">
+            {{ section.settings.description }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <style>
+      .header-title {
+        margin-bottom: 20px;
+      }
+      
+      .header-title__heading {
+        margin-bottom: 15px;
+      }
+      
+      .header-title__description {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      
+      .text-left .header-title__description {
+        margin: 0;
+      }
+      
+      .text-right .header-title__description {
+        margin: 0 0 0 auto;
+      }
+    </style>
