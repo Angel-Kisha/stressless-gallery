@@ -71,13 +71,13 @@
     {% endschema %}
     
     <div class="page-width">
-      <div class="section-header header-title {{ section.settings.alignment }}" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+      <div class="section-page page-title {{ section.settings.alignment }}" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
         {% if section.settings.title != blank %}
-          <h1 class="header-title__heading">{{ section.settings.title }}</h1>
+          <h1 class="page-title__heading">{{ section.settings.title }}</h1>
         {% endif %}
         
         {% if section.settings.show_description and section.settings.description != blank %}
-          <div class="header-title__description rte">
+          <div class="page-title__description rte">
             {{ section.settings.description }}
           </div>
         {% endif %}
@@ -85,24 +85,24 @@
     </div>
     
     <style>
-      .header-title {
+      .page-title {
         margin-bottom: 20px;
       }
       
-      .header-title__heading {
+      .page-title__heading {
         margin-bottom: 15px;
       }
       
-      .header-title__description {
+      .page-title__description {
         max-width: 720px;
         margin: 0 auto;
       }
       
-      .text-left .header-title__description {
+      .text-left .page-title__description {
         margin: 0;
       }
       
-      .text-right .header-title__description {
+      .text-right .page-title__description {
         margin: 0 0 0 auto;
       }
     </style>
