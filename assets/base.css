@@ -3632,5 +3632,9 @@ details-disclosure > details {
   font-family: 'DinCondensed';
 }
 .font-hiragino{
-  font-family: 'DinCondensed';
+  font-family: 'Hiragino';
+}
+.font-hiragino-bold{
+  font-family: 'Hiragino';
+  font-weight: bold;
 }
