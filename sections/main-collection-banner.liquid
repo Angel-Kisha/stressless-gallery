@@ -11,13 +11,23 @@
 
 <div class="collection-hero{% if section.settings.show_collection_image and collection.image %} collection-hero--with-image{% endif %} color-{{ section.settings.color_scheme }} gradient">
   <div class="collection-hero__inner page-width {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-    <div class="collection-hero__text-wrapper">
-      <h1 class="collection-hero__title">
-        <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
-        {{- collection.title | escape -}}
-      </h1>
+    <div class="collection-hero__text-wrapper {{ section.settings.alignment }}">
+      {% if section.settings.title != blank %}
+        <h1 class="collection-hero__title" style="font-size: {{ section.settings.font_size_title }}px;">
+          {{ section.settings.title }}
+        </h1>
+      {% else %}
+        <h1 class="collection-hero__title">
+          <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
+          {{- collection.title | escape -}}
+        </h1>
+      {% endif %}
 
-      {%- if section.settings.show_collection_description -%}
+      {%- if section.settings.show_description and section.settings.description != blank -%}
+        <div class="collection-hero__description rte" style="font-size: {{ section.settings.font_size_description }}px;">
+          {{ section.settings.description }}
+        </div>
+      {%- elsif section.settings.show_collection_description -%}
         <div class="collection-hero__description rte">{{ collection.description }}</div>
       {%- endif -%}
     </div>
@@ -45,11 +55,91 @@
   </div>
 </div>
 
+<style>
+  .text-left {
+    text-align: left;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+  
+  .text-right {
+    text-align: right;
+  }
+</style>
+
 {% schema %}
 {
   "name": "t:sections.main-collection-banner.name",
   "class": "section",
   "settings": [
+    {
+      "type": "header",
+      "content": "Page Title Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Custom Title",
+      "info": "Leave blank to use collection title"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Custom Description",
+      "info": "Overrides collection description when filled"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "default": true,
+      "label": "Show Custom Description"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Text Alignment",
+      "options": [
+        {
+          "value": "text-left",
+          "label": "Left"
+        },
+        {
+          "value": "text-center",
+          "label": "Center"
+        },
+        {
+          "value": "text-right",
+          "label": "Right"
+        }
+      ],
+      "default": "text-center"
+    },
+    {
+      "type": "range",
+      "id": "font_size_title",
+      "label": "Title Font Size",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "font_size_description",
+      "label": "Description Font Size",
+      "min": 12,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Collection Settings"
+    },
     {
       "type": "paragraph",
       "content": "t:sections.main-collection-banner.settings.paragraph.content"
@@ -58,7 +148,8 @@
       "type": "checkbox",
       "id": "show_collection_description",
       "default": true,
-      "label": "t:sections.main-collection-banner.settings.show_collection_description.label"
+      "label": "t:sections.main-collection-banner.settings.show_collection_description.label",
+      "info": "Only applies when no custom description is set"
     },
     {
       "type": "checkbox",
