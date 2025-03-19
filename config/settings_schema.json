@@ -191,7 +191,7 @@
         "type": "range",
         "id": "spacing_grid_vertical",
         "min": 4,
-        "max": 40,
+        "max": 120,
         "step": 4,
         "default": 8,
         "unit": "px",
