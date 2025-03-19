@@ -200,18 +200,6 @@
     ]
   },
   {
-    "name": "Show Heading",
-    "settings": [
-      {
-        "type": "checkbox",
-        "id": "show_heading",
-        "label": "Show Heading",
-        "default": false
-      }
-    ]
-
-  },
-  {
     "name": "t:settings_schema.animations.name",
     "settings": [
       {
