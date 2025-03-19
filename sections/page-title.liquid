@@ -41,6 +41,20 @@
         "default": "text-center"
       },
       {
+        "type": "header",
+        "content": "Colors"
+      },
+      {
+        "type": "color_scheme",
+        "id": "color_scheme",
+        "label": "Color scheme",
+        "default": "background-1"
+      },
+      {
+        "type": "header",
+        "content": "Typography"
+      },
+      {
         "type": "range",
         "id": "font_size_title",
         "label": "Title Font Size",
@@ -59,6 +73,10 @@
         "step": 1,
         "unit": "px",
         "default": 16
+      },
+      {
+        "type": "header",
+        "content": "Layout"
       },
       {
         "type": "range",
@@ -90,17 +108,19 @@
   }
   {% endschema %}
   
-  <div class="page-width drawer-menu">
-    <div class="section-page {{ section.settings.alignment }}" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
-      {% if section.settings.title != blank %}
-        <h1 class="page-title__heading" style="font-size: {{ section.settings.font_size_title }}px;">{{ section.settings.title }}</h1>
-      {% endif %}
-      
-      {% if section.settings.show_description and section.settings.description != blank %}
-        <div class="page-title__description rte" style="font-size: {{ section.settings.font_size_description }}px;">
-          {{ section.settings.description }}
-        </div>
-      {% endif %}
+  <div class="color-{{ section.settings.color_scheme }} gradient">
+    <div class="page-width drawer-menu">
+      <div class="section-page {{ section.settings.alignment }}" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+        {% if section.settings.title != blank %}
+          <h1 class="page-title__heading" style="font-size: {{ section.settings.font_size_title }}px;">{{ section.settings.title }}</h1>
+        {% endif %}
+        
+        {% if section.settings.show_description and section.settings.description != blank %}
+          <div class="page-title__description rte" style="font-size: {{ section.settings.font_size_description }}px;">
+            {{ section.settings.description }}
+          </div>
+        {% endif %}
+      </div>
     </div>
   </div>
   
