@@ -194,7 +194,7 @@
         "max": 120,
         "step": 4,
         "default": 8,
-        "unit": "px",
+        "unit": "em",
         "label": "t:settings_schema.layout.settings.spacing_grid_vertical.label"
       }
     ]
