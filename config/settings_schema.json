@@ -206,7 +206,7 @@
         "type": "checkbox",
         "id": "show_heading",
         "label": "Show Heading",
-        
+        "default": false
       }
     ]
 
