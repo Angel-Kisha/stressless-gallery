@@ -90,6 +90,7 @@
       "settings": {
         "title": "PRODUCTS",
         "heading_size": "h1",
+        "show_heading": false,
         "image_ratio": "adapt",
         "columns_desktop": 3,
         "color_scheme": "scheme-4",
