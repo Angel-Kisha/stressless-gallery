@@ -16,21 +16,16 @@
         "description": "商品一覧",
         "show_description": true,
         "alignment": "text-center",
+        "color_scheme": "scheme-4",
         "font_size_title": 46,
         "font_size_description": 20,
-        "padding_top": 52,
-        "padding_bottom": 52
+        "padding_top": 0,
+        "padding_bottom": 0
       }
     },
     "banner": {
       "type": "main-collection-banner",
       "settings": {
-        "title": "",
-        "description": "",
-        "show_description": true,
-        "alignment": "text-center",
-        "font_size_title": 36,
-        "font_size_description": 16,
         "show_collection_description": true,
         "show_collection_image": false,
         "color_scheme": "scheme-4"
