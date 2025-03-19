@@ -19,10 +19,6 @@
     .collection-hero__title {
       font-size: {{ section.settings.heading_size_mobile }}px;
     }
-    
-    .collection-hero__description {
-      font-size: {{ section.settings.description_size_mobile }}px;
-    }
   }
 {%- endstyle -%}
 
@@ -33,10 +29,6 @@
         <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
         {{- collection.title | escape -}}
       </h1>
-
-      {%- if section.settings.show_collection_description -%}
-        <div class="collection-hero__description rte">{{ collection.description }}</div>
-      {%- endif -%}
     </div>
 
     {%- if section.settings.show_collection_image and collection.image -%}
@@ -122,26 +114,6 @@
       "unit": "px",
       "label": "Heading font size (mobile)",
       "default": 32
-    },
-    {
-      "type": "range",
-      "id": "description_size",
-      "min": 12,
-      "max": 30,
-      "step": 1,
-      "unit": "px",
-      "label": "Description font size",
-      "default": 16
-    },
-    {
-      "type": "range",
-      "id": "description_size_mobile",
-      "min": 12,
-      "max": 24,
-      "step": 1,
-      "unit": "px",
-      "label": "Description font size (mobile)",
-      "default": 14
     },
     {
       "type": "color_scheme",
