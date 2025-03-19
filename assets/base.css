@@ -2372,7 +2372,7 @@ input[type='checkbox'] {
 
 .header__line {
   border-bottom: 0.1rem solid;
-border-image: linear-gradient(to right, #1A5FA7, #FFFFFF, #1A5FA7, #FFFFFF) 1;
+  border-image: linear-gradient(to right, #1A5FA7, #FFFFFF, #1A5FA7, #FFFFFF) 1;
 }
 
 .header {
