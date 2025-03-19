@@ -144,7 +144,7 @@
           >
 
           <h1 class="collection-hero__title">
-        <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
+        {% comment %} <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span> {% endcomment %}
         {{- collection.title | escape -}}
         <span class="collection-hero__translation"> {{ 'collections.' | append: collection.handle |  append: '.english_title' | t: collection.title }}</span>
       </h1>
