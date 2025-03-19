@@ -2367,7 +2367,9 @@ input[type='checkbox'] {
 }
 
 .header-wrapper--border-bottom {
-  border-top: none;
+  background-repeat: no-repeat;
+  background-position: top;
+  padding-top: calc(3rem + 0.2rem);
   background-image: linear-gradient(to right, #1A5FA7, #FFFFFF, #1A5FA7, #FFFFFF);
   background-size: 100% 0.2rem;
   border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
