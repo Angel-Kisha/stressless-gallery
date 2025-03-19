@@ -29,7 +29,7 @@
     <div class="collection-hero__text-wrapper">
       <h1 class="collection-hero__title">
         <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
-        <span>{{- collection.title | escape -}}</span> &nbsp &nbsp
+        <span class="font-hiragino">{{- collection.title | escape -}}</span> &nbsp &nbsp
         {% if section.settings.show_english_title and collection.metafields.custom.english_title %}<span class="font-dincondensed"> {{ collection.metafields.custom.english_title | upcase }}</span>{% endif %}
       </h1>
     </div>
