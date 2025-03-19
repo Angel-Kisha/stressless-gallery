@@ -3621,9 +3621,9 @@ details-disclosure > details {
 }
 
 @font-face {
-  font-family: DinCondensed;
+  font-family: 'DinCondensed';
   src: url('https://cdn.shopify.com/s/files/1/0688/2433/4521/files/DIN-Regular.ttf?v=1742369745');
 }
 .font-dincondensed{
-  font-family: DinConde;
+  font-family: 'DinCondensed';
 }
