@@ -2370,7 +2370,14 @@ input[type='checkbox'] {
   border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
 }
 
-
+.header__line {
+  border-top: none;
+  background-image: linear-gradient(to right, #1A5FA7, #FFFFFF, #1A5FA7, #FFFFFF);
+  background-size: 100% 0.2rem;
+  background-repeat: no-repeat;
+  background-position: top;
+  padding-top: calc(3rem + 0.2rem);
+}
 
 .header {
   display: grid;
