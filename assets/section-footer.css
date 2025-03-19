@@ -53,7 +53,10 @@
   background-position: top;
   padding-top: calc(3rem + 0.2rem);
 }
-
+.header__line {
+  border-bottom: 0.1rem solid;
+  border-image: linear-gradient(to right, #1a5fa7, #ffffff, #1a5fa7, #ffffff) 1;
+}
 .footer__content-bottom-wrapper {
   display: flex;
   flex-direction: column;
