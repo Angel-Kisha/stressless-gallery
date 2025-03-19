@@ -27,14 +27,7 @@
     <div class="collection-hero__text-wrapper">
       <h1 class="collection-hero__title">
         <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
-        {%- if section.settings.show_english_translation and collection.metafields.custom.english_title != blank -%}
-          {{- collection.title | escape -}}
-          <span class="collection-hero__title-translation">
-            ({{ collection.metafields.custom.english_title | escape }})
-          </span>
-        {%- else -%}
-          {{- collection.title | escape -}}
-        {%- endif -%}
+        {{- collection.title | escape -}}
       </h1>
     </div>
 
