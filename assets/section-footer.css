@@ -55,7 +55,7 @@
 }
 
 .footer__line {
-  border-bottom: 0.1rem solid;
+  border-top: 0.1rem solid;
   border-image: linear-gradient(to right, #1a5fa7, #ffffff, #1a5fa7, #ffffff) 1;
 }
 
