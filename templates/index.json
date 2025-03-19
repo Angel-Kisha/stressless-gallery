@@ -25,6 +25,20 @@
         "show_text_below": true
       }
     },
+    "page_title_dnbgXY": {
+      "type": "page-title",
+      "settings": {
+        "title": "PRODUCTS",
+        "description": "商品一覧",
+        "show_description": true,
+        "alignment": "text-center",
+        "color_scheme": "scheme-4",
+        "font_size_title": 36,
+        "font_size_description": 16,
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
     "collection_list_FYQ67m": {
       "type": "collection-list",
       "blocks": {
@@ -89,6 +103,7 @@
   },
   "order": [
     "image_banner_9UcKxY",
+    "page_title_dnbgXY",
     "collection_list_FYQ67m"
   ]
 }
