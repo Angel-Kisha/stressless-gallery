@@ -208,7 +208,7 @@
         endif
       endif
     %}
-      {% comment %} <div class="desktop-localization-wrapper">
+      <div class="desktop-localization-wrapper">
         {%- if section.settings.enable_country_selector and localization.available_countries.size > 1 -%}
           <localization-form class="small-hide medium-hide" data-prevent-hide>
             {%- form 'localization', id: 'HeaderCountryForm', class: 'localization-form' -%}
@@ -230,7 +230,7 @@
             {%- endform -%}
           </localization-form>
         {%- endif -%}
-      </div> {% endcomment %}
+      </div>
      
       {%- if shop.customer_accounts_enabled -%}
         <a
