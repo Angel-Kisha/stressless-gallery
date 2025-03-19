@@ -30,7 +30,7 @@
       <h1 class="collection-hero__title">
         <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
         {{- collection.title | escape -}} &nbsp &nbsp
-        {% if section.settings.show_english_title and collection.metafields.custom.english_title %} {{ collection.metafields.custom.english_title | upcase }}{% endif %}
+        {% if section.settings.show_english_title and collection.metafields.custom.english_title %}<span class=""> {{ collection.metafields.custom.english_title | upcase }}</span>{% endif %}
       </h1>
     </div>
 
