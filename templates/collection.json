@@ -27,8 +27,9 @@
       "type": "main-collection-banner",
       "settings": {
         "show_collection_image": false,
-        "padding_top": 0,
-        "padding_bottom": 0,
+        "show_english_title": true,
+        "padding_top": 12,
+        "padding_bottom": 12,
         "heading_size": 20,
         "heading_size_mobile": 32,
         "color_scheme": "scheme-4"
