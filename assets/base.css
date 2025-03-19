@@ -3732,6 +3732,6 @@ details-disclosure > details {
   font-family: "Hiragino";
   font-weight: bold;
 }
-.font{
-  font-size: ;
+.product-name-font-size{
+  font-size: 1.25em;
 }
