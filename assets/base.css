@@ -3625,8 +3625,8 @@ details-disclosure > details {
   src: url('https://cdn.shopify.com/s/files/1/0688/2433/4521/files/DIN-Regular.ttf?v=1742369745');
 }
 @font-face {
-  font-family: ;
-  src: url();
+  font-family: 'Hiragino';
+  src: url('https://cdn.shopify.com/s/files/1/0688/2433/4521/files/Hiragino_Kaku_Gothic_ProN_W3.otf?v=1742370491');
 }
 .font-dincondensed{
   font-family: 'DinCondensed';
