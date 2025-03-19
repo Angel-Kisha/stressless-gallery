@@ -27,8 +27,7 @@
     <div class="collection-hero__text-wrapper">
       <h1 class="collection-hero__title">
   <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
-  {{- collection.title | escape -}}
-    <span class="collection-hero__title-translation"></span>
+  {{- collection.title | escape -}} {{ collection.metafields.custom.english_title | escape }}
 
 </h1>
     </div>
