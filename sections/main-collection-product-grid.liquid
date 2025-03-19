@@ -146,7 +146,10 @@
           <h1 class="collection-hero__title">
         {% comment %} <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span> {% endcomment %}
         {{- collection.title | escape -}}
-        <span class="collection-hero__translation"> {{ 'collections.' | append: collection.handle |  append: '.english_title' | t: collection.title }}</span>
+        {% if collection.metafields.custom.english_title %}
+          <span class="collection-hero__translation">{{ collection.metafields.custom.english_title }}</span>
+        {% endif %}
+        {% comment %} <span class="collection-hero__translation"> {{ 'collections.' | append: collection.handle |  append: '.english_title' | t: collection.title }}</span> {% endcomment %}
       </h1>
             <div class="loading-overlay gradient"></div>
             <ul
