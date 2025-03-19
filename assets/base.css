@@ -3626,4 +3626,6 @@ details-disclosure > details {
 }
 .font-dincondensed{
   font-family: 'DinCondensed';
+  letter-spacing: 2px; /* Adjust spacing between letters */
+  line-height: 10;
 }
