@@ -144,12 +144,19 @@
           >
 
           <h1 class="collection-hero__title">
-            <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
-            {{- collection.title | escape -}}
-            {% if collection.metafields.custom.english_title %}
-              <span class="collection-hero__translation">{{ collection.metafields.custom.english_title }}</span>
-            {% endif %}
-          </h1>
+  <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
+  {{- collection.title | escape -}}
+  <span class="collection-hero__translation">
+    {% case collection.handle %}
+      {% when 'frontpage' %}
+        Chair
+      {% when 'another-collection' %}
+        Another Translation
+      {% else %}
+        {{ collection.title }}
+    {% endcase %}
+  </span>
+</h1>
             <div class="loading-overlay gradient"></div>
             <ul
               id="product-grid"
