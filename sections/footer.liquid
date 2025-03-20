@@ -292,15 +292,19 @@
           <span class="h2">{{ shop.name }}</span>
         {%- endif -%}
       </a>
-      {% if section.settings.enable_payment_list %}
+      {% if section.settings.enable_payment_list  %}
         <div class="footer-padding-left">
-              <h2 class="font-hiragino footer__payment-title">{{ block.settings.payment_title }}</h2>
-              <p class="font-hirakaku footer__payment-list">
-                {{ block.settings.payment_methods_text | newline_to_br }}
-                {% if block.settings.payment_link_text != blank and block.settings.payment_link_url != blank %}
-                  <br/><a href="{{ block.settings.payment_link_url }}">{{ block.settings.payment_link_text }}</a>
-                {% endif %}
-              </p>
+          {% if section.settings.payment_title != blank %}
+            <h2 class="font-hiragino footer__payment-title">{{ section.settings.payment_title }}</h2>
+          {% endif %}
+          {% if section.settings.payment_methods_text != blank %}
+            <p class="font-hirakaku footer__payment-list">
+              {{ section.settings.payment_methods_text | newline_to_br }}
+              {% if section.settings.payment_link_text != blank and section.settings.payment_link_url != blank %}
+                <br/><a href="{{ section.settings.payment_link_url }}">{{ section.settings.payment_link_text }}</a>
+              {% endif %}
+            </p>
+          {% endif %}
             </div> 
       {% endif %}
       
@@ -426,35 +430,6 @@
           "id": "subtext",
           "default": "t:sections.footer.blocks.text.settings.subtext.default",
           "label": "t:sections.footer.blocks.text.settings.subtext.label"
-        }
-      ]
-    },
-    {
-      "type": "payment_info",
-      "name": "Payment Information",
-      "settings": [
-        {
-          "type": "text",
-          "id": "payment_title",
-          "label": "Payment Section Title",
-          "default": "お支払い方法"
-        },
-        {
-          "type": "textarea",
-          "id": "payment_methods_text",
-          "label": "Payment Methods Description",
-          "info": "Enter your payment methods description. Line breaks will be preserved."
-        },
-        {
-          "type": "text",
-          "id": "payment_link_text",
-          "label": "Payment Link Text",
-          "default": "もっと詳しく"
-        },
-        {
-          "type": "url",
-          "id": "payment_link_url",
-          "label": "Payment Link URL"
         }
       ]
     },
@@ -644,9 +619,6 @@
       },
       {
         "type": "text"
-      },
-      {
-        "type": "payment_info"
       }
     ]
   }
