@@ -41,7 +41,8 @@
 }
 
 .footer__content-bottom {
-
+  border-bottom: 0.1rem solid;
+  border-image: linear-gradient(to right, #1a5fa7, #ffffff, #1a5fa7, #ffffff) 1;
   /* border-top: solid 0.1rem rgba(var(--color-foreground), 0.08);
   padding-top: 3rem; */
 }
