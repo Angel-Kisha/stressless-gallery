@@ -3722,18 +3722,11 @@ details-disclosure > details {
   font-family: "Hiragino";
   src: url("https://cdn.shopify.com/s/files/1/0688/2433/4521/files/Hiragino_Kaku_Gothic_ProN_W3.otf?v=1742370491");
 }
-@font-face {
-  font-family: "Hirakaku";
-  src: url("https://cdn.shopify.com/s/files/1/0688/2433/4521/files/HiraKakuPro-W3.otf?v=1742441587");
-}
 .font-dincondensed {
   font-family: "DinCondensed";
 }
 .font-hiragino {
   font-family: "Hiragino";
-}
-.font-hirakaku {
-  font-family: "Hirakaku";
 }
 .product-name-font-size {
   font-size: 1.25em;
