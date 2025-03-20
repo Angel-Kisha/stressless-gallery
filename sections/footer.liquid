@@ -283,14 +283,7 @@
         {%- endif -%}
       </a>
       {% for block in section.blocks %}
-        {% case block.type %}
-          {% when 'link_list' %}
-            <!-- Link list block code -->
-          {% when 'text' %}
-            <!-- Text block code -->
-          
-          {% comment %} ADD YOUR NEW BLOCK TYPE HERE {% endcomment %}
-          {% when 'payment_info' %}
+     
             <div class="footer-padding-left">
               <h2 class="font-hiragino footer__payment-title">{{ block.settings.payment_title }}</h2>
               <p class="font-hirakaku footer__payment-list">
@@ -300,10 +293,6 @@
                 {% endif %}
               </p>
             </div>
-            
-          {% else %}
-            <!-- Default case -->
-        {% endcase %}
       {% endfor %}
       <div class="footer__column footer__localization isolate">
         {%- if section.settings.enable_country_selector and localization.available_countries.size > 1 -%}
