@@ -35,12 +35,13 @@
 
 .footer-menu {
   display: flex;
+  list-style-type: none;
 }
 
 .footer-menu a{
   color: inherit;
   transition: all 0.2s ease;
-  list-style-type: none;
+  
   text-decoration: none;
   
 }
