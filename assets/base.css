@@ -3732,6 +3732,9 @@ details-disclosure > details {
 .font-hiragino {
   font-family: "Hiragino";
 }
+.font-hirakaku {
+  font-family: "Hirak";
+}
 .product-name-font-size {
   font-size: 1.25em;
 }
