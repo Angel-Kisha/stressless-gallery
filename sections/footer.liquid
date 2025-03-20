@@ -284,7 +284,7 @@
       </a>
       {% if section.settings.enable_payment_list  %}
         <div class="footer-padding-left">
-          {% if section.settings.payment_title != blank %}
+          {%- if section.settings.payment_title != blank -%}
             <h2 class="font-hiragino footer__payment-title">{{ section.settings.payment_title }}</h2>
           {% endif %}
           {%- if section.settings.payment_methods_text != blank -%}
