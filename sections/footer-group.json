@@ -16,7 +16,7 @@
       "settings": {
         "color_scheme": "scheme-4",
         "payment_title": "お支払い方法",
-        "payment_methods_text": "<p>「Google Pay」「Shop Pay」「クレジットカード：JCB・Diners Club・VISA・MasterCard・American Express」での決済に対応。<br/>もっと詳しく</p>",
+        "payment_methods_text": "<p>「Google Pay」「Shop Pay」「クレジットカード：JCB・Diners Club・VISA・MasterCard・American Express」での決済に対応。<br/><a href=\"/policies/privacy-policy\" title=\"Privacy Policy\">もっと詳しく</a></p>",
         "newsletter_enable": false,
         "newsletter_heading": "",
         "enable_payment_list": true,
