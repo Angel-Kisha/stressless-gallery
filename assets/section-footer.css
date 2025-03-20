@@ -40,7 +40,7 @@
 .footer-menu {
   display: flex;
   list-style-type: none;
-  font
+  font-size: 1rem;
   font-weight: bold;
 }
 
