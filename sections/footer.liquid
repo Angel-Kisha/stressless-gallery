@@ -293,10 +293,7 @@
         {%- endif -%}
       </a>
       {% if section.settings.enable_payment_list %}
-        
-      {% endif %}
-      
-            {% comment %} <div class="footer-padding-left">
+        <div class="footer-padding-left">
               <h2 class="font-hiragino footer__payment-title">{{ block.settings.payment_title }}</h2>
               <p class="font-hirakaku footer__payment-list">
                 {{ block.settings.payment_methods_text | newline_to_br }}
@@ -304,7 +301,10 @@
                   <br/><a href="{{ block.settings.payment_link_url }}">{{ block.settings.payment_link_text }}</a>
                 {% endif %}
               </p>
-            </div> {% endcomment %}
+            </div> 
+      {% endif %}
+      
+             
       <div class="footer__column footer__localization isolate">
         {%- if section.settings.enable_country_selector and localization.available_countries.size > 1 -%}
           <localization-form>
