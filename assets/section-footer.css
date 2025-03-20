@@ -18,16 +18,9 @@
 }
 
 .footer__payment-list {
-  font-size: 10px;
-  font-weight: bold;
-}
-
-.footer__payment-learn-more {
   font-size: 1rem;
   font-weight: bold;
-  text-decoration: none;
 }
-
 @media screen and (max-width: 749px) {
   .footer .grid {
     display: block;
