@@ -40,6 +40,7 @@
 .footer-menu {
   display: flex;
   list-style-type: none;
+  font-weight: ;
 }
 
 .footer-menu a{

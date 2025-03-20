@@ -359,7 +359,7 @@
     </div> {% endcomment %}
     {% if section.settings.show_footer_links and section.settings.footer_menu != blank %}
       <div class="footer-links">
-        <ul class="footer-menu">
+        <ul class="footer-menu font-hiragino">
           {% for link in linklists[section.settings.footer_menu].links %}
             <li>
               <a href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>
