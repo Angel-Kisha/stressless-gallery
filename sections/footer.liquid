@@ -300,7 +300,7 @@
           {% if section.settings.payment_methods_text != blank %}
             <p class="font-hirakaku footer__payment-list">
               {{ section.settings.payment_methods_text | newline_to_br }}
-              {% if section.settings.payment_link_text != blank and section.settings.payment_link_url != blank %}
+              {% if section.settings.payment_link_text != blank%}
                 <br/><a href="{{ section.settings.payment_link_url }}">{{ section.settings.payment_link_text }}</a>
               {% endif %}
             </p>
