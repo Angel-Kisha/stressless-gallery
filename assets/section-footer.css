@@ -21,6 +21,12 @@
   font-size: 1rem;
   font-weight: bold;
 }
+
+.footer__payment- {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
 @media screen and (max-width: 749px) {
   .footer .grid {
     display: block;
