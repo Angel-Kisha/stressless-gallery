@@ -33,6 +33,10 @@
   text-decoration-thickness: 0.2rem;
 }
 
+.footer-links {
+  place-items: center;
+}
+
 .footer-menu {
   display: flex;
   list-style-type: none;
