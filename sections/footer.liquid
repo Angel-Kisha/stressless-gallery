@@ -365,6 +365,7 @@
               <a href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>
                 {{ link.title }}
               </a>
+              {% if forloop.last == false %} / {% endif %}
             </li>
           {% endfor %}
         </ul>
