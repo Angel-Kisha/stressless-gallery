@@ -282,7 +282,6 @@
           <span class="h2">{{ shop.name }}</span>
         {%- endif -%}
       </a>
-      {% for block in section.blocks %}
      
             <div class="footer-padding-left">
               <h2 class="font-hiragino footer__payment-title">{{ block.settings.payment_title }}</h2>
@@ -293,7 +292,6 @@
                 {% endif %}
               </p>
             </div>
-      {% endfor %}
       <div class="footer__column footer__localization isolate">
         {%- if section.settings.enable_country_selector and localization.available_countries.size > 1 -%}
           <localization-form>
