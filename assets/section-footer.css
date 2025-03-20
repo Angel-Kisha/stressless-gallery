@@ -34,6 +34,7 @@
 }
 
 .footer__menu {
+  list-style-type: none;
   text-decoration: none;
 }
 
