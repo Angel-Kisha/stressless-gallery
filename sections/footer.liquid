@@ -301,7 +301,7 @@
             <p class="font-hirakaku footer__payment-list">
               {{ section.settings.payment_methods_text | newline_to_br }}
               {% if section.settings.payment_link_text != blank%}
-                <br/><a href="{{ section.settings.payment_link_url }}" class="font-hirakaku footer__payment-list">{{ section.settings.payment_link_text }}</a>
+                <br/><a href="{{ section.settings.payment_link_url }}" class="font-hirakaku footer__payment-view-more">{{ section.settings.payment_link_text }}</a>
               {% endif %}
             </p>
           {% endif %}
