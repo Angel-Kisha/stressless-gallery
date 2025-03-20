@@ -154,7 +154,7 @@
                         {{ 'image' | placeholder_svg_tag: 'placeholder-svg placeholder' }}
                       {%- endif -%}
                     </div>
-                    {% when 'payment_info' %}
+                    {% comment %} {% when 'payment_info' %}
                       <div class="footer-padding-left">
                         <h2 class="font-hiragino footer__payment-title">{{ block.settings.payment_title }}</h2>
                         <p class="font-hirakaku footer__payment-list">
@@ -163,7 +163,7 @@
                             <br/><a href="{{ block.settings.payment_link_url }}">{{ block.settings.payment_link_text }}</a>
                           {% endif %}
                         </p>
-                      </div>
+                      </div> {% endcomment %}
                 {%- endcase -%}
               </div>
             {%- endfor -%}
