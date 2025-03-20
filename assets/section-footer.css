@@ -23,9 +23,10 @@
 }
 
 .font-hiragino.footer__payment-list a {
-  text-decoration: none; 
-  color: inherit;
-  transition: all 0.2s ease;
+  color: rgba(var(--color-link), var(--alpha-link));
+  text-underline-offset: 0.3rem;
+  text-decoration-thickness: 0.1rem;
+  transition: text-decoration-thickness var(--duration-short) ease;
 }
 
 .font-hiragino.footer__payment-list a:hover {
