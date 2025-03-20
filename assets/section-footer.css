@@ -30,6 +30,7 @@
 
 .font-hiragino.footer__payment-list a:hover {
   font-weight: bold !important;
+  color: currentColor;
 }
 
 @media screen and (max-width: 749px) {
