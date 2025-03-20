@@ -33,7 +33,7 @@
   text-decoration-thickness: 0.2rem;
 }
 
-.footer-menu {
+.footer-menu a{
   color: inherit;
   transition: all 0.2s ease;
   list-style-type: none;
