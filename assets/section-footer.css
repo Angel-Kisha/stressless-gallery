@@ -34,6 +34,8 @@
 }
 
 .footer__menu {
+  color: inherit;
+  transition: all 0.2s ease;
   list-style-type: none;
   text-decoration: none;
 }
