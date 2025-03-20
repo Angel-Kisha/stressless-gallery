@@ -34,7 +34,7 @@
 }
 
 .footer__links {
-  
+  text-decoration: none;
 }
 
 @media screen and (max-width: 749px) {
