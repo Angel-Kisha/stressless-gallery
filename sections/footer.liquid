@@ -154,16 +154,6 @@
                         {{ 'image' | placeholder_svg_tag: 'placeholder-svg placeholder' }}
                       {%- endif -%}
                     </div>
-                    {% comment %} {% when 'payment_info' %}
-                      <div class="footer-padding-left">
-                        <h2 class="font-hiragino footer__payment-title">{{ block.settings.payment_title }}</h2>
-                        <p class="font-hirakaku footer__payment-list">
-                          {{ block.settings.payment_methods_text | newline_to_br }}
-                          {% if block.settings.payment_link_text != blank and block.settings.payment_link_url != blank %}
-                            <br/><a href="{{ block.settings.payment_link_url }}">{{ block.settings.payment_link_text }}</a>
-                          {% endif %}
-                        </p>
-                      </div> {% endcomment %}
                 {%- endcase -%}
               </div>
             {%- endfor -%}
