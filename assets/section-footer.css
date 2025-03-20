@@ -11,6 +11,10 @@
   justify-items: self-start;
 }
 
+.footer__payment {
+  font-size: 1.5rem;
+}
+
 @media screen and (max-width: 749px) {
   .footer .grid {
     display: block;
