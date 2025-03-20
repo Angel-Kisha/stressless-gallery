@@ -28,6 +28,10 @@
   transition: all 0.2s ease;
 }
 
+.font-hiragino.footer__payment-list a:hover {
+  font-weight: bold;
+}
+
 @media screen and (max-width: 749px) {
   .footer .grid {
     display: block;
