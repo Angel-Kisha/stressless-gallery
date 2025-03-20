@@ -15,6 +15,9 @@
   font-size: 1.5rem;
 }
 
+.footer__payment-list {
+  font-size: 1.5rem;
+}
 @media screen and (max-width: 749px) {
   .footer .grid {
     display: block;
