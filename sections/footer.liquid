@@ -288,10 +288,10 @@
             <h2 class="font-hiragino footer__payment-title">{{ section.settings.payment_title }}</h2>
           {% endif %}
           {%- if section.settings.payment_methods_text != blank -%}
-            <p class="font-hiragino footer__payment-list">
+            <div class="font-hiragino footer__payment-list">
               {{ section.settings.payment_methods_text }}
-            </p>
-          {% endif %}
+            </div>
+          {%- endif -%}
             </div> 
       {% endif %}
       
