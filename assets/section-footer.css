@@ -22,6 +22,12 @@
   font-weight: bold;
 }
 
+.font-hiragino.footer__payment-list a {
+  text-decoration: none; 
+  color: inherit;
+  transition: all 0.2s ease;
+}
+
 @media screen and (max-width: 749px) {
   .footer .grid {
     display: block;
