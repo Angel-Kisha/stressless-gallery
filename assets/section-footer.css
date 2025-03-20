@@ -11,12 +11,12 @@
   justify-items: self-start;
 }
 
-.footer__payment {
+.footer__payment-title {
   font-size: 1.5rem;
 }
 
 .footer__payment-list {
-  font-size: 1.5rem;
+  font-size: 1rem;
 }
 @media screen and (max-width: 749px) {
   .footer .grid {
