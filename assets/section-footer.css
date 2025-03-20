@@ -38,6 +38,7 @@
   transition: all 0.2s ease;
   list-style-type: none;
   text-decoration: none;
+  display: flex;
 }
 
 @media screen and (max-width: 749px) {
