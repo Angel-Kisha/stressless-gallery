@@ -22,9 +22,10 @@
   font-weight: bold;
 }
 
-.footer__payment- {
+.footer__payment-view-more {
   font-size: 1rem;
   font-weight: bold;
+  text-decoration: none;
 }
 
 @media screen and (max-width: 749px) {
