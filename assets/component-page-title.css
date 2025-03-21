@@ -39,6 +39,6 @@
 
 @media screen and (max-width: 749px) { 
     .page-title__heading {
-        font-size: calc({{ section.settings.font_size_title }}px * 0.8); /* Reduce size by 20% */
-      }
-}
+      font-size: calc({{ section.settings.font_size_title }}px * 0.8); /* Reduce size by 20% */
+    }
+  }
