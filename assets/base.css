@@ -91,7 +91,6 @@
 
 body:has(.section-header .drawer-menu) .announcement-bar-section .page-width {
   max-width: 100%;
-  background-color: #0c468b;
 }
 
 .page-width.drawer-menu {
