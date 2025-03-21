@@ -41,13 +41,11 @@
 }
 
 .footer-menu {
-  width: 100%;
   display: flex;
   list-style-type: none;
   font-size: 1rem;
   font-weight: bold;
   align-items: center;
-  margin: 0;
 }
 
 .footer-menu a{
