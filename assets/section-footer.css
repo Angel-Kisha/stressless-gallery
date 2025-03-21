@@ -40,6 +40,10 @@
   place-items: center;
 }
 
+.footer-links ul {
+ padding: 0;
+}
+
 .footer-menu {
   display: flex;
   list-style-type: none;
