@@ -301,6 +301,8 @@
 }
 
 .card__heading {
+  letter-spacing: .2rem;
+  font-size: 20px;
   margin-top: 0;
   margin-bottom: 0;
 }
