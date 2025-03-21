@@ -61,7 +61,7 @@
 @media screen and (max-width: 749px) {
 
   .footer-menu {
-    fle
+    flex-wrap: wrap;
     padding: 0 2rem;
   }
   .footer .grid {
