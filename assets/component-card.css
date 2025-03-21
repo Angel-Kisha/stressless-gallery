@@ -248,8 +248,8 @@
     width: auto;
   }
 
-  .card-title {
-    
+  .card__heading {
+    font-size: 16px;
   }
 }
 
