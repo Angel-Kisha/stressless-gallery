@@ -119,7 +119,7 @@
   {% endschema %}
   
   <div class="color-{{ section.settings.color_scheme }} gradient">
-    <div class="page-title-width">
+    <div class="page-title-width" style="margin-top: {{ section.settings.margin_top }}px;">
       <div class="section-page {{ section.settings.alignment }}" style="padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
         {% if section.settings.title != blank %}
           <h1 class="page-title__heading font-dincondensed" style="font-size: {{ section.settings.font_size_title }}px;">{{ section.settings.title }}</h1>
