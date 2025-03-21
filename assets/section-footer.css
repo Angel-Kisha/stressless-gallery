@@ -32,6 +32,7 @@
   color: rgb(var(--color-link));
   text-decoration-thickness: 0.2rem;
   text-decoration: underline;
+  text-underline-offset: .5em;
 }
 
 .footer-links {
