@@ -59,6 +59,10 @@
 }
 
 @media screen and (max-width: 749px) {
+
+  .footer-menu {
+    padding
+  }
   .footer .grid {
     display: block;
   }
