@@ -2572,6 +2572,8 @@ input[type="checkbox"] {
 /* Header icons */
 .header__icons {
   display: flex;
+  height: fit-content;
+  
   grid-area: icons;
   justify-self: end;
   padding-right: 0.8rem;
@@ -3734,5 +3736,5 @@ details-disclosure > details {
 .header-links {
   font-size: 1.125rem;
   font-weight: bold;
-  
+  font-family: "Hiragino";
 }
