@@ -31,6 +31,7 @@
 .font-hiragino.footer__payment-list a:hover, .footer-menu a:hover {
   color: rgb(var(--color-link));
   text-decoration-thickness: 0.2rem;
+  text-decoration: underline;
 }
 
 .footer-links {
