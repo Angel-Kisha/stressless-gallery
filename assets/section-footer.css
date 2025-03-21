@@ -28,6 +28,11 @@
   transition: all 0.2s ease;
 }
 
+.font-hiragino.footer__payment-list a, 
+.footer-menu a {
+  transition: color 0.3s ease, text-decoration-thickness 0.3s ease, text-underline-offset 0.3s ease;
+}
+
 .font-hiragino.footer__payment-list a:hover, .footer-menu a:hover {
   color: rgb(var(--color-link));
   text-decoration-thickness: 0.2rem;
