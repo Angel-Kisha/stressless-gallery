@@ -59,10 +59,3 @@
 .collection-list-view-all {
   margin-top: 2rem;
 }
-
-@media screen and (min-width: 750px) {
-  .section-collection-list .collection-list:not(.slider) {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  }
-}
