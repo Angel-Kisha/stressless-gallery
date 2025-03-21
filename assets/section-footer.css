@@ -41,6 +41,7 @@
 }
 
 .footer-menu {
+  width: 100%;
   display: flex;
   list-style-type: none;
   font-size: 1rem;
