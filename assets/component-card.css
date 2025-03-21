@@ -248,7 +248,9 @@
     width: auto;
   }
 
-  .card-nam
+  .card-title {
+    
+  }
 }
 
 .card-information quantity-popover volume-pricing {
