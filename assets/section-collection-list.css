@@ -59,3 +59,7 @@
 .collection-list-view-all {
   margin-top: 2rem;
 }
+
+@media screen and (min-width: 500px) {
+  
+}
