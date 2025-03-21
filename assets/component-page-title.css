@@ -37,8 +37,3 @@
   margin: 0 0 0 auto;
 }
 
-@media screen and (max-width: 749px) { 
-    .page-title__heading {
-     font-size: 30px !important;
-    }
-  }
