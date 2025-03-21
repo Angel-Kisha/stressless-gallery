@@ -439,6 +439,10 @@ table:not([class]) th {
 }
 
 @media screen and (max-width: 749px) {
+
+  .page-width-nopadding {
+    padding: 0 2rem;
+  }
   .small-hide {
     display: none !important;
   }
