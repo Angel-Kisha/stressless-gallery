@@ -109,7 +109,7 @@
                 {% if product.variants.first.sku != blank %}
                   <p class="product-code">商品コード: {{ product.variants.first.sku }}</p>
                 {% endif %}
-
+                
               {% comment %} {%- when 'price' -%}
                 <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
                   {%- render 'price',
@@ -145,7 +145,7 @@
                     {{ form | payment_terms }}
                   {%- endform -%}
                 </div>
-              {% comment %} {%- when 'inventory' -%}
+              {%- when 'inventory' -%}
                 <p
                   class="product__inventory{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.inventory_management != 'shopify' %} visibility-hidden{% endif %}"
                   {{ block.shopify_attributes }}
@@ -195,7 +195,8 @@
                       {%- endif -%}
                     {%- endif -%}
                   {%- endif -%}
-                </p> {% endcomment %}
+                </p>
+                
               {%- when 'description' -%}
                 {%- if product.description != blank -%}
                   <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
