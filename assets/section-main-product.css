@@ -250,8 +250,6 @@ a.product__text {
   font-size: 1rem;
 }
 
-.product-title
-
 .product__title {
   word-break: break-word;
   margin-bottom: 1.5rem;
@@ -259,6 +257,9 @@ a.product__text {
 
 .product__title > * {
   margin: 0;
+  font-family: 'Hiragino';
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .product__title > a {
