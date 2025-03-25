@@ -216,7 +216,7 @@
                 </p>
               {%- when 'custom_liquid' -%}
                 {{ block.settings.custom_liquid }}
-              {% comment %} {%- when 'collapsible_tab' -%}
+              {%- when 'collapsible_tab' -%}
                 <div class="product__accordion accordion quick-add-hidden" {{ block.shopify_attributes }}>
                   <details id="Details-{{ block.id }}-{{ section.id }}">
                     <summary>
@@ -233,7 +233,7 @@
                       {{ block.settings.page.content }}
                     </div>
                   </details>
-                </div> {% endcomment %}
+                </div>
               {%- when 'quantity_selector' -%}
                 <div
                   id="Quantity-Form-{{ section.id }}"
