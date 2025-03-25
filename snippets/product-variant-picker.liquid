@@ -58,7 +58,7 @@
             {% if request.locale.iso_code == 'ja' %}
               {% case option.name %}
                 {% when 'Color' %}カラー
-                {% when 'Type' %}サイズ
+                {% when 'Type' %}タイプ
                 {% else %}{{ option.name }}
               {% endcase %}
             {% else %}
