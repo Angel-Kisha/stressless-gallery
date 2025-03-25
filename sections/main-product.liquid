@@ -245,12 +245,7 @@
                   {%- assign cart_qty = cart
                     | item_count_for_variant: product.selected_or_first_available_variant.id
                   -%}
-
-                  
                   {% # theme-check-enable %}
-
-                  {%- when 'variant_picker' -%}
-                    {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
                   <div class="product-quantity">
                     <label class="quantity__label product-quantity-label" for="Quantity-{{ section.id }}">
                       {{ 'products.product.quantity.label' | t }}
@@ -476,6 +471,8 @@
                   render 'share-button', block: block, share_link: share_url
                 %}
 
+              {%- when 'variant_picker' -%}
+                {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
               {%- when 'buy_buttons' -%}
                 {%- render 'buy-buttons',
                   block: block,
