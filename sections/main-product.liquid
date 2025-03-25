@@ -110,7 +110,10 @@
                   <p class="product-code">商品コード: {{ product.variants.first.sku }}</p>
                 {% endif %} {% endcomment %}
               {% when 'decorative_line' %}
-                <hr class="decorative-horizontal-line" style=" margin: {{ block.settings.line_margin }}px 0;"></hr>
+                <hr 
+                class="decorative-horizontal-line" 
+                style="margin-top: {{ block.settings.line_top_margin }}px; margin-bottom: {{ block.settings.line_bottom_margin }}px;"
+              ></hr>              
               {%- when 'price' -%}
                 <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
                   {%- render 'price',
@@ -2098,12 +2101,22 @@
       "settings": [
         {
           "type": "range",
-          "id": "line_margin",
+          "id": "line_top_margin",
           "min": 0,
           "max": 50,
           "step": 5,
           "unit": "px",
-          "label": "Vertical Margin",
+          "label": "Top Margin",
+          "default": 10
+        },
+        {
+          "type": "range",
+          "id": "line_bottom_margin",
+          "min": 0,
+          "max": 50,
+          "step": 5,
+          "unit": "px",
+          "label": "Bottom Margin",
           "default": 10
         }
       ]
