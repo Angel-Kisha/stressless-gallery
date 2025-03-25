@@ -57,7 +57,7 @@
           <label class="product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
             {% if request.locale.iso_code == 'ja' %}
               {% case option.name %}
-                {% when 'Color' %}色
+                {% when 'Color' %}カラー
                 {% when 'Type' %}サイズ
                 {% else %}{{ option.name }}
               {% endcase %}
