@@ -2013,7 +2013,9 @@ input[type="checkbox"] {
   appearance: none;
 }
 
-bg
+.bg-blue {
+  background-color: ;
+}
 
 .quantity__button {
   width: calc(4.5rem / var(--font-body-scale));
