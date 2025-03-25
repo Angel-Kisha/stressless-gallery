@@ -210,6 +210,7 @@ product-info {
   color: #ffffff;
   letter-spacing: 2px;
   font-family: 'Hiragino';
+  font-weight: 600;
 }
 
 @media screen and (forced-colors: active) {
