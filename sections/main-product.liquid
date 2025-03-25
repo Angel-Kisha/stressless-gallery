@@ -245,6 +245,9 @@
                   {%- assign cart_qty = cart
                     | item_count_for_variant: product.selected_or_first_available_variant.id
                   -%}
+
+                  {%- when 'variant_picker' -%}
+                    {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
                   {% # theme-check-enable %}
                   <div class="product-quantity">
                     <label class="quantity__label product-quantity-label" for="Quantity-{{ section.id }}">
