@@ -379,7 +379,8 @@
                       {%- endif -%}
                     </div>
                   </div>
-                  {% comment %} <div class="quantity__rules caption" id="Quantity-Rules-{{ section.id }}">
+                  
+                  <div class="quantity__rules caption" id="Quantity-Rules-{{ section.id }}">
                     {%- if product.selected_or_first_available_variant.quantity_rule.increment > 1 -%}
                       <span class="divider">
                         {{-
@@ -447,7 +448,7 @@
                         {%- endif -%}
                       {%- endif -%}
                     </volume-pricing>
-                  {%- endif -%} {% endcomment %}
+                  {%- endif -%}
                 </div>
               {%- when 'popup' -%}
                 <modal-opener
