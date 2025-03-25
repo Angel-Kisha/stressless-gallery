@@ -1946,7 +1946,7 @@ input[type="checkbox"] {
 .product-quantity-label {
   font-size: 1.5rem;
   font-family: 'Hiragino';
-  
+  font-weight: 700;
 }
 
 /* component-quantity */
