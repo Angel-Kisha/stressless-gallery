@@ -253,6 +253,7 @@ a.product__text {
 .product__title {
   font-family: 'Hiragino';
   font-size: 1.5rem;
+  font-weight: 700;
   word-break: break-word;
   margin-bottom: 1.5rem;
 }
