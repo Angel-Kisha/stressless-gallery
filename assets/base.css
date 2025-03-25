@@ -1944,7 +1944,7 @@ input[type="checkbox"] {
 }
 
 .product-quantity-label {
-  font-size: 1.5rem;
+  font-size: 24px;
   font-family: 'Hiragino';
   font-weight: 600;
   letter-spacing: 2px;
