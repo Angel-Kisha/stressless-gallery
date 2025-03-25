@@ -110,7 +110,7 @@
                   <p class="product-code">商品コード: {{ product.variants.first.sku }}</p>
                 {% endif %} {% endcomment %}
               {% when 'decorative_line' %}
-                <hr class="decorative-horizontal-line" style=""></hr>
+                <hr class="decorative-horizontal-line" style="padding: {{  }}"></hr>
               {%- when 'price' -%}
                 <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
                   {%- render 'price',
