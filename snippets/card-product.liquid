@@ -144,7 +144,7 @@
         </div>
       </div>
       <div class="card__content">
-        {%- unless hide_card_information -%}
+        {%- if hide_card_information != true -%}
         <div class="card__information">
           <h3
             class="card__heading font-hiragino font-body-bold product-name-font-size {% if card_product.featured_media or settings.card_style == 'standard' %} h5{% endif %}"
@@ -289,7 +289,7 @@
             {%- endif -%}
           </div>
         </div>
-          {%- endunless -%}
+          {%- endif -%}
         {% assign product_form_id = 'quick-add-' | append: section_id | append: card_product.id %}
         {% if quick_add == 'standard' %}
           <div class="quick-add no-js-hidden">
