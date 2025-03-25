@@ -39,6 +39,7 @@ variant-selects {
 }
 
 .product-form__input--dropdown {
+  background-color: #ffffff;
   --swatch-input--size: 2rem;
   margin-bottom: 1.6rem;
 }
