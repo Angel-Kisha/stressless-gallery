@@ -379,10 +379,6 @@
                       {%- endif -%}
                     </div>
                   </div>
-
-                   {%- when 'variant_picker' -%}
-                  {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
-
                   
                   <div class="quantity__rules caption" id="Quantity-Rules-{{ section.id }}">
                     {%- if product.selected_or_first_available_variant.quantity_rule.increment > 1 -%}
@@ -410,7 +406,6 @@
                       </span>
                     {%- endif -%}
                   </div>
-
                   {%- if product.quantity_price_breaks_configured? -%}
                     <volume-pricing class="parent-display" id="Volume-{{ section.id }}">
                       {%- if product.selected_or_first_available_variant.quantity_price_breaks.size > 0 -%}
@@ -455,7 +450,6 @@
                     </volume-pricing>
                   {%- endif -%}
                 </div>
-
               {%- when 'popup' -%}
                 <modal-opener
                   class="product-popup-modal__opener quick-add-hidden"
@@ -476,6 +470,10 @@
                   assign share_url = product.selected_variant.url | default: product.url | prepend: request.origin
                   render 'share-button', block: block, share_link: share_url
                 %}
+
+                {%- when 'variant_picker' -%}
+                  {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
+
                   
               {%- when 'buy_buttons' -%}
                 {%- render 'buy-buttons',
