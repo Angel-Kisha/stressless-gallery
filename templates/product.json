@@ -30,6 +30,10 @@
             "text_style": "body"
           }
         },
+        "decorative_line_deGiLh": {
+          "type": "decorative_line",
+          "settings": {}
+        },
         "quantity-selector": {
           "type": "quantity_selector",
           "settings": {}
@@ -53,6 +57,7 @@
         "vendor",
         "title",
         "sku_VYTTKh",
+        "decorative_line_deGiLh",
         "quantity-selector",
         "variant-picker",
         "buy_buttons"
