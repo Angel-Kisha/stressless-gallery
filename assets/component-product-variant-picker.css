@@ -50,7 +50,6 @@ variant-selects {
 }
 
 .product-form__input--dropdown .dropdown-swatch {
-  color: #000000;
   position: absolute;
   left: 1.6rem;
   top: calc(50% - var(--swatch-input--size) / 2);
@@ -58,6 +57,8 @@ variant-selects {
   height: var(--swatch-input--size);
   z-index: 1;
 }
+
+
 
 /* Custom styles for Pill display type */
 .product-form__input--pill input[type='radio'] + label {
