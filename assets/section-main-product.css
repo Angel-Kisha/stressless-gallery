@@ -257,6 +257,10 @@ a.product__text {
 
 .product__title > * {
   margin: 0;
+  font-family: 'Hiragino';
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 3px;
 }
 
 .product__title > a {
