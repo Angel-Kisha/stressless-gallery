@@ -1937,6 +1937,10 @@ input[type="checkbox"] {
   text-transform: capitalize;
 }
 
+.product-quantity {
+  
+}
+
 /* component-quantity */
 .quantity {
   color: rgba(var(--color-foreground));
