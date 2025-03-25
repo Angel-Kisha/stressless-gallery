@@ -205,7 +205,7 @@ product-info {
   align-items: center;
 }
 
-.product-label-dropdown label{
+.product-label-dropdown-box {
   font-size: 24px;
   color: #ffffff;
   letter-spacing: 2px;
