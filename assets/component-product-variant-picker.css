@@ -44,8 +44,6 @@ variant-selects {
 }
 
 .product-form__input--dropdown .dropdown-swatch + select {
-  background-color: #ffffff;
-  color: #000000;
   padding-left: calc(2.4rem + var(--swatch-input--size));
 }
 
@@ -57,6 +55,8 @@ variant-selects {
   height: var(--swatch-input--size);
   z-index: 1;
 }
+
+.w
 
 .svg-black {
   color: #000000;
