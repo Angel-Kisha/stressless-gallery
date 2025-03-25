@@ -12,19 +12,6 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "complementary_ey3tWW": {
-          "type": "complementary",
-          "settings": {
-            "block_heading": "相性が良い",
-            "make_collapsible_row": false,
-            "icon": "price_tag",
-            "product_list_limit": 10,
-            "products_per_page": 3,
-            "pagination_style": "counter",
-            "image_ratio": "square",
-            "enable_quick_add": false
-          }
-        },
         "vendor": {
           "type": "text",
           "disabled": true,
@@ -77,7 +64,6 @@
         }
       },
       "block_order": [
-        "complementary_ey3tWW",
         "vendor",
         "title",
         "sku_VYTTKh",
@@ -164,12 +150,57 @@
         "padding_top": 0,
         "padding_bottom": 36
       }
+    },
+    "page_title_CCVj4h": {
+      "type": "page-title",
+      "settings": {
+        "title": "OTHER ITEMS",
+        "description": "関連商品",
+        "show_description": true,
+        "alignment": "text-center",
+        "color_scheme": "scheme-4",
+        "font_size_title": 36,
+        "font_size_description": 16,
+        "margin_top": 0,
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "featured_collection_kLMPjB": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "",
+        "products_to_show": 4,
+        "title": "",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": false,
+        "full_width": false,
+        "show_view_all": true,
+        "view_all_style": "solid",
+        "color_scheme": "scheme-4",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 0,
+        "padding_bottom": 36
+      }
     }
   },
   "order": [
     "main",
     "related-products",
     "page_title_wPKdnK",
-    "featured_collection_ayHyed"
+    "featured_collection_ayHyed",
+    "page_title_CCVj4h",
+    "featured_collection_kLMPjB"
   ]
 }
