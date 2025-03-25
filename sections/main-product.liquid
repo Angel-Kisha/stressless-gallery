@@ -235,7 +235,7 @@
                   </details>
                 </div>
                 {%- when 'variant_picker' -%}
-                  {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
+                 <div> {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}</div>
               {%- when 'quantity_selector' -%}
                 <div
                   id="Quantity-Form-{{ section.id }}"
