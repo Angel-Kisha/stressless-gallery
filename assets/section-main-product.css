@@ -206,7 +206,8 @@ product-info {
 }
 
 .product-label-dropdown label{
-  
+  font-size: 24px;
+  color: ;
 }
 
 @media screen and (forced-colors: active) {
