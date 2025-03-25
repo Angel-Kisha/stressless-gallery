@@ -32,7 +32,9 @@
         },
         "decorative_line_deGiLh": {
           "type": "decorative_line",
-          "settings": {}
+          "settings": {
+            "line_margin": 30
+          }
         },
         "quantity-selector": {
           "type": "quantity_selector",
@@ -43,6 +45,12 @@
           "settings": {
             "picker_type": "dropdown",
             "swatch_shape": "circle"
+          }
+        },
+        "decorative_line_aBej7L": {
+          "type": "decorative_line",
+          "settings": {
+            "line_margin": 40
           }
         },
         "buy_buttons": {
@@ -60,6 +68,7 @@
         "decorative_line_deGiLh",
         "quantity-selector",
         "variant-picker",
+        "decorative_line_aBej7L",
         "buy_buttons"
       ],
       "settings": {
