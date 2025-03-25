@@ -1307,7 +1307,6 @@ button.shopify-payment-button__button--unbranded {
   background-color: #0c468b;
   height: 3px;
   margin: 20px 0;
-  padding: 20px 0;
 }
 
 .button:not([disabled]):hover::after,
