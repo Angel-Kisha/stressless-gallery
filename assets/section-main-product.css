@@ -251,6 +251,7 @@ a.product__text {
 }
 
 .product__title {
+  font-family: 'Hiragino';
   word-break: break-word;
   margin-bottom: 1.5rem;
 }
