@@ -106,9 +106,9 @@
                   </a>
                 </div>
 
-                {% if product.variants.first.sku != blank %}
+                {% comment %} {% if product.variants.first.sku != blank %}
                   <p class="product-code">商品コード: {{ product.variants.first.sku }}</p>
-                {% endif %}
+                {% endif %} {% endcomment %}
 
               {%- when 'price' -%}
                 <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
@@ -212,7 +212,7 @@
                   {{ block.shopify_attributes }}
                 >
                   <span class="visually-hidden">{{ 'products.product.sku' | t }}:</span>
-                  商品コード: {{- product.selected_or_first_available_variant.sku -}}
+                  商品コード: &nbsp {{- product.selected_or_first_available_variant.sku -}}
                 </p>
               {%- when 'custom_liquid' -%}
                 {{ block.settings.custom_liquid }}
