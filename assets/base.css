@@ -2016,10 +2016,12 @@ input[type="checkbox"] {
 .bg-blue {
   background-color: #0c468b;
   color: #ffffff;
-  box-shadow: none !important;
+
 }
 
-.bg-blue
+.bg-blue:after {
+    box-shadow: none !important;
+}
 
 .quantity__button {
   width: calc(4.5rem / var(--font-body-scale));
