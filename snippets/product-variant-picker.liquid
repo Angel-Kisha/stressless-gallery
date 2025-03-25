@@ -55,7 +55,15 @@
       {%- else -%}
         <div class="product-form__input product-form__input--dropdown product-label-dropdown">
           <label class="product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
-            {{ option.name }}
+            {% if request.locale.iso_code == 'ja' %}
+              {% case option.name %}
+                {% when 'Color' %}色
+                {% when 'Size' %}サイズ
+                {% else %}{{ option.name }}
+              {% endcase %}
+            {% else %}
+              {{ option.name }}
+            {% endif %}
           </label>
           <div class="select">
             {%- if picker_type == 'swatch_dropdown' -%}
