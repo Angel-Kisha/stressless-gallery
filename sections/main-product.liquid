@@ -247,6 +247,11 @@
                   -%}
                   {% # theme-check-enable %}
                   <div class="product-quantity">
+
+                  {%- when 'variant_picker' -%}
+                    {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
+
+                    
                     <label class="quantity__label product-quantity-label" for="Quantity-{{ section.id }}">
                       {{ 'products.product.quantity.label' | t }}
                       <span class="quantity__rules-cart{% if cart_qty == 0 %} hidden{% endif %}">
