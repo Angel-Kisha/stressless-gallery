@@ -200,7 +200,9 @@ product-info {
 }
 
 .product-label-dropdown {
-  displ
+  display: flex;
+  gap: 2rem;
+  align-items: center;
 }
 
 @media screen and (forced-colors: active) {
