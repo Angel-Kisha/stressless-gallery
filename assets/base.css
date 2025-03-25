@@ -2023,6 +2023,10 @@ input[type="checkbox"] {
     box-shadow: none !important;
 }
 
+.button-text {
+  
+}
+
 .quantity__button {
   width: calc(4.5rem / var(--font-body-scale));
   flex-shrink: 0;
