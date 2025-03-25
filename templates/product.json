@@ -137,57 +137,32 @@
         "padding_bottom": 40
       }
     },
-    "slideshow_AXa8BE": {
-      "type": "slideshow",
-      "blocks": {
-        "slide_89Jme8": {
-          "type": "slide",
-          "settings": {
-            "image_overlay_opacity": 0,
-            "heading": "画像スライド",
-            "heading_size": "h1",
-            "subheading": "ブランドのストーリーを画像で伝える",
-            "button_label": "ボタンのラベル",
-            "link": "",
-            "button_style_secondary": false,
-            "show_text_box": true,
-            "box_align": "middle-center",
-            "text_alignment": "center",
-            "text_alignment_mobile": "center",
-            "color_scheme": ""
-          }
-        },
-        "slide_t3BQKb": {
-          "type": "slide",
-          "settings": {
-            "image_overlay_opacity": 0,
-            "heading": "画像スライド",
-            "heading_size": "h1",
-            "subheading": "ブランドのストーリーを画像で伝える",
-            "button_label": "ボタンのラベル",
-            "link": "",
-            "button_style_secondary": false,
-            "show_text_box": true,
-            "box_align": "middle-center",
-            "text_alignment": "center",
-            "text_alignment_mobile": "center",
-            "color_scheme": ""
-          }
-        }
-      },
-      "block_order": [
-        "slide_89Jme8",
-        "slide_t3BQKb"
-      ],
+    "featured_collection_ayHyed": {
+      "type": "featured-collection",
       "settings": {
-        "layout": "full_bleed",
-        "slide_height": "medium",
-        "slider_visual": "counter",
-        "auto_rotate": false,
-        "change_slides_speed": 5,
-        "image_behavior": "none",
-        "show_text_below": true,
-        "accessibility_info": "ブランドについてのスライドショー"
+        "collection": "frontpage",
+        "products_to_show": 4,
+        "title": "",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 2,
+        "enable_desktop_slider": true,
+        "full_width": true,
+        "show_view_all": false,
+        "view_all_style": "outline",
+        "color_scheme": "scheme-57d242fb-41d7-48d8-973c-9aa565c6be01",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": false,
+        "padding_top": 0,
+        "padding_bottom": 36
       }
     }
   },
@@ -195,6 +170,6 @@
     "main",
     "related-products",
     "page_title_wPKdnK",
-    "slideshow_AXa8BE"
+    "featured_collection_ayHyed"
   ]
 }
