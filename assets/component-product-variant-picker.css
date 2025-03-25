@@ -39,12 +39,12 @@ variant-selects {
 }
 
 .product-form__input--dropdown {
-  background-color: #ffffff;
   --swatch-input--size: 2rem;
   margin-bottom: 1.6rem;
 }
 
 .product-form__input--dropdown .dropdown-swatch + select {
+  background-color: #ffffff;
   padding-left: calc(2.4rem + var(--swatch-input--size));
 }
 
