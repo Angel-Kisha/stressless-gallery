@@ -1938,7 +1938,8 @@ input[type="checkbox"] {
 }
 
 .product-quantity {
-  
+  display: flex;
+  gap: 1rem;
 }
 
 /* component-quantity */
