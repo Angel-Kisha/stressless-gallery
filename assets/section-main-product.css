@@ -258,8 +258,8 @@ a.product__text {
 .product__title > * {
   margin: 0;
   font-family: 'Hiragino';
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 600;
 }
 
 .product__title > a {
