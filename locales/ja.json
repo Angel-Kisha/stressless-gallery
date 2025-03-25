@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "general": {
     "password_page": {
@@ -111,7 +120,7 @@
       "on_sale": "セール",
       "product_variants": "商品バリエーション",
       "quantity": {
-        "label": "数量",
+        "label": "購入数",
         "input_label": "{{ product }}の数量",
         "increase": "{{ product }}の数量を増やす",
         "decrease": "{{ product }}の数量を減らす",
