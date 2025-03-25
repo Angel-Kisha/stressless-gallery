@@ -2014,6 +2014,7 @@ input[type="checkbox"] {
 }
 
 .bg-blue {
+  width: 80% !important;
   background-color: #0c468b;
   color: #ffffff;
 
@@ -2026,7 +2027,7 @@ input[type="checkbox"] {
 .button-text {
   font-family: 'Hiragino';
   font-weight: 600;
-  
+
 }
 
 .quantity__button {
