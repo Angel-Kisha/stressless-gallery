@@ -246,7 +246,7 @@
                     | item_count_for_variant: product.selected_or_first_available_variant.id
                   -%}
                   {% # theme-check-enable %}
-                  <div class="product-col-reverse">
+                  <div class="product">
                     <div class="product-quantity">
                       <label class="quantity__label product-quantity-label" for="Quantity-{{ section.id }}">
                         {{ 'products.product.quantity.label' | t }}
@@ -381,7 +381,7 @@
                       </div>
                     </div>
                     <div>
-                      {% comment %} {%- when 'variant_picker' -%} {% endcomment %}
+                      {%- when 'variant_picker' -%}
                         {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
                     </div>
                   </div>
