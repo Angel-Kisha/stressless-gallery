@@ -110,7 +110,7 @@
                   <p class="product-code">商品コード: {{ product.variants.first.sku }}</p>
                 {% endif %} {% endcomment %}
               {% when 'decorative_line' %}
-                <div class="decorative-horizontal-line"></div>
+                <hr class="decorative-horizontal-line" style=" margin: {{ block.settings.line_margin }}px 0;"></hr>
               {%- when 'price' -%}
                 <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
                   {%- render 'price',
@@ -2094,7 +2094,19 @@
     },
     {
       "type": "decorative_line",
-      "name": "Decorative Line"
+      "name": "Decorative Line",
+      "settings": [
+        {
+          "type": "range",
+          "id": "line_margin",
+          "min": 0,
+          "max": 50,
+          "step": 5,
+          "unit": "px",
+          "label": "Vertical Margin",
+          "default": 10
+        }
+      ]
     }
   ],
   "settings": [
