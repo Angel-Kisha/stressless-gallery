@@ -1303,7 +1303,8 @@ button.shopify-payment-button__button--unbranded {
 }
 
 .decorative-horizontal-line {
-
+  width: 100%;
+  
 }
 
 .button:not([disabled]):hover::after,
