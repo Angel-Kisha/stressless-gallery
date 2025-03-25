@@ -53,9 +53,17 @@
           %}
         </fieldset>
       {%- else -%}
-        <div class="product-form__input product-form__input--dropdown">
-          <label class="form__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">
-            {{ option.name }}
+        <div class="product-form__input product-form__input--dropdown product-label-dropdown">
+          <label class="product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+            {% if request.locale.iso_code == 'ja' %}
+              {% case option.name %}
+                {% when 'Color' %}カラー
+                {% when 'Type' %}タイプ
+                {% else %}{{ option.name }}
+              {% endcase %}
+            {% else %}
+              {{ option.name }}
+            {% endif %}
           </label>
           <div class="select">
             {%- if picker_type == 'swatch_dropdown' -%}
@@ -79,7 +87,7 @@
                 picker_type: picker_type
               %}
             </select>
-            <span class="svg-wrapper">
+            <span class="svg-wrapper svg-black">
               {{- 'icon-caret.svg' | inline_asset_content -}}
             </span>
           </div>

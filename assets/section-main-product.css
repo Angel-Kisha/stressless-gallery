@@ -183,6 +183,7 @@ product-info {
 
 .product-form__input .select {
   max-width: 100%;
+  width: calc(14rem / var(--font-body-scale) + var(--inputs-border-width) * 2);
 }
 
 .product-form__input .svg-wrapper {
@@ -197,6 +198,20 @@ product-info {
 .product-form__submit[disabled] + .shopify-payment-button .shopify-payment-button__button[disabled] {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.product-label-dropdown {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.product-label-dropdown-text {
+  font-size: 24px;
+  color: #ffffff;
+  letter-spacing: 2px;
+  font-family: 'Hiragino';
+  font-weight: 600;
 }
 
 @media screen and (forced-colors: active) {
