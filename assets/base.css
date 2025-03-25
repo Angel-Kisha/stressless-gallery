@@ -1940,7 +1940,7 @@ input[type="checkbox"] {
 .product-quantity {
   display: flex;
   gap: 2rem;
-  justi
+  align-items: center;
 }
 
 /* component-quantity */
