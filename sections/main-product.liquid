@@ -259,7 +259,7 @@
                       </span>
                     </label>
                     <div class="price-per-item__container">
-                      <quantity-input class="quantity" data-url="{{ product.url }}" data-section="{{ section.id }}">
+                      <quantity-input class="quantity white-box" data-url="{{ product.url }}" data-section="{{ section.id }}">
                         <button class="quantity__button white-box" name="minus" type="button">
                           <span class="visually-hidden">
                             {{- 'products.product.quantity.decrease' | t: product: product.title | escape -}}
@@ -284,7 +284,7 @@
                           value="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
                           form="{{ product_form_id }}"
                         >
-                        <button class="quantity__button" name="plus" type="button">
+                        <button class="quantity__button white-box" name="plus" type="button">
                           <span class="visually-hidden">
                             {{- 'products.product.quantity.increase' | t: product: product.title | escape -}}
                           </span>
