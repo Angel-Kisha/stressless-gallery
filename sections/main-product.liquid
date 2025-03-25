@@ -106,11 +106,10 @@
                   </a>
                 </div>
 
-                {% comment %} {% if product.variants.first.sku != blank %}
+                {% if product.variants.first.sku != blank %}
                   <p class="product-code">商品コード: {{ product.variants.first.sku }}</p>
-                {% endif %} {% endcomment %}
-              {% when 'decorative_line' %}
-                <div class="decorative-horizontal-line"></div>
+                {% endif %}
+
               {%- when 'price' -%}
                 <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
                   {%- render 'price',
@@ -207,13 +206,13 @@
                 {%- endif -%}
               {%- when 'sku' -%}
                 <p
-                  class="product__sku product-code{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
+                  class="product__sku{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
                   id="Sku-{{ section.id }}"
                   role="status"
                   {{ block.shopify_attributes }}
                 >
                   <span class="visually-hidden">{{ 'products.product.sku' | t }}:</span>
-                  商品コード: &nbsp {{- product.selected_or_first_available_variant.sku -}}
+                  {{- product.selected_or_first_available_variant.sku -}}
                 </p>
               {%- when 'custom_liquid' -%}
                 {{ block.settings.custom_liquid }}
@@ -2091,10 +2090,6 @@
           "info": "t:sections.main-product.blocks.icon_with_text.settings.heading.info"
         }
       ]
-    },
-    {
-      "type": "decorative_line",
-      "name": "Decorative Line"
     }
   ],
   "settings": [

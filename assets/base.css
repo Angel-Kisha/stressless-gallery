@@ -1302,13 +1302,6 @@ button.shopify-payment-button__button--unbranded {
   transition: box-shadow var(--duration-short) ease;
 }
 
-.decorative-horizontal-line {
-  width: 100%;
-  background-color: #0c468b;
-  height: 2rem;
-  margin: 2rem 0;
-}
-
 .button:not([disabled]):hover::after,
 .shopify-challenge__button:hover::after,
 .customer button:hover::after,
@@ -2018,23 +2011,6 @@ input[type="checkbox"] {
   flex-grow: 1;
   -webkit-appearance: none;
   appearance: none;
-}
-
-.bg-blue {
-  width: 80% !important;
-  background-color: #0c468b;
-  color: #ffffff;
-
-}
-
-.bg-blue:after {
-    box-shadow: none !important;
-}
-
-.button-text {
-  font-family: 'Hiragino';
-  font-weight: 600;
-
 }
 
 .quantity__button {
