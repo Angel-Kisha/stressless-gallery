@@ -379,7 +379,11 @@
                       {%- endif -%}
                     </div>
                   </div>
-                  div
+                  <div>
+                    {%- when 'variant_picker' -%}
+                      {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
+    
+                  </div>
                   
                   <div class="quantity__rules caption" id="Quantity-Rules-{{ section.id }}">
                     {%- if product.selected_or_first_available_variant.quantity_rule.increment > 1 -%}
