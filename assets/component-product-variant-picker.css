@@ -58,7 +58,9 @@ variant-selects {
   z-index: 1;
 }
 
-
+.svg-black {
+  color: #000000;
+}
 
 /* Custom styles for Pill display type */
 .product-form__input--pill input[type='radio'] + label {
