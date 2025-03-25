@@ -182,7 +182,6 @@ product-info {
 }
 
 .product-form__input .select {
-  background-color: #ffffff;
   max-width: 100%;
   width: calc(14rem / var(--font-body-scale) + var(--inputs-border-width) * 2);
 }
