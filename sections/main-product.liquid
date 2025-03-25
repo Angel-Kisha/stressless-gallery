@@ -109,7 +109,7 @@
                 {% comment %} {% if product.variants.first.sku != blank %}
                   <p class="product-code">商品コード: {{ product.variants.first.sku }}</p>
                 {% endif %} {% endcomment %}
-                {% when 'decorative_line' %}
+              {% when 'decorative_line' %}
                   <div class="decorative-horizontal-line-{{ section.id }}"></div>
               {%- when 'price' -%}
                 <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
