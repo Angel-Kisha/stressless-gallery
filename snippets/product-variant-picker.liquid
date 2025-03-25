@@ -53,7 +53,7 @@
           %}
         </fieldset>
       {%- else -%}
-        <div class="product-form__input product-form__input--dropdown product-label-dropdown white-box">
+        <div class="product-form__input product-form__input--dropdown product-label-dropdown">
           <label class="product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
             {% if request.locale.iso_code == 'ja' %}
               {% case option.name %}
