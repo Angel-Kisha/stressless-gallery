@@ -105,7 +105,7 @@
                     </h2>
                   </a>
                 </div>
-              {%- when 'price' -%}
+              {% comment %} {%- when 'price' -%}
                 <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
                   {%- render 'price',
                     product: product,
@@ -113,7 +113,7 @@
                     show_badges: true,
                     price_class: 'price--large'
                   -%}
-                </div>
+                </div> {% endcomment %}
                 {% comment %} {%- if product.quantity_price_breaks_configured? -%}
                   <div class="volume-pricing-note" id="Volume-Note-{{ section.id }}">
                     <span>{{ 'products.product.volume_pricing.note' | t }}</span>
