@@ -207,7 +207,9 @@ product-info {
 
 .product-label-dropdown label{
   font-size: 24px;
-  color: ;
+  color: #ffffff;
+  letter-spacing: 2px;
+  font-family: 'Hiragino';
 }
 
 @media screen and (forced-colors: active) {
