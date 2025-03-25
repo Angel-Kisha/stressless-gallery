@@ -32,10 +32,7 @@
         },
         "decorative_line_deGiLh": {
           "type": "decorative_line",
-          "settings": {
-            "line_top_margin": 35,
-            "line_bottom_margin": 25
-          }
+          "settings": {}
         },
         "quantity-selector": {
           "type": "quantity_selector",
@@ -50,10 +47,7 @@
         },
         "decorative_line_aBej7L": {
           "type": "decorative_line",
-          "settings": {
-            "line_top_margin": 50,
-            "line_bottom_margin": 35
-          }
+          "settings": {}
         },
         "buy_buttons": {
           "type": "buy_buttons",
