@@ -56,7 +56,10 @@ variant-selects {
   z-index: 1;
 }
 
-.w
+.white-box {
+  background-color: #ffffff;
+  color: #000000;
+}
 
 .svg-black {
   color: #000000;
