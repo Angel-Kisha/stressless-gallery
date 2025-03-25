@@ -2025,6 +2025,8 @@ input[type="checkbox"] {
 
 .button-text {
   font-family: 'Hiragino';
+  font-weight: 600;
+  
 }
 
 .quantity__button {
