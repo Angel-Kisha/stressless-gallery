@@ -25,7 +25,7 @@
           "settings": {
             "detail_header": "詳細",
             "detail_text": "Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.",
-            "detail_margin_top": 50,
+            "detail_margin_top": 80,
             "header_alignment": "center",
             "text_alignment": "justify"
           }
