@@ -36,29 +36,6 @@
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
   }
-
-  /* Horizontal pagination styles */
-  .slider-pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-top: 15px;
-    padding: 10px 0;
-  }
-
-  .slider-pagination-dot {
-    flex: 1;
-    height: 4px;
-    background-color: #e0e0e0;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    max-width: 60px;
-  }
-
-  .slider-pagination-dot.active {
-    background-color: #000;
-  }
 {%- endstyle -%}
 
 {%- liquid
@@ -79,7 +56,6 @@
   if section.settings.enable_desktop_slider and products_to_display > section.settings.columns_desktop
     assign show_desktop_slider = true
   endif
-  assign total_pagination_dots = products_to_display | divided_by: section.settings.columns_desktop | ceil
 -%}
 
 <div
@@ -90,6 +66,25 @@
     id="collection-{{ section.id }}"
     data-id="{{ section.id }}"
   >
+    <div class="collection__title top-collection title-wrapper title-wrapper--no-top-margin page-width{% if show_mobile_slider %} title-wrapper--self-padded-tablet-down{% endif %}{% if show_desktop_slider %} collection__title--desktop-slider{% endif %}">
+      {%- if section.settings.title != blank -%}
+        <h2 class="title inline-richtext {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+          {{ section.settings.title }}
+        </h2>
+      {%- endif -%}
+      {%- if section.settings.description != blank
+        or section.settings.show_description
+        and section.settings.collection.description != empty
+      -%}
+        <div class="collection__description {{ section.settings.description_style }} rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+          {%- if section.settings.show_description -%}
+            {{ section.settings.collection.description }}
+          {%- else -%}
+            {{ section.settings.description -}}
+          {%- endif %}
+        </div>
+      {%- endif -%}
+    </div>
 
     <slider-component class="slider-mobile-gutter{% if section.settings.full_width %} slider-component-full-width{% endif %}{% if show_mobile_slider == false %} page-width{% endif %}{% if show_desktop_slider == false and section.settings.full_width == false %} page-width-desktop{% endif %}{% if show_desktop_slider %} slider-component-desktop{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
       <ul
@@ -160,14 +155,35 @@
         {%- endif -%}
       </ul>
       {%- if show_mobile_slider or show_desktop_slider -%}
-        <div class="slider-pagination">
-          {%- for i in (1..total_pagination_dots) -%}
-            <div 
-              class="slider-pagination-dot{% if forloop.first %} active{% endif %}" 
-              data-slide="{{ forloop.index }}"
-              onclick="document.querySelector('#Slider-{{ section.id }}').scrollToSlide({{ forloop.index }})"
-            ></div>
-          {%- endfor -%}
+        <div class="slider-buttons">
+          <button
+            type="button"
+            class="slider-button slider-button--prev"
+            name="previous"
+            aria-label="{{ 'general.slider.previous_slide' | t }}"
+            aria-controls="Slider-{{ section.id }}"
+          >
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </button>
+          <div class="slider-counter caption">
+            <span class="slider-counter--current">1</span>
+            <span aria-hidden="true"> / </span>
+            <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+            <span class="slider-counter--total">{{ products_to_display }}</span>
+          </div>
+          <button
+            type="button"
+            class="slider-button slider-button--next"
+            name="next"
+            aria-label="{{ 'general.slider.next_slide' | t }}"
+            aria-controls="Slider-{{ section.id }}"
+          >
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </button>
         </div>
       {%- endif -%}
     </slider-component>
@@ -188,60 +204,6 @@
     {%- endif -%}
   </div>
 </div>
-
-<script>
-  class SliderComponent extends HTMLElement {
-    constructor() {
-      super();
-      this.slider = this.querySelector('.slider');
-      this.paginationDots = this.querySelectorAll('.slider-pagination-dot');
-      
-      // Add scroll event listener to update active dot
-      this.slider.addEventListener('scroll', () => this.updateActiveDot());
-    }
-
-    connectedCallback() {
-      // Add method to scroll to a specific slide
-      this.slider.scrollToSlide = (slideIndex) => {
-        const slides = this.slider.querySelectorAll('.slider__slide');
-        if (slides.length === 0) return;
-        
-        const targetSlide = slides[slideIndex - 1];
-        
-        // Scroll to the slide
-        targetSlide.scrollIntoView({ 
-          behavior: 'smooth', 
-          inline: 'start' 
-        });
-      };
-    }
-
-    updateActiveDot() {
-      const slides = this.slider.querySelectorAll('.slider__slide');
-      const containerWidth = this.slider.clientWidth;
-      
-      // Find the first slide that is more than 50% in view
-      let activeIndex = 0;
-      slides.forEach((slide, index) => {
-        const rect = slide.getBoundingClientRect();
-        const slideParentRect = this.slider.getBoundingClientRect();
-        
-        const slideLeftPosition = rect.left - slideParentRect.left;
-        
-        if (slideLeftPosition < containerWidth / 2) {
-          activeIndex = index;
-        }
-      });
-
-      // Update active dot
-      this.paginationDots.forEach(dot => dot.classList.remove('active'));
-      this.paginationDots[activeIndex].classList.add('active');
-    }
-  }
-
-  // Define the custom element
-  customElements.define('slider-component', SliderComponent);
-</script>
 
 {% schema %}
 {
