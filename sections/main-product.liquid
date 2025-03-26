@@ -200,12 +200,23 @@
 
               {%- when 'description' -%}
                 {%- if product.description != blank -%}
-                  {% if block.settings.show_description_heading %}
-                    <h2 class="product-description-heading">
-                      {{ block.settings.description_heading }}
-                    </h2>
-                  {% endif %}
-                  <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
+                  {% assign padding_top = block.settings.description_padding_top | default: 16 %}
+                  {% assign padding_bottom = block.settings.description_padding_bottom | default: 16 %}
+
+                  <div
+                    class="product__description rte quick-add-hidden"
+                    {{ block.shopify_attributes }}
+                    style="
+                      padding-top: {{ padding_top }}px;
+                      padding-bottom: {{ padding_bottom }}px;
+                    "
+                  >
+                    {% if block.settings.show_description_heading %}
+                      <h2 class="product-description-heading">
+                        {{ block.settings.description_heading }}
+                      </h2>
+                    {% endif %}
+
                     {{ product.description }}
                   </div>
                 {%- endif -%}
