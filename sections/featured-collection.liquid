@@ -157,7 +157,7 @@
         {%- endif -%}
       </ul>
       {%- if show_mobile_slider or show_desktop_slider -%}
-        <div class="collection-slider-navigation">
+        <slider-dots class="collection-slider-navigation">
           <div class="slider-dots">
             {%- for i in (1..products_to_display) -%}
               <button 
@@ -168,7 +168,7 @@
               ></button>
             {%- endfor -%}
           </div>
-        </div>
+        </slider-dots>
       {%- endif -%}
     </slider-component>
 

@@ -430,7 +430,7 @@ product-description-detail {
   background-color: rgba(0, 0, 0, 0.2);
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .slider-dot.active {
