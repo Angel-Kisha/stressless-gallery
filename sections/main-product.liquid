@@ -84,10 +84,9 @@
                 class="product-description-detail w-80" 
                 style="margin-top: {{ block.settings.detail_margin_top }}px;"
               >
-                {% assign header_tag = block.settings.header_style | default: 'h3' %}
-                <{{ header_tag }} class="font-bold text-{{ block.settings.header_alignment | default: 'left' }}">
+                < class="font-bold text-{{ block.settings.header_alignment | default: 'left' }}">
                   {{ block.settings.detail_header }}
-                </{{ header_tag }}>
+                </>
                 
                 <div class="text-{{ block.settings.text_alignment | default: 'left' }} {% if block.settings.text_style == 'subtle' %}text-subtle{% elsif block.settings.text_style == 'italic' %}italic{% endif %}">
                   {{ block.settings.detail_text }}
