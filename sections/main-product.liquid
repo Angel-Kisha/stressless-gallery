@@ -79,7 +79,7 @@
         {% render 'product-media-gallery', variant_images: variant_images %}
         {% for block in section.blocks %}
           {% case block.type %}
-            {% when 'description_detail' %}
+            {% when 'detail' %}
               <div 
                 class="product-description-detail" 
                 style="margin-top: {{ block.settings.detail_margin_top }}px;"
