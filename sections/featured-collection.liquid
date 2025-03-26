@@ -156,7 +156,7 @@
           {%- endfor -%}
         {%- endif -%}
       </ul>
-      {% comment %} {%- if show_mobile_slider or show_desktop_slider -%}
+      {%- if show_mobile_slider or show_desktop_slider -%}
         <slider-dots class="collection-slider-navigation">
           <div class="slider-dots">
             {%- liquid
@@ -186,9 +186,7 @@
             {%- endfor -%}
           </div>
         </slider-dots>
-      {%- endif -%} {% endcomment %}
-
-      
+      {%- endif -%}
     </slider-component>
 
     {%- if section.settings.show_view_all and more_in_collection -%}
