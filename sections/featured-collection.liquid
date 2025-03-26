@@ -37,6 +37,26 @@
     }
   }
 {%- endstyle -%}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  const navigationLines = document.querySelectorAll('.navigation-line');
+  const sliderItems = document.querySelectorAll('.slider-item');
+
+  navigationLines.forEach(line => {
+    line.addEventListener('click', function() {
+      const slideIndex = this.getAttribute('data-slide');
+      
+      // Remove active class from all lines and slider items
+      navigationLines.forEach(nav => nav.classList.remove('active'));
+      sliderItems.forEach(item => item.classList.remove('active'));
+      
+      // Add active class to clicked line and corresponding slider item
+      this.classList.add('active');
+      sliderItems[slideIndex].classList.add('active');
+    });
+  });
+});
+</script>
 
 {%- liquid
   assign products_to_display = section.settings.collection.all_products_count
