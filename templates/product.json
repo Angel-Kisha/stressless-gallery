@@ -66,7 +66,9 @@
           "type": "description",
           "settings": {
             "show_description_heading": true,
-            "description_heading": "SPEC"
+            "description_heading": "SPEC",
+            "description_padding_top": 72,
+            "description_padding_bottom": 16
           }
         }
       },
