@@ -123,6 +123,7 @@
 }
 
 .card__content {
+  place-content: left;
   display: grid;
   grid-template-rows: minmax(0, 1fr) max-content minmax(0, 1fr);
   padding: 1rem;
