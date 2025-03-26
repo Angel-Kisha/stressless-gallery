@@ -156,7 +156,7 @@
           {%- endfor -%}
         {%- endif -%}
       </ul>
-      {%- if show_mobile_slider or show_desktop_slider -%}
+      {% comment %} {%- if show_mobile_slider or show_desktop_slider -%}
         <slider-dots class="collection-slider-navigation">
           <div class="slider-dots">
             {%- liquid
@@ -176,6 +176,67 @@
               assign total_dots = total_slides | divided_by: slides_per_view | ceil
             -%}
             
+            {%- for i in (1..total_dots) -%}
+              <button 
+                class="slider-dot {% if forloop.first %}active{% endif %}" 
+                type="button" 
+                aria-label="Go to slide {{ forloop.index }}"
+                data-slide-index="{{ forloop.index0 }}"
+              ></button>
+            {%- endfor -%}
+          </div>
+        </slider-dots>
+      {%- endif -%} {% endcomment %}
+
+      {%- if show_mobile_slider or show_desktop_slider -%}
+        <slider-dots class="slider-buttons">
+          <button
+            type="button"
+            class="slider-button slider-button--prev"
+            name="previous"
+            aria-label="{{ 'general.slider.previous_slide' | t }}"
+            aria-controls="Slider-{{ section.id }}"
+          >
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </button>
+          <div class="slider-counter caption">
+            <span class="slider-counter--current">1</span>
+            <span aria-hidden="true"> / </span>
+            <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+            <span class="slider-counter--total">
+              {%- liquid
+                # Calculate number of slides to generate dots
+                if section.settings.collection.products.size > 0
+                  assign total_slides = section.settings.collection.products.size
+                else
+                  assign total_slides = section.settings.columns_desktop
+                endif
+      
+                assign slides_per_view = section.settings.columns_mobile | plus: 0
+                if show_desktop_slider
+                  assign slides_per_view = section.settings.columns_desktop
+                endif
+      
+                # Calculate dots precisely
+                assign total_dots = total_slides | divided_by: slides_per_view | ceil
+              -%}
+              {{ total_dots }}
+            </span>
+          </div>
+          <button
+            type="button"
+            class="slider-button slider-button--next"
+            name="next"
+            aria-label="{{ 'general.slider.next_slide' | t }}"
+            aria-controls="Slider-{{ section.id }}"
+          >
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </button>
+          <div class="slider-dots">
             {%- for i in (1..total_dots) -%}
               <button 
                 class="slider-dot {% if forloop.first %}active{% endif %}" 
