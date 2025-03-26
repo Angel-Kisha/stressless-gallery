@@ -420,6 +420,37 @@ product-description-detail {
   text-align: center;
 }
 
+.slider-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.pagination-dots {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ccc;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination-dot.is-active {
+  background-color: #000;
+}
+
+.pagination-dot:hover {
+  background-color: #888;
+}
+
 .product--no-media .product-popup-modal__button {
   padding-right: 0;
 }
