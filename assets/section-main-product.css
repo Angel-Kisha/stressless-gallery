@@ -427,14 +427,14 @@ product-description-detail {
 .slider-dot {
   width: 10px;
   height: 4px;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: #a1a1a1;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .slider-dot.active {
-  background-color: #000;
+  background-color: #ffffff;
   width: 20px;
 }
 
