@@ -1632,6 +1632,10 @@
           },
           "name": "テキスト"
         },
+        
+        "detail": {
+          "name": "詳細"
+        },
         "variant_picker": {
           "name": "バリエーションピッカー",
           "settings": {
