@@ -172,8 +172,8 @@
                 assign slides_per_view = section.settings.columns_desktop
               endif
       
-              assign scrollable_slides = total_slides | minus: slides_per_view | plus: 1
-              assign total_dots = scrollable_slides | at_most: total_slides
+              # Calculate dots precisely
+              assign total_dots = total_slides | divided_by: slides_per_view | ceil
             -%}
             
             {%- for i in (1..total_dots) -%}
