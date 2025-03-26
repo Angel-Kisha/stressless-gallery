@@ -37,26 +37,6 @@
     }
   }
 {%- endstyle -%}
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-  const navigationLines = document.querySelectorAll('.navigation-line');
-  const sliderItems = document.querySelectorAll('.slider-item');
-
-  navigationLines.forEach(line => {
-    line.addEventListener('click', function() {
-      const slideIndex = this.getAttribute('data-slide');
-      
-      // Remove active class from all lines and slider items
-      navigationLines.forEach(nav => nav.classList.remove('active'));
-      sliderItems.forEach(item => item.classList.remove('active'));
-      
-      // Add active class to clicked line and corresponding slider item
-      this.classList.add('active');
-      sliderItems[slideIndex].classList.add('active');
-    });
-  });
-});
-</script>
 
 {%- liquid
   assign products_to_display = section.settings.collection.all_products_count
@@ -175,22 +155,7 @@
         {%- endif -%}
       </ul>
       {%- if show_mobile_slider or show_desktop_slider -%}
-        <div class="image-slider">
-  <div class="slider-container">
-    {% for product in collection.products limit: 3 %}
-      <div class="slider-item {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.index0 }}">
-        <img src="{{ product.featured_image | img_url: 'large' }}" alt="{{ product.title }}" class="slider-image">
-      </div>
-    {% endfor %}
-  </div>
-  
-  <div class="slider-navigation">
-    {% for product in collection.products limit: 3 %}
-      <div class="navigation-line {% if forloop.first %}active{% endif %}" data-slide="{{ forloop.index0 }}"></div>
-    {% endfor %}
-  </div>
-</div>
-        {% comment %} <div class="slider-buttons">
+        <div class="slider-buttons">
           <button
             type="button"
             class="slider-button slider-button--prev"
@@ -219,7 +184,7 @@
               {{- 'icon-caret.svg' | inline_asset_content -}}
             </span>
           </button>
-        </div> {% endcomment %}
+        </div>
       {%- endif -%}
     </slider-component>
 
