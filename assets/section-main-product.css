@@ -392,6 +392,8 @@ a.product__text {
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 2px;
+  background-color: #a1a1a1;
+  padding: 10px;
 }
 
 .product-form__buttons {
