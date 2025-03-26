@@ -55,6 +55,10 @@
             "line_bottom_margin": 35
           }
         },
+        "description_7wWhyW": {
+          "type": "description",
+          "settings": {}
+        },
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
@@ -71,6 +75,7 @@
         "quantity-selector",
         "variant-picker",
         "decorative_line_aBej7L",
+        "description_7wWhyW",
         "buy_buttons"
       ],
       "settings": {
@@ -79,7 +84,7 @@
         "media_size": "medium",
         "constrain_to_viewport": true,
         "media_fit": "contain",
-        "gallery_layout": "stacked",
+        "gallery_layout": "thumbnail",
         "mobile_thumbnails": "show",
         "media_position": "left",
         "image_zoom": "lightbox",
