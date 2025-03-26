@@ -89,7 +89,7 @@
                 </p>
                 
                 <div class="{% if block.settings.text_style == 'subtle' %}text-subtle{% elsif block.settings.text_style == 'italic' %}italic{% endif %}"
-                style="text-alignment: {{ block.settings.text_alignment | default: 'left' }}"
+                style="text-align: {{ block.settings.text_alignment | default: 'left' }}"
                 >
                   {{ block.settings.detail_text }}
                 </div>
