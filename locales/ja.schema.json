@@ -1611,6 +1611,9 @@
     "main-product": {
       "name": "商品情報",
       "blocks": {
+        "detail": {
+
+        },
         "text": {
           "settings": {
             "text": {
