@@ -106,14 +106,16 @@
                   </a>
                 </div>
 
-                {% comment %} {% if product.variants.first.sku != blank %}
-                  <p class="product-code">商品コード: {{ product.variants.first.sku }}</p>
-                {% endif %} {% endcomment %}
+                {% comment %}
+                  {% if product.variants.first.sku != blank %}
+                    <p class="product-code">商品コード: {{ product.variants.first.sku }}</p>
+                  {% endif %}
+                {% endcomment %}
               {% when 'decorative_line' %}
-                <hr 
-                class="decorative-horizontal-line" 
-                style="margin-top: {{ block.settings.line_top_margin }}px; margin-bottom: {{ block.settings.line_bottom_margin }}px;"
-              />              
+                <hr
+                  class="decorative-horizontal-line"
+                  style="margin-top: {{ block.settings.line_top_margin }}px; margin-bottom: {{ block.settings.line_bottom_margin }}px;"
+                >
               {%- when 'price' -%}
                 <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
                   {%- render 'price',
@@ -203,16 +205,16 @@
                 </p>
 
               {%- when 'description' -%}
-  {%- if product.description != blank -%}
-    {% if block.settings.show_description_heading %}
-      <h2 class="product-description-heading">
-        {{ block.settings.description_heading }}
-      </h2>
-    {% endif %}
-    <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
-      {{ product.description }}
-    </div>
-  {%- endif -%}
+                {%- if product.description != blank -%}
+                  {% if block.settings.show_description_heading %}
+                    <h2 class="product-description-heading">
+                      {{ block.settings.description_heading }}
+                    </h2>
+                  {% endif %}
+                  <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
+                    {{ product.description }}
+                  </div>
+                {%- endif -%}
               {%- when 'sku' -%}
                 <p
                   class="product__sku product-code{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
@@ -221,7 +223,8 @@
                   {{ block.shopify_attributes }}
                 >
                   <span class="visually-hidden">{{ 'products.product.sku' | t }}:</span>
-                  商品コード: &nbsp {{- product.selected_or_first_available_variant.sku -}}
+                  商品コード: &nbsp
+                  {{- product.selected_or_first_available_variant.sku -}}
                 </p>
               {%- when 'custom_liquid' -%}
                 {{ block.settings.custom_liquid }}
@@ -945,7 +948,7 @@
       "type": "description",
       "name": "t:sections.main-product.blocks.description.name",
       "limit": 1,
-          "settings": [
+      "settings": [
         {
           "type": "checkbox",
           "id": "show_description_heading",
