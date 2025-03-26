@@ -940,7 +940,21 @@
     {
       "type": "description",
       "name": "t:sections.main-product.blocks.description.name",
-      "limit": 1
+      "limit": 1,
+          "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_description_heading",
+          "label": "Show Description Heading",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "description_heading",
+          "label": "Description Heading",
+          "default": "Product Description"
+        }
+      ]
     },
     {
       "type": "share",
