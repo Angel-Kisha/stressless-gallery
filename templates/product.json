@@ -55,16 +55,16 @@
             "line_bottom_margin": 35
           }
         },
-        "description_7wWhyW": {
-          "type": "description",
-          "settings": {}
-        },
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
             "show_dynamic_checkout": false,
             "show_gift_card_recipient": false
           }
+        },
+        "description_7wWhyW": {
+          "type": "description",
+          "settings": {}
         }
       },
       "block_order": [
@@ -75,8 +75,8 @@
         "quantity-selector",
         "variant-picker",
         "decorative_line_aBej7L",
-        "description_7wWhyW",
-        "buy_buttons"
+        "buy_buttons",
+        "description_7wWhyW"
       ],
       "settings": {
         "enable_sticky_info": true,
