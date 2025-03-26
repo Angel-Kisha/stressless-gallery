@@ -409,6 +409,29 @@ product-description-detail {
 .w-85 {
   width: 85%;
 }
+.slider-progress-container {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.1);
+  margin-top: 15px;
+  position: relative;
+}
+
+.slider-progress-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background-color: #000;
+  transition: width 0.3s ease;
+}
+
+.slider-progress-indicator {
+  height: 100%;
+  background-color: #000;
+  width: 0;
+}
 
 .product-form__buttons {
   max-width: 44rem;
