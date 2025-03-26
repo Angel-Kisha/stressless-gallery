@@ -203,7 +203,7 @@
                 </p>
 
               {%- when 'description' -%}
-                {% comment %} make a h1 with box in this side of the code and apply switch on this, which has a option to show this  {% endcomment %}
+                {% comment %} make a h1 with box in this side of the code and apply switch on this, which has a option to show this h1 with box or hide this {% endcomment %}
                 {%- if product.description != blank -%}
                   <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
                     {{ product.description }}
