@@ -1632,6 +1632,9 @@
           },
           "name": "テキスト"
         },
+        "detail": {
+          "name": "詳細"
+        },
         "variant_picker": {
           "name": "バリエーションピッカー",
           "settings": {
@@ -2494,6 +2497,9 @@
     "featured-product": {
       "name": "特集商品",
       "blocks": {
+        "detail": {
+          "name": "詳細"
+        },
         "text": {
           "name": "テキスト",
           "settings": {
@@ -2514,9 +2520,6 @@
               }
             }
           }
-        },
-        "detail": {
-          "name": "詳細"
         },
         "title": {
           "name": "タイトル"
