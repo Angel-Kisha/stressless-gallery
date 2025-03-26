@@ -24,6 +24,25 @@
   <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.querySelector('#Slider-{{ section.id }}');
+    const dots = document.querySelectorAll('.slider-dot');
+    
+    slider.addEventListener('scroll', function() {
+      const scrollPosition = slider.scrollLeft;
+      const slideWidth = slider.querySelector('.slider__slide').offsetWidth;
+      const activeIndex = Math.round(scrollPosition / slideWidth);
+      
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === activeIndex);
+        dot.classList.toggle('bg-gray-300', index !== activeIndex);
+        dot.classList.toggle('bg-blue-500', index === activeIndex);
+      });
+    });
+  });
+</script>
+
 {%- style -%}
   .section-{{ section.id }}-padding {
     padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
