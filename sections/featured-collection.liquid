@@ -155,35 +155,19 @@
         {%- endif -%}
       </ul>
       {%- if show_mobile_slider or show_desktop_slider -%}
-        <div class="slider-buttons">
-          <button
-            type="button"
-            class="slider-button slider-button--prev"
-            name="previous"
-            aria-label="{{ 'general.slider.previous_slide' | t }}"
-            aria-controls="Slider-{{ section.id }}"
-          >
-            <span class="svg-wrapper">
-              {{- 'icon-caret.svg' | inline_asset_content -}}
-            </span>
-          </button>
-          <div class="slider-counter caption">
-            <span class="slider-counter--current">1</span>
-            <span aria-hidden="true"> / </span>
-            <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
-            <span class="slider-counter--total">{{ products_to_display }}</span>
+        <div class="slider-navigation">
+          <div class="slider-bars" id="Slider-{{ section.id }}-bars">
+            {%- for i in (1..products_to_display) -%}
+              <button 
+                type="button" 
+                class="slider-bar {% if forloop.first %}active{% endif %}"
+                data-slide="{{ forloop.index0 }}"
+                aria-label="{{ 'general.slider.go_to_slide' | t: slide: forloop.index }}"
+              >
+                <span class="slider-bar-inner"></span>
+              </button>
+            {%- endfor -%}
           </div>
-          <button
-            type="button"
-            class="slider-button slider-button--next"
-            name="next"
-            aria-label="{{ 'general.slider.next_slide' | t }}"
-            aria-controls="Slider-{{ section.id }}"
-          >
-            <span class="svg-wrapper">
-              {{- 'icon-caret.svg' | inline_asset_content -}}
-            </span>
-          </button>
         </div>
       {%- endif -%}
     </slider-component>
