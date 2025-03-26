@@ -203,6 +203,7 @@
                 </p>
 
               {%- when 'description' -%}
+                {% comment %} make a h1 {% endcomment %}
                 {%- if product.description != blank -%}
                   <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
                     {{ product.description }}
