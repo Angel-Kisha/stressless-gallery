@@ -82,7 +82,7 @@
             {% when 'detail' %}
               <div 
                 class="product-description-detail w-85" 
-                style="margin-top: {{ block.settings.detail_margin_top }}px;"
+                style="margin-top: {{ block.settings.detail_margin_top }}px; padding-top: {{ block.settings.detail_padding_top }}px;"
               >
                 <p class="font-bold text-{{ block.settings.header_alignment | default: 'left' }}">
                   {{ block.settings.detail_header }}
