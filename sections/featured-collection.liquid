@@ -155,7 +155,23 @@
         {%- endif -%}
       </ul>
       {%- if show_mobile_slider or show_desktop_slider -%}
-        <div class="slider-buttons">
+        <div class="slider-pagination">
+  {% if products_to_display > 1 %}
+    <div class="pagination-dots">
+      {% for i in (1..products_to_display) %}
+        <button 
+          type="button" 
+          class="pagination-dot {% if forloop.first %}is-active{% endif %}"
+          data-slide="{{ forloop.index0 }}"
+          aria-label="{{ 'general.slider.go_to_slide' | t: slide_number: forloop.index }}"
+        >
+          <span class="visually-hidden">{{ 'general.slider.go_to_slide' | t: slide_number: forloop.index }}</span>
+        </button>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+        {% comment %} <div class="slider-buttons">
           <button
             type="button"
             class="slider-button slider-button--prev"
@@ -184,7 +200,7 @@
               {{- 'icon-caret.svg' | inline_asset_content -}}
             </span>
           </button>
-        </div>
+        </div> {% endcomment %}
       {%- endif -%}
     </slider-component>
 
