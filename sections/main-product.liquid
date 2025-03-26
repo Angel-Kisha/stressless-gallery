@@ -77,6 +77,24 @@
     <div class="product product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
       <div class="grid__item product__media-wrapper">
         {% render 'product-media-gallery', variant_images: variant_images %}
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'description_detail' %}
+              <div 
+                class="product-description-detail" 
+                style="margin-top: {{ block.settings.detail_margin_top }}px;"
+              >
+                {% assign header_tag = block.settings.header_style | default: 'h3' %}
+                <{{ header_tag }} class="product-description-detail__header">
+                  {{ block.settings.detail_header }}
+                </{{ header_tag }}>
+                
+                <div class="product-description-detail__text {% if block.settings.text_style == 'subtle' %}text-subtle{% elsif block.settings.text_style == 'italic' %}italic{% endif %}">
+                  {{ block.settings.detail_text }}
+                </div>
+              </div>
+          {% endcase %}
+        {% endfor %}
       </div>
       <div class="product__info-wrapper grid__item{% if settings.page_width > 1400 and section.settings.media_size == "small" %} product__info-wrapper--extra-padding{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
         <section
