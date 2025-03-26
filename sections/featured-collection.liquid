@@ -159,14 +159,26 @@
       {%- if show_mobile_slider or show_desktop_slider -%}
         <slider-dots class="collection-slider-navigation">
           <div class="slider-dots">
-            {%- for i in (1..products_to_display) -%}
-              <button 
-                class="slider-dot {% if forloop.first %}active{% endif %}" 
-                type="button" 
-                aria-label="Go to slide {{ forloop.index }}"
-                data-slide-index="{{ forloop.index0 }}"
-              ></button>
-            {%- endfor -%}
+            {%- if section.settings.collection.products.size > 0 -%}
+              {%- assign visible_products = section.settings.collection.products | slice: 0, section.settings.products_to_show -%}
+              {%- for i in (1..visible_products.size) -%}
+                <button 
+                  class="slider-dot {% if forloop.first %}active{% endif %}" 
+                  type="button" 
+                  aria-label="Go to slide {{ forloop.index }}"
+                  data-slide-index="{{ forloop.index0 }}"
+                ></button>
+              {%- endfor -%}
+            {%- else -%}
+              {%- for i in (1..section.settings.columns_desktop) -%}
+                <button 
+                  class="slider-dot {% if forloop.first %}active{% endif %}" 
+                  type="button" 
+                  aria-label="Go to slide {{ forloop.index }}"
+                  data-slide-index="{{ forloop.index0 }}"
+                ></button>
+              {%- endfor -%}
+            {%- endif -%}
           </div>
         </slider-dots>
       {%- endif -%}
