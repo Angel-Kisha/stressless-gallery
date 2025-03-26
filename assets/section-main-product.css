@@ -403,7 +403,7 @@ product-description-detail {
 }
 
 .font-bold {
-  
+  font-weight: bold;
 }
 
 .product-form__buttons {
