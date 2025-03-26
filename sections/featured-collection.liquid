@@ -159,26 +159,31 @@
       {%- if show_mobile_slider or show_desktop_slider -%}
         <slider-dots class="collection-slider-navigation">
           <div class="slider-dots">
-            {%- if section.settings.collection.products.size > 0 -%}
-              {%- assign visible_products = section.settings.collection.products | slice: 0, section.settings.products_to_show -%}
-              {%- for i in (1..visible_products.size) -%}
-                <button 
-                  class="slider-dot {% if forloop.first %}active{% endif %}" 
-                  type="button" 
-                  aria-label="Go to slide {{ forloop.index }}"
-                  data-slide-index="{{ forloop.index0 }}"
-                ></button>
-              {%- endfor -%}
-            {%- else -%}
-              {%- for i in (1..section.settings.columns_desktop) -%}
-                <button 
-                  class="slider-dot {% if forloop.first %}active{% endif %}" 
-                  type="button" 
-                  aria-label="Go to slide {{ forloop.index }}"
-                  data-slide-index="{{ forloop.index0 }}"
-                ></button>
-              {%- endfor -%}
-            {%- endif -%}
+            {%- liquid
+              # Calculate number of slides to generate dots
+              if section.settings.collection.products.size > 0
+                assign total_slides = section.settings.collection.products.size
+              else
+                assign total_slides = section.settings.columns_desktop
+              endif
+      
+              assign slides_per_view = section.settings.columns_mobile | plus: 0
+              if show_desktop_slider
+                assign slides_per_view = section.settings.columns_desktop
+              endif
+      
+              assign scrollable_slides = total_slides | minus: slides_per_view | plus: 1
+              assign total_dots = scrollable_slides | at_most: total_slides
+            -%}
+            
+            {%- for i in (1..total_dots) -%}
+              <button 
+                class="slider-dot {% if forloop.first %}active{% endif %}" 
+                type="button" 
+                aria-label="Go to slide {{ forloop.index }}"
+                data-slide-index="{{ forloop.index0 }}"
+              ></button>
+            {%- endfor -%}
           </div>
         </slider-dots>
       {%- endif -%}
