@@ -3,6 +3,7 @@ class SliderDots extends HTMLElement {
       super();
       this.slider = this.closest('slider-component').querySelector('.slider');
       this.dots = this.querySelectorAll('.slider-dot');
+      this.slides = this.slider.querySelectorAll('.slider__slide');
       
       this.initializeSliderObserver();
       this.addDotClickListeners();
@@ -17,28 +18,34 @@ class SliderDots extends HTMLElement {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            const slideIndex = Array.from(this.slider.children).indexOf(entry.target);
+            const slideIndex = Array.from(this.slides).indexOf(entry.target);
             this.updateActiveDot(slideIndex);
           }
         });
       }, observerOptions);
   
-      this.slider.querySelectorAll('.slider__slide').forEach(slide => {
+      this.slides.forEach(slide => {
         observer.observe(slide);
       });
     }
   
     addDotClickListeners() {
-      this.dots.forEach(dot => {
+      this.dots.forEach((dot, index) => {
         dot.addEventListener('click', () => {
-          const slideIndex = parseInt(dot.getAttribute('data-slide-index'));
-          const slideToFocus = this.slider.children[slideIndex];
+          const slideToFocus = this.slides[index];
           
-          // Use existing slider scroll method
+          // Precise scroll calculation
+          const sliderRect = this.slider.getBoundingClientRect();
+          const slideRect = slideToFocus.getBoundingClientRect();
+          const scrollAmount = slideRect.left - sliderRect.left + this.slider.scrollLeft;
+  
           this.slider.scrollTo({
-            left: slideToFocus.offsetLeft,
+            left: scrollAmount,
             behavior: 'smooth'
           });
+  
+          // Update active dot
+          this.updateActiveDot(index);
         });
       });
     }
