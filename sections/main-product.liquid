@@ -88,7 +88,9 @@
                   {{ block.settings.detail_header }}
                 </p>
                 
-                <div class="text-{{ block.settings.text_alignment | default: 'left' }} {% if block.settings.text_style == 'subtle' %}text-subtle{% elsif block.settings.text_style == 'italic' %}italic{% endif %}">
+                <div class="{% if block.settings.text_style == 'subtle' %}text-subtle{% elsif block.settings.text_style == 'italic' %}italic{% endif %}"
+                style
+                >
                   {{ block.settings.detail_text }}
                 </div>
               </div>
