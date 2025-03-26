@@ -81,7 +81,7 @@
           {% case block.type %}
             {% when 'detail' %}
               <div 
-                class="product-description-detail font-bold w-80" 
+                class="product-description-detail w-80" 
                 style="margin-top: {{ block.settings.detail_margin_top }}px;"
               >
                 {% assign header_tag = block.settings.header_style | default: 'h3' %}
@@ -89,7 +89,7 @@
                   {{ block.settings.detail_header }}
                 </{{ header_tag }}>
                 
-                <div class="product-description-detail {% if block.settings.text_style == 'subtle' %}text-subtle{% elsif block.settings.text_style == 'italic' %}italic{% endif %}">
+                <div class="{% if block.settings.text_style == 'subtle' %}text-subtle{% elsif block.settings.text_style == 'italic' %}italic{% endif %}">
                   {{ block.settings.detail_text }}
                 </div>
               </div>
