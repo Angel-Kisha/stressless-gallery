@@ -203,12 +203,16 @@
                 </p>
 
               {%- when 'description' -%}
-                {% comment %} make a h1 with box in this side of the code and apply switch on this, which has a option to show this h1 with box or hide this {% endcomment %}
-                {%- if product.description != blank -%}
-                  <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
-                    {{ product.description }}
-                  </div>
-                {%- endif -%}
+  {%- if product.description != blank -%}
+    {% if block.settings.show_description_heading %}
+      <h2 class="product-description-heading">
+        {{ block.settings.description_heading }}
+      </h2>
+    {% endif %}
+    <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
+      {{ product.description }}
+    </div>
+  {%- endif -%}
               {%- when 'sku' -%}
                 <p
                   class="product__sku product-code{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
