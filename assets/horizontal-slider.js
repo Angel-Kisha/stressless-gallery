@@ -3,7 +3,8 @@ class SliderDots extends HTMLElement {
       super();
       this.slider = this.closest('slider-component').querySelector('.slider');
       this.dots = this.querySelectorAll('.slider-dot');
-      this.slides = this.slider.querySelectorAll('.slider__slide');
+      this.slides = Array.from(this.slider.querySelectorAll('.slider__slide'));
+      this.totalSlides = this.slides.length;
       
       this.initializeSliderObserver();
       this.addDotClickListeners();
@@ -18,7 +19,7 @@ class SliderDots extends HTMLElement {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            const slideIndex = Array.from(this.slides).indexOf(entry.target);
+            const slideIndex = this.slides.indexOf(entry.target);
             this.updateActiveDot(slideIndex);
           }
         });
@@ -32,22 +33,49 @@ class SliderDots extends HTMLElement {
     addDotClickListeners() {
       this.dots.forEach((dot, index) => {
         dot.addEventListener('click', () => {
-          const slideToFocus = this.slides[index];
-          
-          // Precise scroll calculation
-          const sliderRect = this.slider.getBoundingClientRect();
-          const slideRect = slideToFocus.getBoundingClientRect();
-          const scrollAmount = slideRect.left - sliderRect.left + this.slider.scrollLeft;
-  
-          this.slider.scrollTo({
-            left: scrollAmount,
-            behavior: 'smooth'
-          });
-  
-          // Update active dot
-          this.updateActiveDot(index);
+          this.centerSlide(index);
         });
       });
+    }
+  
+    centerSlide(targetIndex) {
+      // Handle looping for first and last slides
+      let prevIndex, nextIndex;
+      
+      if (targetIndex === 0) {
+        // When first slide is clicked, show last slides before it
+        prevIndex = this.totalSlides - 1;
+        nextIndex = 1;
+      } else if (targetIndex === this.totalSlides - 1) {
+        // When last slide is clicked, show first slides after it
+        prevIndex = this.totalSlides - 2;
+        nextIndex = 0;
+      } else {
+        // Normal case
+        prevIndex = targetIndex - 1;
+        nextIndex = targetIndex + 1;
+      }
+  
+      // Calculate center position
+      const sliderRect = this.slider.getBoundingClientRect();
+      const targetSlide = this.slides[targetIndex];
+      const targetSlideRect = targetSlide.getBoundingClientRect();
+      
+      // Calculate scroll to center the target slide
+      const scrollAmount = 
+        targetSlideRect.left - 
+        sliderRect.left + 
+        this.slider.scrollLeft - 
+        (sliderRect.width / 2) + 
+        (targetSlideRect.width / 2);
+  
+      this.slider.scrollTo({
+        left: scrollAmount,
+        behavior: 'smooth'
+      });
+  
+      // Update active dot
+      this.updateActiveDot(targetIndex);
     }
   
     updateActiveDot(activeIndex) {
