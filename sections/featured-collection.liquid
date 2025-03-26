@@ -193,7 +193,7 @@
                 type="button" 
                 class="slider-bar {% if forloop.first %}active{% endif %}"
                 data-slide="{{ forloop.index0 }}"
-                aria-label="{{ 'general.slider.go_to_slide' | t: slide: forloop.index }}"
+                aria-label="{{ 'general.slider.previous_slide' | t: slide: forloop.index }}"
                 aria-controls="Slider-{{ section.id }}"
               >
                 <span class="slider-bar-inner"></span>
