@@ -406,6 +406,10 @@ product-description-detail {
   font-weight: bold;
 }
 
+.w-80 {
+  
+}
+
 .product-form__buttons {
   max-width: 44rem;
   place-items: center;
