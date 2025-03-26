@@ -191,7 +191,7 @@
     "featured_collection_kLMPjB": {
       "type": "featured-collection",
       "settings": {
-        "collection": "",
+        "collection": "frontpage",
         "products_to_show": 4,
         "title": "",
         "heading_size": "h1",
