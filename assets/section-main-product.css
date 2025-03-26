@@ -399,8 +399,11 @@ a.product__text {
 product-description-detail {
   font-style: 'Hiragino';
   font-size: 24px;
-  font-weight: 600;
   letter-spacing: 2px;
+}
+
+.font-bold {
+  
 }
 
 .product-form__buttons {
