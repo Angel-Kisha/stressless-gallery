@@ -81,7 +81,7 @@
           {% case block.type %}
             {% when 'detail' %}
               <div 
-                class="product-description-detail w-8" 
+                class="product-description-detail w-85" 
                 style="margin-top: {{ block.settings.detail_margin_top }}px;"
               >
                 <p class="font-bold text-{{ block.settings.header_alignment | default: 'left' }}">
@@ -840,7 +840,17 @@
           "id": "detail_margin_top",
           "label": "Margin Top (px)",
           "min": 0,
-          "max": 100,
+          "max": 50,
+          "step": 2,
+          "default": 16,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "detail_padding_top",
+          "label": "Margin Top (px)",
+          "min": 0,
+          "max": 50,
           "step": 2,
           "default": 16,
           "unit": "px"
