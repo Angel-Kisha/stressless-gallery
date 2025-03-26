@@ -125,7 +125,7 @@
         aria-label="{{ 'general.slider.name' | t }}"
       >
         {% assign skip_card_product_styles = false %}
-
+    
         {%- if section.settings.collection.products.size > 0 -%}
           {% paginate section.settings.collection.products by section.settings.products_to_show %}
             {%- for product in section.settings.collection.products limit: section.settings.products_to_show -%}
@@ -184,6 +184,7 @@
           {%- endfor -%}
         {%- endif -%}
       </ul>
+    
       {%- if show_mobile_slider or show_desktop_slider -%}
         <div class="slider-navigation">
           <div class="slider-bars" id="Slider-{{ section.id }}-bars">
@@ -192,7 +193,7 @@
                 type="button" 
                 class="slider-bar {% if forloop.first %}active{% endif %}"
                 data-slide="{{ forloop.index0 }}"
-                aria-label="{{ 'general.slider.previous_slide' | t }}"
+                aria-label="{{ 'general.slider.go_to_slide' | t: slide: forloop.index }}"
                 aria-controls="Slider-{{ section.id }}"
               >
                 <span class="slider-bar-inner"></span>
