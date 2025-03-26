@@ -84,9 +84,9 @@
                 class="product-description-detail w-80" 
                 style="margin-top: {{ block.settings.detail_margin_top }}px;"
               >
-                < class="font-bold text-{{ block.settings.header_alignment | default: 'left' }}">
+                <p class="font-bold text-{{ block.settings.header_alignment | default: 'left' }}">
                   {{ block.settings.detail_header }}
-                </>
+                </p>
                 
                 <div class="text-{{ block.settings.text_alignment | default: 'left' }} {% if block.settings.text_style == 'subtle' %}text-subtle{% elsif block.settings.text_style == 'italic' %}italic{% endif %}">
                   {{ block.settings.detail_text }}
