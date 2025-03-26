@@ -387,6 +387,10 @@ a.product__text {
   margin-bottom: 1.2rem;
 }
 
+.product-description-heading {
+  
+}
+
 .product-form__buttons {
   max-width: 44rem;
   place-items: center;
