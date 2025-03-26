@@ -20,6 +20,15 @@
             "text_style": "uppercase"
           }
         },
+        "detail_rKg6wj": {
+          "type": "detail",
+          "settings": {
+            "detail_header": "詳細",
+            "detail_text": "Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.",
+            "detail_margin_top": 50,
+            "header_alignment": "center"
+          }
+        },
         "title": {
           "type": "title",
           "settings": {}
@@ -74,6 +83,7 @@
       },
       "block_order": [
         "vendor",
+        "detail_rKg6wj",
         "title",
         "sku_VYTTKh",
         "decorative_line_deGiLh",
@@ -84,7 +94,7 @@
         "description_7wWhyW"
       ],
       "settings": {
-        "enable_sticky_info": true,
+        "enable_sticky_info": false,
         "color_scheme": "scheme-4",
         "media_size": "medium",
         "constrain_to_viewport": true,
