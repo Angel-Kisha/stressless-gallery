@@ -189,6 +189,7 @@
                 class="slider-bar {% if forloop.first %}active{% endif %}"
                 data-slide="{{ forloop.index0 }}"
                 aria-label="{{ 'general.slider.previous_slide' | t }}"
+                aria-controls="Slider-{{ section.id }}"
               >
                 <span class="slider-bar-inner"></span>
               </button>
