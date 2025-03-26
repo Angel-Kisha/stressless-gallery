@@ -38,6 +38,32 @@
   }
 {%- endstyle -%}
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sliderBars = document.querySelectorAll('#Slider-{{ section.id }}-bars .slider-bar');
+    
+    sliderBars.forEach(bar => {
+      bar.addEventListener('click', function() {
+        // Remove active class from all bars
+        sliderBars.forEach(b => b.classList.remove('active'));
+        
+        // Add active class to clicked bar
+        this.classList.add('active');
+        
+        // Get the slide index
+        const slideIndex = parseInt(this.dataset.slide);
+        
+        // TODO: Add your slider navigation logic here
+        // This might involve:
+        // - Changing the displayed product/image
+        // - Updating slider position
+        // Example (pseudo-code):
+        // slider.goToSlide(slideIndex);
+      });
+    });
+  });
+</script>
+
 {%- liquid
   assign products_to_display = section.settings.collection.all_products_count
 
