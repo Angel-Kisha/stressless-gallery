@@ -38,36 +38,6 @@
   }
 {%- endstyle -%}
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const slider = document.querySelector('#Slider-{{ section.id }}');
-    const sliderBars = document.querySelectorAll('#Slider-{{ section.id }}-bars .slider-bar');
-    const slides = slider.querySelectorAll('.slider__slide');
-
-    function centerSlide(slideIndex) {
-      // Calculate the transform value to center the slide
-      const slideWidth = slides[0].offsetWidth;
-      const transform = -slideIndex * slideWidth;
-      
-      // Move the entire slider
-      slider.querySelector('ul').style.transform = `translateX(${transform}px)`;
-      
-      // Update active bar
-      sliderBars.forEach(bar => bar.classList.remove('active'));
-      sliderBars[slideIndex].classList.add('active');
-    }
-
-    sliderBars.forEach((bar, index) => {
-      bar.addEventListener('click', function() {
-        centerSlide(index);
-      });
-    });
-
-    // Optional: Initial centering of first slide
-    centerSlide(0);
-  });
-</script>
-
 {%- liquid
   assign products_to_display = section.settings.collection.all_products_count
 
@@ -125,7 +95,7 @@
         aria-label="{{ 'general.slider.name' | t }}"
       >
         {% assign skip_card_product_styles = false %}
-    
+
         {%- if section.settings.collection.products.size > 0 -%}
           {% paginate section.settings.collection.products by section.settings.products_to_show %}
             {%- for product in section.settings.collection.products limit: section.settings.products_to_show -%}
@@ -184,22 +154,36 @@
           {%- endfor -%}
         {%- endif -%}
       </ul>
-    
       {%- if show_mobile_slider or show_desktop_slider -%}
-        <div class="slider-navigation">
-          <div class="slider-bars" id="Slider-{{ section.id }}-bars">
-            {%- for i in (1..products_to_display) -%}
-              <button 
-                type="button" 
-                class="slider-bar {% if forloop.first %}active{% endif %}"
-                data-slide="{{ forloop.index0 }}"
-                aria-label="{{ 'general.slider.previous_slide' | t: slide: forloop.index }}"
-                aria-controls="Slider-{{ section.id }}"
-              >
-                <span class="slider-bar-inner"></span>
-              </button>
-            {%- endfor -%}
+        <div class="slider-buttons">
+          <button
+            type="button"
+            class="slider-button slider-button--prev"
+            name="previous"
+            aria-label="{{ 'general.slider.previous_slide' | t }}"
+            aria-controls="Slider-{{ section.id }}"
+          >
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </button>
+          <div class="slider-counter caption">
+            <span class="slider-counter--current">1</span>
+            <span aria-hidden="true"> / </span>
+            <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+            <span class="slider-counter--total">{{ products_to_display }}</span>
           </div>
+          <button
+            type="button"
+            class="slider-button slider-button--next"
+            name="next"
+            aria-label="{{ 'general.slider.next_slide' | t }}"
+            aria-controls="Slider-{{ section.id }}"
+          >
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </button>
         </div>
       {%- endif -%}
     </slider-component>
