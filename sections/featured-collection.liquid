@@ -38,6 +38,41 @@
   }
 {%- endstyle -%}
 
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  /* New horizontal pagination styles */
+  .slider-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .slider-pagination-dot {
+    width: 40px;
+    height: 4px;
+    background-color: #d1d1d1;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .slider-pagination-dot.active {
+    background-color: #000;
+  }
+{%- endstyle -%}
+
 {%- liquid
   assign products_to_display = section.settings.collection.all_products_count
 
@@ -155,35 +190,14 @@
         {%- endif -%}
       </ul>
       {%- if show_mobile_slider or show_desktop_slider -%}
-        <div class="slider-buttons">
-          <button
-            type="button"
-            class="slider-button slider-button--prev"
-            name="previous"
-            aria-label="{{ 'general.slider.previous_slide' | t }}"
-            aria-controls="Slider-{{ section.id }}"
-          >
-            <span class="svg-wrapper">
-              {{- 'icon-caret.svg' | inline_asset_content -}}
-            </span>
-          </button>
-          <div class="slider-counter caption">
-            <span class="slider-counter--current">1</span>
-            <span aria-hidden="true"> / </span>
-            <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
-            <span class="slider-counter--total">{{ products_to_display }}</span>
-          </div>
-          <button
-            type="button"
-            class="slider-button slider-button--next"
-            name="next"
-            aria-label="{{ 'general.slider.next_slide' | t }}"
-            aria-controls="Slider-{{ section.id }}"
-          >
-            <span class="svg-wrapper">
-              {{- 'icon-caret.svg' | inline_asset_content -}}
-            </span>
-          </button>
+        <div class="slider-pagination">
+          {%- for i in (1..products_to_display) -%}
+            <div 
+              class="slider-pagination-dot{% if forloop.first %} active{% endif %}" 
+              data-slide="{{ forloop.index }}"
+              onclick="document.querySelector('#Slider-{{ section.id }}').scrollToSlide({{ forloop.index }})"
+            ></div>
+          {%- endfor -%}
         </div>
       {%- endif -%}
     </slider-component>
@@ -204,6 +218,36 @@
     {%- endif -%}
   </div>
 </div>
+
+<script>
+  // Add this script to handle slider functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const sliderComponents = document.querySelectorAll('slider-component');
+    
+    sliderComponents.forEach(sliderComponent => {
+      const slider = sliderComponent.querySelector('.slider');
+      const paginationDots = sliderComponent.querySelectorAll('.slider-pagination-dot');
+      
+      // Extend slider with scrollToSlide method
+      slider.scrollToSlide = function(slideIndex) {
+        const slides = this.querySelectorAll('.slider__slide');
+        if (slides.length === 0) return;
+        
+        const targetSlide = slides[slideIndex - 1];
+        
+        // Update active pagination dot
+        paginationDots.forEach(dot => dot.classList.remove('active'));
+        paginationDots[slideIndex - 1].classList.add('active');
+        
+        // Scroll to the slide
+        targetSlide.scrollIntoView({ 
+          behavior: 'smooth', 
+          inline: 'start' 
+        });
+      };
+    });
+  });
+</script>
 
 {% schema %}
 {
