@@ -165,7 +165,7 @@
         "color_scheme": "scheme-57d242fb-41d7-48d8-973c-9aa565c6be01",
         "image_ratio": "square",
         "image_shape": "default",
-        "show_secondary_image": true,
+        "show_secondary_image": false,
         "show_vendor": false,
         "show_rating": false,
         "quick_add": "none",
