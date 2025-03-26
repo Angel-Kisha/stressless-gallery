@@ -157,20 +157,18 @@
         {%- endif -%}
       </ul>
       {%- if show_mobile_slider or show_desktop_slider -%}
-        <slider-progress-line class="slider-buttons">
-          <div class="slider-progress-container">
-            <div 
-              class="slider-progress-line" 
-              id="SliderProgress-{{ section.id }}"
-              role="progressbar"
-              aria-valuenow="1"
-              aria-valuemin="1"
-              aria-valuemax="{{ products_to_display }}"
-            >
-              <div class="slider-progress-indicator"></div>
-            </div>
+        <div class="collection-slider-navigation">
+          <div class="slider-dots">
+            {%- for i in (1..products_to_display) -%}
+              <button 
+                class="slider-dot {% if forloop.first %}active{% endif %}" 
+                type="button" 
+                aria-label="Go to slide {{ forloop.index }}"
+                data-slide-index="{{ forloop.index0 }}"
+              ></button>
+            {%- endfor -%}
           </div>
-        </slider-progress-line>
+        </div>
       {%- endif -%}
     </slider-component>
 
