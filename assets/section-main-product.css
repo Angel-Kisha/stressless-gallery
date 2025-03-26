@@ -396,7 +396,12 @@ a.product__text {
   padding: 20px;
 }
 
-product-description-detail
+product-description-detail {
+  font-style: 'Hiragino';
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
 
 .product-form__buttons {
   max-width: 44rem;
