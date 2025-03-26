@@ -33,35 +33,30 @@ class SliderDots extends HTMLElement {
     addDotClickListeners() {
       this.dots.forEach((dot, index) => {
         dot.addEventListener('click', () => {
-          this.centerSlide(index);
+          this.centerSlideWithCircularLayout(index);
         });
       });
     }
   
-    centerSlide(targetIndex) {
-      // Handle looping for first and last slides
-      let prevIndex, nextIndex;
-      
-      if (targetIndex === 0) {
-        // When first slide is clicked, show last slides before it
-        prevIndex = this.totalSlides - 1;
-        nextIndex = 1;
-      } else if (targetIndex === this.totalSlides - 1) {
-        // When last slide is clicked, show first slides after it
-        prevIndex = this.totalSlides - 2;
-        nextIndex = 0;
-      } else {
-        // Normal case
-        prevIndex = targetIndex - 1;
-        nextIndex = targetIndex + 1;
+    centerSlideWithCircularLayout(targetIndex) {
+      // Rearrange slides to create a circular layout
+      const arrangedSlides = this.getCircularArrangement(targetIndex);
+  
+      // Remove existing slides
+      while (this.slider.firstChild) {
+        this.slider.removeChild(this.slider.firstChild);
       }
   
-      // Calculate center position
+      // Append rearranged slides
+      arrangedSlides.forEach(slide => {
+        this.slider.appendChild(slide);
+      });
+  
+      // Center the target slide
+      const targetSlide = arrangedSlides[1]; // Middle slide is always the target
       const sliderRect = this.slider.getBoundingClientRect();
-      const targetSlide = this.slides[targetIndex];
       const targetSlideRect = targetSlide.getBoundingClientRect();
       
-      // Calculate scroll to center the target slide
       const scrollAmount = 
         targetSlideRect.left - 
         sliderRect.left + 
@@ -76,6 +71,38 @@ class SliderDots extends HTMLElement {
   
       // Update active dot
       this.updateActiveDot(targetIndex);
+    }
+  
+    getCircularArrangement(targetIndex) {
+      // Create a circular arrangement of slides
+      const lastIndex = this.totalSlides - 1;
+      
+      // Calculate indices for left, center, and right slides
+      let leftIndex, centerIndex, rightIndex;
+  
+      if (targetIndex === 0) {
+        // When first slide is clicked
+        leftIndex = lastIndex;
+        centerIndex = 0;
+        rightIndex = 1;
+      } else if (targetIndex === lastIndex) {
+        // When last slide is clicked
+        leftIndex = lastIndex - 1;
+        centerIndex = lastIndex;
+        rightIndex = 0;
+      } else {
+        // Normal case
+        leftIndex = targetIndex - 1;
+        centerIndex = targetIndex;
+        rightIndex = targetIndex + 1;
+      }
+  
+      // Return slides in the order: left, center, right
+      return [
+        this.slides[leftIndex],
+        this.slides[centerIndex],
+        this.slides[rightIndex]
+      ];
     }
   
     updateActiveDot(activeIndex) {
