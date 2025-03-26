@@ -389,7 +389,9 @@ a.product__text {
 
 .product-description-heading {
   font-style: 'Hiragino';
-  font-
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 2px;
 }
 
 .product-form__buttons {
