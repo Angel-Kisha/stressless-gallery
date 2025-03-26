@@ -24,25 +24,6 @@
   <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const slider = document.querySelector('#Slider-{{ section.id }}');
-    const dots = document.querySelectorAll('.slider-dot');
-    
-    slider.addEventListener('scroll', function() {
-      const scrollPosition = slider.scrollLeft;
-      const slideWidth = slider.querySelector('.slider__slide').offsetWidth;
-      const activeIndex = Math.round(scrollPosition / slideWidth);
-      
-      dots.forEach((dot, index) => {
-        dot.classList.toggle('active', index === activeIndex);
-        dot.classList.toggle('bg-gray-300', index !== activeIndex);
-        dot.classList.toggle('bg-blue-500', index === activeIndex);
-      });
-    });
-  });
-</script>
-
 {%- style -%}
   .section-{{ section.id }}-padding {
     padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
@@ -104,7 +85,7 @@
         </div>
       {%- endif -%}
     </div>
-{% comment %} 
+
     <slider-component class="slider-mobile-gutter{% if section.settings.full_width %} slider-component-full-width{% endif %}{% if show_mobile_slider == false %} page-width{% endif %}{% if show_desktop_slider == false and section.settings.full_width == false %} page-width-desktop{% endif %}{% if show_desktop_slider %} slider-component-desktop{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
       <ul
         id="Slider-{{ section.id }}"
@@ -205,81 +186,8 @@
           </button>
         </div>
       {%- endif -%}
-    </slider-component> {% endcomment %}
-    <slider-component class="slider-mobile-gutter{% if section.settings.full_width %} slider-component-full-width{% endif %}{% if show_mobile_slider == false %} page-width{% endif %}{% if show_desktop_slider == false and section.settings.full_width == false %} page-width-desktop{% endif %}{% if show_desktop_slider %} slider-component-desktop{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-      <ul
-        id="Slider-{{ section.id }}"
-        data-id="{{ section.id }}"
-        class="grid product-grid contains-card contains-card--product{% if settings.card_style == 'standard' %} contains-card--standard{% endif %} grid--{{ section.settings.columns_desktop }}-col-desktop{% if section.settings.collection == blank %} grid--2-col-tablet-down{% else %} grid--{{ section.settings.columns_mobile }}-col-tablet-down{% endif %} slider slider--desktop slider--tablet grid--peek"
-        role="list"
-        aria-label="{{ 'general.slider.name' | t }}"
-      >
-        {%- if section.settings.collection.products.size > 0 -%}
-          {% paginate section.settings.collection.products by section.settings.products_to_show %}
-            {%- for product in section.settings.collection.products limit: section.settings.products_to_show -%}
-              <li
-                id="Slide-{{ section.id }}-{{ forloop.index }}"
-                class="grid__item slider__slide{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-                {% if settings.animations_reveal_on_scroll %}
-                  data-cascade
-                  style="--animation-order: {{ forloop.index }};"
-                {% endif %}
-              >
-                {% render 'card-product',
-                  card_product: product,
-                  media_aspect_ratio: section.settings.image_ratio,
-                  image_shape: section.settings.image_shape,
-                  show_secondary_image: section.settings.show_secondary_image,
-                  show_vendor: section.settings.show_vendor,
-                  show_rating: section.settings.show_rating,
-                  section_id: section.id,
-                  quick_add: section.settings.quick_add,
-                  bold_product_name: section.settings.bold_product_name,
-                  content_alignment: section.settings.content_alignment,
-                  show_product_title: section.settings.show_product_title
-                %}
-              </li>
-            {%- endfor -%}
-          {% endpaginate %}
-        {%- else -%}
-          {%- for i in (1..section.settings.columns_desktop) -%}
-            <li
-              class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-              {% if settings.animations_reveal_on_scroll %}
-                data-cascade
-                style="--animation-order: {{ forloop.index }};"
-              {% endif %}
-            >
-              {% liquid
-                assign ridx = forloop.rindex
-                case ridx
-                  when 5
-                    assign ridx = 1
-                  when 6
-                    assign ridx = 2
-                endcase
-              %}
-              {%- assign placeholder_image = 'product-apparel-' | append: ridx -%}
-              {% render 'card-product',
-                show_vendor: section.settings.show_vendor,
-                media_aspect_ratio: section.settings.image_ratio,
-                image_shape: section.settings.image_shape,
-                placeholder_image: placeholder_image
-              %}
-            </li>
-          {%- endfor -%}
-        {%- endif -%}
-      </ul>
-      
-      <div class="slider-dots">
-        <div class="slider-dot-container flex justify-center mt-4">
-          {%- for i in (1..section.settings.columns_desktop) -%}
-            <span class="slider-dot mx-1 w-2 h-2 bg-gray-300 rounded-full inline-block {% if forloop.first %}active{% endif %}"></span>
-          {%- endfor -%}
-        </div>
-      </div>
     </slider-component>
-    
+
     {%- if section.settings.show_view_all and more_in_collection -%}
       <div class="center collection__view-all{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
         <a
@@ -346,11 +254,6 @@
       "id": "show_product_title",
       "label": "Show Product Title",
       "default": true
-    },
-    {
-      "type": "collection",
-      "id": "collection1",
-      "label": "Select Collection"
     },
     {
       "type": "checkbox",

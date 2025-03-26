@@ -396,12 +396,6 @@ a.product__text {
   padding: 20px;
 }
 
-.slider-dot.active {
-  background-color: #3B82F6;
-  width: 12px;
-  border-radius: 6px;
-}
-
 product-description-detail {
   font-style: 'Hiragino';
   font-size: 24px;
