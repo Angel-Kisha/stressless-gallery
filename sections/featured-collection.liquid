@@ -40,27 +40,31 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.querySelector('#Slider-{{ section.id }}');
     const sliderBars = document.querySelectorAll('#Slider-{{ section.id }}-bars .slider-bar');
-    
-    sliderBars.forEach(bar => {
+    const slides = slider.querySelectorAll('.slider__slide');
+
+    function centerSlide(slideIndex) {
+      // Calculate the transform value to center the slide
+      const slideWidth = slides[0].offsetWidth;
+      const transform = -slideIndex * slideWidth;
+      
+      // Move the entire slider
+      slider.querySelector('ul').style.transform = `translateX(${transform}px)`;
+      
+      // Update active bar
+      sliderBars.forEach(bar => bar.classList.remove('active'));
+      sliderBars[slideIndex].classList.add('active');
+    }
+
+    sliderBars.forEach((bar, index) => {
       bar.addEventListener('click', function() {
-        // Remove active class from all bars
-        sliderBars.forEach(b => b.classList.remove('active'));
-        
-        // Add active class to clicked bar
-        this.classList.add('active');
-        
-        // Get the slide index
-        const slideIndex = parseInt(this.dataset.slide);
-        
-        // TODO: Add your slider navigation logic here
-        // This might involve:
-        // - Changing the displayed product/image
-        // - Updating slider position
-        // Example (pseudo-code):
-        // slider.goToSlide(slideIndex);
+        centerSlide(index);
       });
     });
+
+    // Optional: Initial centering of first slide
+    centerSlide(0);
   });
 </script>
 
