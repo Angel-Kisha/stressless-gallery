@@ -26,7 +26,8 @@
             "detail_header": "詳細",
             "detail_text": "Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.Enter your product details here.",
             "detail_margin_top": 50,
-            "header_alignment": "center"
+            "header_alignment": "center",
+            "text_alignment": "justify"
           }
         },
         "title": {
