@@ -64,7 +64,10 @@
         },
         "description_7wWhyW": {
           "type": "description",
-          "settings": {}
+          "settings": {
+            "show_description_heading": true,
+            "description_heading": "SPEC"
+          }
         }
       },
       "block_order": [
