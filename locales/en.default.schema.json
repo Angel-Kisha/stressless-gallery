@@ -1957,6 +1957,9 @@
             }
           }
         },
+        "detail": {
+          "name": "Detail"
+        },
         "title": {
           "name": "Title"
         },
