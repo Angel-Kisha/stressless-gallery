@@ -15,7 +15,6 @@
   
   {% liquid 
     assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' 
-    assign media_width = 0.65
   %}
 
   {%- liquid
