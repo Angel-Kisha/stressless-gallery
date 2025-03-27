@@ -36,7 +36,7 @@
       role="list"
       aria-label="{{ 'general.slider.name' | t }}"
     >
-      {%- for media in product.media -%}
+      {% comment %} {%- for media in product.media -%}
         <li
           id="Slide-{{ forloop.index }}"
           class="grid__item{% if show_mobile_slider or show_desktop_slider %} slider__slide{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
@@ -53,6 +53,22 @@
             variant_images: variant_images
           %}
         </li>
+      {%- endfor -%} {% endcomment %}
+
+      {%- for media in product.media -%}
+        <div>
+          Media Type: {{ media.media_type }}
+          Media ID: {{ media.id }}
+          
+          {% if media.media_type == 'image' %}
+            {{ media.preview_image 
+              | image_url: width: 600 
+              | image_tag: 
+                loading: 'lazy', 
+                class: 'product-media-image' 
+            }}
+          {% endif %}
+        </div>
       {%- endfor -%}
     </ul>
 
