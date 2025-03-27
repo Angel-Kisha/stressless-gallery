@@ -225,7 +225,13 @@
     "product_image_gallery_pNwyAy": {
       "type": "product-image-gallery",
       "settings": {
-        "enable_full_width": false
+        "image_fit": "cover",
+        "image_height": 450,
+        "padding_top": 100,
+        "padding_bottom": 50,
+        "padding_left": 0,
+        "padding_right": 0,
+        "background_color": "#f3f3f3"
       }
     }
   },
