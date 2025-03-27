@@ -186,80 +186,70 @@
   </style>
   
   <script>
-    class SliderComponent extends HTMLElement {
-      constructor() {
-        super();
-        this.slider = this.querySelector('#ProductMediaSlider');
-        this.prevButton = this.querySelector('.slider-button--prev');
-        this.nextButton = this.querySelector('.slider-button--next');
-        this.currentSlideCounter = this.querySelector('.slider-counter--current');
-        
-        // Get all image items
-        this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
-        
-        // Initialize state
-        this.currentIndex = 0;
-        this.visibleSlides = 3;
-        this.totalImages = this.imageItems.length;
-        this.totalSlides = Math.max(1, this.totalImages - this.visibleSlides + 1);
-        
-        this.initializeSlider();
-      }
-      
-      initializeSlider() {
-        // Setup navigation buttons
-        if (this.prevButton) {
-          this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
-        }
-        
-        if (this.nextButton) {
-          this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
-        }
-        
-        // Initial render and button state
-        this.updateSliderContent();
-        this.updateNavigationButtons();
-      }
-      
-      scrollToNextSlide() {
-        if (this.currentIndex < this.totalSlides - 1) {
-          this.currentIndex++;
-          this.updateSliderContent();
-          this.updateNavigationButtons();
-        }
-      }
-      
-      scrollToPrevSlide() {
-        if (this.currentIndex > 0) {
-          this.currentIndex--;
-          this.updateSliderContent();
-          this.updateNavigationButtons();
-        }
-      }
-      
-      updateNavigationButtons() {
-        // Disable prev button if at first slide
-        if (this.prevButton) {
-          this.prevButton.disabled = (this.currentIndex === 0);
-        }
-        
-        // Disable next button if at last slide
-        if (this.nextButton) {
-          this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
-        }
-      }
-      
-      updateSliderContent() {
-        // Calculate the translation based on current index
-        const translateX = -this.currentIndex * (this.imageItems[0].offsetWidth + 10);
-        this.slider.style.transform = `translateX(${translateX}px)`;
-        
-        // Update slide counter
-        if (this.currentSlideCounter) {
-          this.currentSlideCounter.textContent = this.currentIndex + 1;
-        }
-      }
+   class SliderComponent extends HTMLElement {
+  constructor() {
+    super();
+    this.slider = this.querySelector('#ProductMediaSlider');
+    this.prevButton = this.querySelector('.slider-button--prev');
+    this.nextButton = this.querySelector('.slider-button--next');
+    this.currentSlideCounter = this.querySelector('.slider-counter--current');
+
+    // Get all image items
+    this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
+
+    // Initialize state
+    this.currentIndex = 0;
+    this.imagesPerSlide = 3; // Change this based on how many should be visible at a time
+    this.totalSlides = Math.ceil(this.imageItems.length / this.imagesPerSlide);
+
+    this.initializeSlider();
+  }
+
+  initializeSlider() {
+    if (this.prevButton) {
+      this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
     }
-  
-    customElements.define('slider-component', SliderComponent);
+
+    if (this.nextButton) {
+      this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
+    }
+
+    this.updateSlider();
+    this.updateButtons();
+  }
+
+  scrollToNextSlide() {
+    if (this.currentIndex < this.totalSlides - 1) {
+      this.currentIndex++;
+      this.updateSlider();
+      this.updateButtons();
+    }
+  }
+
+  scrollToPrevSlide() {
+    if (this.currentIndex > 0) {
+      this.currentIndex--;
+      this.updateSlider();
+      this.updateButtons();
+    }
+  }
+
+  updateSlider() {
+    const imageWidth = this.imageItems[0].offsetWidth + 10; // Adjust for margin/gap
+    const translateX = -this.currentIndex * (imageWidth * this.imagesPerSlide);
+    this.slider.style.transform = `translateX(${translateX}px)`;
+
+    if (this.currentSlideCounter) {
+      this.currentSlideCounter.textContent = this.currentIndex + 1;
+    }
+  }
+
+  updateButtons() {
+    this.prevButton.disabled = this.currentIndex === 0;
+    this.nextButton.disabled = this.currentIndex >= this.totalSlides - 1;
+  }
+}
+
+customElements.define('slider-component', SliderComponent);
+
   </script>
