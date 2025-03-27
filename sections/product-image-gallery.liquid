@@ -16,8 +16,7 @@
     assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' 
   %}
   
-  <div 
-    class="product-gallery 
+  <div class="product-gallery 
     product-gallery--{{ section.settings.gallery_layout }}" 
     data-section-id="{{ section.id }}"
   >
