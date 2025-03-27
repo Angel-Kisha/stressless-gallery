@@ -41,8 +41,6 @@
       "settings": {
         "products_per_page": 16,
         "columns_desktop": 3,
-        "show_product_title": false,
-        "show_price": false,
         "columns_mobile": "1",
         "color_scheme": "scheme-4",
         "image_ratio": "adapt",
