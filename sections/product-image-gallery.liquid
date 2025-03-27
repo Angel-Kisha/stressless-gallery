@@ -50,7 +50,6 @@
     product-gallery--{{ section.settings.gallery_layout }}" 
     data-section-id="{{ section.id }}"
   >
-    {% if product.media.size > 0 %}
       <div class="product-gallery__images-container">
         <div class="product-gallery__images product__media-wrapper">
           {% render 'product-media-gallery', 
@@ -59,11 +58,7 @@
           %}
         </div>
       </div>
-    {% else %}
-      <div class="product-gallery__no-images">
-        <p>No product media available.</p>
-      </div>
-    {% endif %}
+
   </div>
   
   {% stylesheet %}
