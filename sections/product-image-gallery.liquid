@@ -2,26 +2,6 @@
   {
     "name": "Product Image Gallery",
     "settings": [
-      {
-        "type": "range",
-        "id": "image_width",
-        "min": 400,
-        "max": 800,
-        "step": 10,
-        "unit": "px",
-        "label": "Image Width",
-        "default": 640
-      },
-      {
-        "type": "range",
-        "id": "image_height",
-        "min": 300,
-        "max": 600,
-        "step": 10,
-        "unit": "px",
-        "label": "Image Height",
-        "default": 460
-      }
     ],
     "presets": [
       {
@@ -31,11 +11,11 @@
     ]
   }
 {% endschema %}
-
+  
 {% liquid 
   assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' 
 %}
-
+  
 <div class="product-gallery 
   product-gallery--{{ section.settings.gallery_layout }}" 
   data-section-id="{{ section.id }}"
@@ -45,21 +25,25 @@
         <div class="img-size">
           {% render 'product-media-gallery',
             variant_images: variant_images,
-            section_settings: section.settings,
-            custom_image_width: section.settings.image_width,
-            custom_image_height: section.settings.image_height
+            section_settings: section.settings
           %}
         </div>
       </div>
     </div>
 </div>
-
+  
 {% stylesheet %}
 .img-size {
-  max-width: {{ section.settings.image_width }}px !important;
-  max-height: {{ section.settings.image_height }}px !important;
+  max-width: 640px !important;
+  max-height: 460px !important;
 }
 
+.product__media-list .product__media-item img {
+  width: 640px !important;
+  height: 460px !important;
+  object-fit: cover;
+}
+  
 .product-gallery--grid .product-gallery__images {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
