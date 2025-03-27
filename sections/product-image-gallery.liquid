@@ -7,18 +7,6 @@
         "id": "enable_full_width",
         "label": "Full Width Gallery",
         "default": false
-      },
-      {
-        "type": "checkbox",
-        "id": "show_media_type_badges",
-        "label": "Show Media Type Badges",
-        "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "enable_zoom",
-        "label": "Enable Image Zoom",
-        "default": true
       }
     ],
     "presets": [
@@ -34,21 +22,23 @@
     assign image_count = product.media.size
   %}
   
-  <div class="product-gallery {% if section.settings.enable_full_width %}product-gallery--full-width{% endif %}">
+  <div class="product-gallery">
     {% if product.media.size > 0 %}
-      <div class="product-gallery__main-container">
-        <div class="product-gallery__main-image">
-          {% for media in product.media limit:3 %}
-            <div class="gallery-slide {% if forloop.first %}active{% endif %}">
-              {% if media.media_type == 'image' %}
-                {{ media | image_url: width: 800 | image_tag: 
-                  loading: 'lazy', 
-                  class: 'gallery-main-img', 
-                  alt: media.alt | escape 
-                }}
-              {% endif %}
-            </div>
-          {% endfor %}
+      <div class="product-gallery__container">
+        <div class="product-gallery__images-wrapper">
+          <div class="product-gallery__images">
+            {% for media in product.media limit:3 %}
+              <div class="gallery-image">
+                {% if media.media_type == 'image' %}
+                  {{ media | image_url: width: 800 | image_tag: 
+                    loading: 'lazy', 
+                    class: 'gallery-img', 
+                    alt: media.alt | escape 
+                  }}
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
         </div>
   
         <div class="product-gallery__pagination">
@@ -76,29 +66,30 @@
   </div>
   
   {% stylesheet %}
-  .product-gallery__main-container {
+  .product-gallery__container {
     max-width: 1200px;
     margin: 0 auto;
-  }
-  
-  .product-gallery__main-image {
-    display: flex;
     overflow: hidden;
-    position: relative;
+  }
+  
+  .product-gallery__images-wrapper {
     width: 100%;
+    overflow: hidden;
   }
   
-  .gallery-slide {
-    display: none;
-    width: 100%;
-    flex-shrink: 0;
+  .product-gallery__images {
+    display: flex;
+    width: 300%;
+    transition: transform 0.3s ease;
   }
   
-  .gallery-slide.active {
-    display: block;
+  .gallery-image {
+    width: calc(100% / 3);
+    padding: 0 10px;
+    box-sizing: border-box;
   }
   
-  .gallery-main-img {
+  .gallery-img {
     width: 100%;
     height: auto;
     object-fit: cover;
@@ -133,18 +124,19 @@
   
   {% javascript %}
   document.addEventListener('DOMContentLoaded', function() {
-    const mainImages = document.querySelectorAll('.gallery-slide');
+    const imagesWrapper = document.querySelector('.product-gallery__images');
     const paginationDots = document.querySelectorAll('.pagination-dot');
     
     paginationDots.forEach((dot, index) => {
       dot.addEventListener('click', () => {
-        // Remove active class from all dots and slides
+        // Remove active class from all dots
         paginationDots.forEach(d => d.classList.remove('active'));
-        mainImages.forEach(img => img.classList.remove('active'));
         
-        // Add active class to clicked dot and corresponding slide
+        // Add active class to clicked dot
         dot.classList.add('active');
-        mainImages[index].classList.add('active');
+        
+        // Move images
+        imagesWrapper.style.transform = `translateX(-${index * 33.33}%)`;
       });
     });
   });
