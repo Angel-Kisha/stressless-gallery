@@ -17,11 +17,7 @@
     ]
   }
   {% endschema %}
-  
-  {% liquid 
-    # Ensure we are working with the current product's images
-    assign product_images = product.images
-  %}
+  {% assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' %}
   
   <div class="product-gallery {% if section.settings.enable_full_width %}product-gallery--full-width{% endif %}" data-section-id="{{ section.id }}">
     {% if product_images.size > 0 %}
