@@ -33,90 +33,10 @@
   
   {% stylesheet %}
   
-  .product-gallery--grid .product-gallery__images {
+  .product-gallery__images {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 10px;
   }
-  
-  .product-gallery__pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  
-  .product-gallery__pagination-dot {
-    width: 60px;
-    height: 60px;
-    border: 2px solid #e0e0e0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    overflow: hidden;
-  }
-  
-  .product-gallery__pagination-dot img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  .product-gallery__pagination-dot.active {
-    border-color: #333;
-  }
-  
-  .pagination-dot-placeholder {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    background-color: #f0f0f0;
-    color: #666;
-  }
   {% endstylesheet %}
   
-  {% javascript %}
-  document.addEventListener('DOMContentLoaded', function() {
-    const gallery = document.querySelector('.product-gallery__images');
-    const paginationDots = document.querySelectorAll('.product-gallery__pagination-dot');
-    
-    if (paginationDots.length > 0) {
-      paginationDots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-          // Remove active class from all dots
-          paginationDots.forEach(d => d.classList.remove('active'));
-          
-          // Add active class to clicked dot
-          dot.classList.add('active');
-          
-          // Move gallery to selected image
-          gallery.style.transform = `translateX(-${index * 100}%)`;
-        });
-      });
-    }
-  
-    // Zoom functionality
-    {% if section.settings.enable_zoom %}
-      const zoomContainers = document.querySelectorAll('.product-gallery__image-wrapper');
-      
-      zoomContainers.forEach(container => {
-        const image = container.querySelector('img');
-        
-        container.addEventListener('mousemove', function(e) {
-          const rect = container.getBoundingClientRect();
-          const x = (e.clientX - rect.left) / rect.width * 100;
-          const y = (e.clientY - rect.top) / rect.height * 100;
-          
-          image.style.transformOrigin = `${x}% ${y}%`;
-          image.style.transform = 'scale(1.5)';
-        });
-        
-        container.addEventListener('mouseleave', function() {
-          image.style.transform = 'scale(1)';
-        });
-      });
-    {% endif %}
-  });
-  {% endjavascript %}
