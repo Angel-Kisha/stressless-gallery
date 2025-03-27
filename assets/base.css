@@ -2924,7 +2924,7 @@ details[open] > .header__submenu {
 
 .header__menu-item:hover span {
   text-decoration: underline;
-  text-underline-offset: 2rem;
+  text-underline-offset: 1rem;
 }
 
 details[open] > .header__menu-item {
