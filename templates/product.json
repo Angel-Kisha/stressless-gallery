@@ -221,6 +221,12 @@
         "padding_top": 0,
         "padding_bottom": 0
       }
+    },
+    "product_image_gallery_DX8NCy": {
+      "type": "product-image-gallery",
+      "settings": {
+        "enable_full_width": true
+      }
     }
   },
   "order": [
@@ -229,6 +235,7 @@
     "page_title_wPKdnK",
     "featured_collection_ayHyed",
     "page_title_CCVj4h",
-    "featured_collection_kLMPjB"
+    "featured_collection_kLMPjB",
+    "product_image_gallery_DX8NCy"
   ]
 }
