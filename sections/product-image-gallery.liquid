@@ -27,6 +27,52 @@
         "unit": "px",
         "label": "Image Height",
         "default": 500
+      },
+      {
+        "type": "range",
+        "id": "padding_top",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "px",
+        "label": "Padding Top",
+        "default": 20
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "px",
+        "label": "Padding Bottom",
+        "default": 20
+      },
+      {
+        "type": "range",
+        "id": "padding_left",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "px",
+        "label": "Padding Left",
+        "default": 20
+      },
+      {
+        "type": "range",
+        "id": "padding_right",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "px",
+        "label": "Padding Right",
+        "default": 20
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background Color",
+        "default": "#ffffff"
       }
     ],
     "presets": [
@@ -38,7 +84,7 @@
   }
   {% endschema %}
   
-  <div class="product-media-gallery isolate gradient">
+  <div class="product-media-gallery isolate gradient" style="background-color: {{ section.settings.background_color }}; padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;">
     <slider-component class="slider-mobile-gutter page-width">
       <div
         id="ProductMediaSlider"
