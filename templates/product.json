@@ -225,10 +225,7 @@
     "product_image_gallery_pNwyAy": {
       "type": "product-image-gallery",
       "settings": {
-        "enable_full_width": false,
-        "show_media_type_badges": true,
-        "enable_zoom": true,
-        "gallery_layout": "slider"
+        "enable_full_width": false
       }
     }
   },
