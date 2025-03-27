@@ -38,14 +38,6 @@
   }
   {% endschema %}
   
-  {% liquid 
-    assign products_to_display = product.images.size 
-    assign total_slides = 1
-    if products_to_display > 3
-      assign total_slides = products_to_display | minus: 2
-    endif
-  %}
-  
   <div class="product-media-gallery isolate gradient">
     <slider-component class="slider-mobile-gutter page-width">
       <div
@@ -54,23 +46,20 @@
         role="list"
         aria-label="{{ 'general.slider.name' | t }}"
       >
-        {%- for i in (0..2) -%}
-          {%- if forloop.index0 < product.images.size -%}
-            {%- assign media = product.images[forloop.index0] -%}
-            <div class="product-media-item">
-              {{ media 
-                | image_url: width: 1000 
-                | image_tag: 
-                  loading: 'lazy', 
-                  class: 'product-media-image',
-                  alt: media.alt | escape
-              }}
-            </div>
-          {%- endif -%}
+        {%- for media in product.images limit: 10 -%}
+          <div class="product-media-item">
+            {{ media 
+              | image_url: width: 1000 
+              | image_tag: 
+                loading: 'lazy', 
+                class: 'product-media-image',
+                alt: media.alt | escape
+            }}
+          </div>
         {%- endfor -%}
       </div>
   
-      {%- if products_to_display > 3 -%}
+      {%- if product.images.size > 3 -%}
         <div class="slider-buttons">
           <button
             type="button"
@@ -84,7 +73,7 @@
             <span class="slider-counter--current">1</span>
             <span aria-hidden="true"> / </span>
             <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
-            <span class="slider-counter--total">{{ total_slides }}</span>
+            <span class="slider-counter--total">{{ product.images.size | minus: 2 }}</span>
           </div>
           <button
             type="button"
@@ -134,6 +123,11 @@
       font-size: 24px;
     }
   
+    .slider-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  
     .slider-counter {
       font-size: 14px;
       color: #888;
@@ -149,26 +143,21 @@
         this.prevButton = this.querySelector('.slider-button--prev');
         this.nextButton = this.querySelector('.slider-button--next');
         this.currentSlideCounter = this.querySelector('.slider-counter--current');
-        this.totalSlideCounter = this.querySelector('.slider-counter--total');
         
-        // Get all product images from the page
-        this.images = Array.from(this.querySelectorAll('.product-media-item img')).map(img => ({
-          src: img.src,
-          alt: img.alt
-        }));
+        // Get all image items
+        this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
         
+        // Initialize state
         this.currentIndex = 0;
-        this.totalSlides = Math.max(1, Math.ceil((this.images.length - 3) / 1) + 1);
-        
-        // Update total slides display
-        if (this.totalSlideCounter) {
-          this.totalSlideCounter.textContent = this.totalSlides;
-        }
+        this.visibleSlides = 3;
+        this.totalImages = this.imageItems.length;
+        this.totalSlides = Math.max(1, this.totalImages - this.visibleSlides + 1);
         
         this.initializeSlider();
       }
       
       initializeSlider() {
+        // Setup navigation buttons
         if (this.prevButton) {
           this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
         }
@@ -177,7 +166,8 @@
           this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
         }
         
-        // Initial setup of buttons
+        // Initial render and button state
+        this.updateSliderContent();
         this.updateNavigationButtons();
       }
       
@@ -205,29 +195,19 @@
         
         // Disable next button if at last slide
         if (this.nextButton) {
-          this.nextButton.disabled = (this.currentIndex === this.totalSlides - 1);
+          this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
         }
       }
       
       updateSliderContent() {
-        const sliderItems = this.querySelectorAll('.product-media-item');
-        
-        for (let i = 0; i < 3; i++) {
-          const imageIndex = this.currentIndex + i;
-          const sliderItem = sliderItems[i];
-          
-          if (imageIndex < this.images.length) {
-            const img = this.images[imageIndex];
-            sliderItem.innerHTML = `
-              <img 
-                src="${img.src}" 
-                alt="${img.alt}" 
-                loading="lazy" 
-                class="product-media-image" 
-                style="width: 100%; height: 500px; object-fit: cover;"
-              >`;
+        // Hide all images first
+        this.imageItems.forEach((item, index) => {
+          if (index >= this.currentIndex && index < this.currentIndex + this.visibleSlides) {
+            item.style.display = 'block';
+          } else {
+            item.style.display = 'none';
           }
-        }
+        });
         
         // Update slide counter
         if (this.currentSlideCounter) {
