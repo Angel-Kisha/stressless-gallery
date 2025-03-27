@@ -41,13 +41,6 @@
   {% endschema %}
   
   {% liquid 
-    # Prepare media types
-    assign model_count = product.media | where: 'media_type', 'model' | size 
-    assign video_count = product.media | where: "media_type", "video" | size 
-    assign external_video_count = product.media | where: "media_type", "external_video" | size 
-    assign image_count = product.media | where: "media_type", "image" | size 
-  
-    # Variant-specific images
     assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' 
   %}
   

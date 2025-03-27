@@ -221,6 +221,15 @@
         "padding_top": 0,
         "padding_bottom": 0
       }
+    },
+    "product_image_gallery_pNwyAy": {
+      "type": "product-image-gallery",
+      "settings": {
+        "enable_full_width": false,
+        "show_media_type_badges": true,
+        "enable_zoom": true,
+        "gallery_layout": "slider"
+      }
     }
   },
   "order": [
@@ -229,6 +238,7 @@
     "page_title_wPKdnK",
     "featured_collection_ayHyed",
     "page_title_CCVj4h",
-    "featured_collection_kLMPjB"
+    "featured_collection_kLMPjB",
+    "product_image_gallery_pNwyAy"
   ]
 }
