@@ -12,4 +12,97 @@
   }
   {% endschema %}
 
+  {% comment %}
+  Renders a carousel of all product media with horizontal pagination
+{% endcomment %}
+
+<div class="product-media-carousel">
+  <div class="product-media-carousel__slider">
+    {%- for media in product.media -%}
+      <div class="product-media-carousel__slide">
+        {% render 'product-thumbnail',
+          media: media,
+          media_count: product.media.size,
+          position: forloop.index,
+          desktop_layout: 'stacked',
+          mobile_layout: 'show',
+          loop: section.settings.enable_video_looping,
+          modal_id: section.id,
+          xr_button: true,
+          media_width: 1,
+          media_fit: 'contain',
+          constrain_to_viewport: true,
+          lazy_load: forloop.index > 1
+        %}
+      </div>
+    {%- endfor -%}
+  </div>
   
+  <div class="product-media-carousel__pagination">
+    {%- for media in product.media -%}
+      <span class="product-media-carousel__pagination-dot" data-slide="{{ forloop.index0 }}"></span>
+    {%- endfor -%}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.querySelector('.product-media-carousel__slider');
+    const paginationDots = document.querySelectorAll('.product-media-carousel__pagination-dot');
+    let currentSlide = 0;
+
+    function updatePagination() {
+      paginationDots.forEach((dot, index) => {
+        dot.classList.toggle('is-active', index === currentSlide);
+      });
+      
+      slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+
+    paginationDots.forEach(dot => {
+      dot.addEventListener('click', function() {
+        currentSlide = parseInt(this.dataset.slide);
+        updatePagination();
+      });
+    });
+  });
+</script>
+
+<style>
+  .product-media-carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .product-media-carousel__slider {
+    display: flex;
+    transition: transform 0.3s ease;
+  }
+
+  .product-media-carousel__slide {
+    flex: 0 0 100%;
+    width: 100%;
+  }
+
+  .product-media-carousel__pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .product-media-carousel__pagination-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #ccc;
+    border-radius: 50%;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .product-media-carousel__pagination-dot.is-active {
+    background-color: #333;
+  }
+</style>
+
