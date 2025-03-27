@@ -409,6 +409,34 @@ product-description-detail {
 .w-85 {
   width: 85%;
 }
+.collection-slider-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.slider-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 45px;
+}
+
+.slider-dot {
+  width: 60px;
+  height: 4px;
+  background-color: #a1a1a1;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.slider-dot.active {
+  background-color: #ffffff;
+  width: 60px;
+}
 
 .product-form__buttons {
   max-width: 44rem;
