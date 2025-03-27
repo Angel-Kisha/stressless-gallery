@@ -2,34 +2,6 @@
   {
     "name": "Product Image Gallery",
     "settings": [
-      {
-        "type": "checkbox",
-        "id": "enable_full_width",
-        "label": "Full Width Gallery",
-        "default": false
-      },
-      {
-        "type": "checkbox",
-        "id": "show_media_type_badges",
-        "label": "Show Media Type Badges",
-        "default": true
-      },
-      {
-        "type": "checkbox",
-        "id": "enable_zoom",
-        "label": "Enable Image Zoom",
-        "default": true
-      },
-      {
-        "type": "select",
-        "id": "gallery_layout",
-        "label": "Gallery Layout",
-        "options": [
-          {"value": "slider", "label": "Slider"},
-          {"value": "grid", "label": "Grid"}
-        ],
-        "default": "slider"
-      }
     ],
     "presets": [
       {
@@ -46,7 +18,6 @@
   
   <div 
     class="product-gallery 
-    {% if section.settings.enable_full_width %}product-gallery--full-width{% endif %} 
     product-gallery--{{ section.settings.gallery_layout }}" 
     data-section-id="{{ section.id }}"
   >
