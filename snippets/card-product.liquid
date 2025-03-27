@@ -161,7 +161,7 @@
                 {{ card_product.title | escape }}
               </a>
             </h3>
-            {% comment %} {% else %}
+            {% else %}
             <a
             href="{{ card_product.url }}"
             id="CardLink-{{ section_id }}-{{ card_product.id }}"
@@ -169,7 +169,7 @@
             aria-labelledby="CardLink-{{ section_id }}-{{ card_product.id }} Badge-{{ section_id }}-{{ card_product.id }}"
           >
             {{ card_product.title | escape }}
-          </a> {% endcomment %}
+          </a>
           {%- endif -%}
           <div class="card-information">
             {%- if show_vendor -%}
