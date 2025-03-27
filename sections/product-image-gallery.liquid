@@ -23,15 +23,19 @@
   >
       <div class="product-gallery__images-container">
         <div class="product-gallery__images product__media-wrapper">
-          {% render 'product-media-gallery', 
-            variant_images: variant_images, 
-            section_settings: section.settings 
-          %}
+          <div class="">
+            {% render 'product-media-gallery',
+              variant_images: variant_images,
+              section_settings: section.settings
+            %}
+          </div>
         </div>
       </div>
   </div>
   
   {% stylesheet %}
+
+  .
   
   .product-gallery--grid .product-gallery__images {
     display: grid;
