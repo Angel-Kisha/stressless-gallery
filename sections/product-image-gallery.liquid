@@ -109,7 +109,7 @@
                 data-slide="{{ forloop.index0 }}"
               >
                 {% if media.media_type == 'image' %}
-                  <img src="{{ media.preview_image | image_url }}" alt="{{ media.alt | escape }}" wid>
+                  <img src="{{ media.preview_image | image_url }}" alt="{{ media.alt | escape }}" width="640" hei>
                 {% else %}
                   <div class="pagination-dot-placeholder">
                     {% if media.media_type == 'video' %}▶{% endif %}
