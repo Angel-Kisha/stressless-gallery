@@ -7,6 +7,18 @@
         "id": "enable_full_width",
         "label": "Full Width Gallery",
         "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_media_type_badges",
+        "label": "Show Media Type Badges",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_zoom",
+        "label": "Enable Image Zoom",
+        "default": true
       }
     ],
     "presets": [
@@ -18,93 +30,122 @@
   }
   {% endschema %}
   
-  {% comment %}Product Media Gallery Template{% endcomment %}
-<div class="product-media-gallery">
-  <div class="main-image-container">
-    {% for image in product.images %}
-      <div class="main-image {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
-        {{ image | image_url: width: 800 | image_tag: 
-          loading: 'lazy',
-          class: 'product-main-image',
-          alt: image.alt | escape
-        }}
+  {% liquid 
+    assign image_count = product.media.size
+  %}
+  
+  <div class="product-gallery {% if section.settings.enable_full_width %}product-gallery--full-width{% endif %}">
+    {% if product.media.size > 0 %}
+      <div class="product-gallery__main-container">
+        <div class="product-gallery__main-image">
+          {% for media in product.media limit:3 %}
+            <div class="gallery-slide {% if forloop.first %}active{% endif %}">
+              {% if media.media_type == 'image' %}
+                {{ media | image_url: width: 800 | image_tag: 
+                  loading: 'lazy', 
+                  class: 'gallery-main-img', 
+                  alt: media.alt | escape 
+                }}
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+  
+        <div class="product-gallery__pagination">
+          {% for media in product.media limit:3 %}
+            <div 
+              class="pagination-dot {% if forloop.first %}active{% endif %}" 
+              data-slide="{{ forloop.index0 }}"
+            >
+              {% if media.media_type == 'image' %}
+                {{ media | image_url: width: 100 | image_tag: 
+                  loading: 'lazy', 
+                  class: 'pagination-thumbnail', 
+                  alt: media.alt | escape 
+                }}
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
       </div>
-    {% endfor %}
+    {% else %}
+      <div class="product-gallery__no-images">
+        <p>No product images available.</p>
+      </div>
+    {% endif %}
   </div>
   
-  <div class="image-navigation">
-    {% for image in product.images %}
-      <div 
-        class="nav-dot {% if forloop.first %}active{% endif %}" 
-        data-index="{{ forloop.index0 }}"
-        style="width: calc(100% / {{ product.images.size }} - 10px);"
-      ></div>
-    {% endfor %}
-  </div>
-</div>
-
-<style>
-.product-media-gallery {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.main-image-container {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-}
-
-.main-image {
-  display: none;
-  width: 100%;
-}
-
-.main-image.active {
-  display: block;
-}
-
-.image-navigation {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  gap: 10px;
-}
-
-.nav-dot {
-  height: 5px;
-  background-color: #ccc;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.nav-dot.active {
-  background-color: #007bff;
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const mainImages = document.querySelectorAll('.main-image');
-  const navDots = document.querySelectorAll('.nav-dot');
+  {% stylesheet %}
+  .product-gallery__main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
   
-  navDots.forEach(dot => {
-    dot.addEventListener('click', function() {
-      const index = this.getAttribute('data-index');
-      
-      // Remove active class from all images and nav dots
-      mainImages.forEach(img => img.classList.remove('active'));
-      navDots.forEach(navDot => navDot.classList.remove('active'));
-      
-      // Add active class to selected image and nav dot
-      mainImages[index].classList.add('active');
-      this.classList.add('active');
+  .product-gallery__main-image {
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+  
+  .gallery-slide {
+    display: none;
+    width: 100%;
+    flex-shrink: 0;
+  }
+  
+  .gallery-slide.active {
+    display: block;
+  }
+  
+  .gallery-main-img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+  
+  .product-gallery__pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  
+  .pagination-dot {
+    width: 80px;
+    height: 80px;
+    border: 2px solid #e0e0e0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .pagination-dot.active {
+    border-color: #007bff;
+  }
+  
+  .pagination-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  {% endstylesheet %}
+  
+  {% javascript %}
+  document.addEventListener('DOMContentLoaded', function() {
+    const mainImages = document.querySelectorAll('.gallery-slide');
+    const paginationDots = document.querySelectorAll('.pagination-dot');
+    
+    paginationDots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        // Remove active class from all dots and slides
+        paginationDots.forEach(d => d.classList.remove('active'));
+        mainImages.forEach(img => img.classList.remove('active'));
+        
+        // Add active class to clicked dot and corresponding slide
+        dot.classList.add('active');
+        mainImages[index].classList.add('active');
+      });
     });
   });
-});
-</script>
-{% comment %}
-  Usage:
-  {% render 'product-media-gallery', variant_images: variant_images %}
-{% endcomment %}
+  {% endjavascript %}
