@@ -1,152 +1,94 @@
-{% schema %}
-  {
-    "name": "Product Image Gallery",
-    "settings": [
-      {
-        "type": "checkbox",
-        "id": "enable_full_width",
-        "label": "Full Width Gallery",
-        "default": false
-      }
-    ],
-    "presets": [
-      {
-        "name": "Product Image Gallery",
-        "category": "Product"
-      }
-    ]
-  }
-  {% endschema %}
-  
-  {% liquid 
-    # Ensure we are working with the current product's images
-    assign product_images = product.images
-  %}
-  
-  <div class="product-gallery {% if section.settings.enable_full_width %}product-gallery--full-width{% endif %}" data-section-id="{{ section.id }}">
-    {% if product_images.size > 0 %}
-      <div class="product-gallery__images-container">
-        <div class="product-gallery__images">
-          {% for image in product_images %}
-            <div class="product-gallery__image-wrapper" data-image-index="{{ forloop.index0 }}">
-              {{ image | image_url: width: 640, height: 460 | image_tag: 
-                class: 'product-gallery__image', 
-                loading: 'lazy', 
-                alt: image.alt | escape 
-              }}
-            </div>
-          {% endfor %}
-        </div>
-  
-        {% if product_images.size > 1 %}
-          <div class="product-gallery__pagination">
-            {% for image in product_images %}
-              <div 
-                class="product-gallery__pagination-dot {% if forloop.first %}active{% endif %}"
-                data-slide="{{ forloop.index0 }}"
-              ></div>
-            {% endfor %}
-          </div>
-        {% endif %}
+{% comment %}
+  Renders a carousel of all product media with horizontal pagination
+{% endcomment %}
+
+<div class="product-media-carousel">
+  <div class="product-media-carousel__slider">
+    {%- for media in product.media -%}
+      <div class="product-media-carousel__slide">
+        {% render 'product-thumbnail',
+          media: media,
+          media_count: product.media.size,
+          position: forloop.index,
+          desktop_layout: 'stacked',
+          mobile_layout: 'show',
+          loop: section.settings.enable_video_looping,
+          modal_id: section.id,
+          xr_button: true,
+          media_width: 1,
+          media_fit: 'contain',
+          constrain_to_viewport: true,
+          lazy_load: forloop.index > 1
+        %}
       </div>
-    {% else %}
-      <div class="product-gallery__no-images">
-        <p>No product images available.</p>
-      </div>
-    {% endif %}
+    {%- endfor -%}
   </div>
   
-  {% stylesheet %}
-  .product-gallery {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
+  <div class="product-media-carousel__pagination">
+    {%- for media in product.media -%}
+      <span class="product-media-carousel__pagination-dot" data-slide="{{ forloop.index0 }}"></span>
+    {%- endfor -%}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.querySelector('.product-media-carousel__slider');
+    const paginationDots = document.querySelectorAll('.product-media-carousel__pagination-dot');
+    let currentSlide = 0;
+
+    function updatePagination() {
+      paginationDots.forEach((dot, index) => {
+        dot.classList.toggle('is-active', index === currentSlide);
+      });
+      
+      slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+
+    paginationDots.forEach(dot => {
+      dot.addEventListener('click', function() {
+        currentSlide = parseInt(this.dataset.slide);
+        updatePagination();
+      });
+    });
+  });
+</script>
+
+<style>
+  .product-media-carousel {
     position: relative;
-  }
-  
-  .product-gallery--full-width {
-    max-width: 100%;
-  }
-  
-  .product-gallery__images-container {
-    position: relative;
     width: 100%;
-  }
-  
-  .product-gallery__images {
-    display: flex;
     overflow: hidden;
-    width: 100%;
+  }
+
+  .product-media-carousel__slider {
+    display: flex;
     transition: transform 0.3s ease;
   }
-  
-  .product-gallery__image-wrapper {
+
+  .product-media-carousel__slide {
     flex: 0 0 100%;
     width: 100%;
+  }
+
+  .product-media-carousel__pagination {
     display: flex;
     justify-content: center;
-    align-items: center;
+    margin-top: 1rem;
   }
-  
-  .product-gallery__image {
-    max-width: 640px;
-    max-height: 460px;
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-  }
-  
-  .product-gallery__pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
-  }
-  
-  .product-gallery__pagination-dot {
-    width: 60px;
-    height: 4px;
-    background-color: #e0e0e0;
+
+  .product-media-carousel__pagination-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #ccc;
+    border-radius: 50%;
     margin: 0 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s;
   }
-  
-  .product-gallery__pagination-dot.active {
+
+  .product-media-carousel__pagination-dot.is-active {
     background-color: #333;
   }
-  
-  .product-gallery__no-images {
-    text-align: center;
-    padding: 20px;
-    color: #888;
-  }
-  
-  @media screen and (max-width: 768px) {
-    .product-gallery__image {
-      max-width: 100%;
-      max-height: none;
-    }
-  }
-  {% endstylesheet %}
-  
-  {% javascript %}
-  document.addEventListener('DOMContentLoaded', function() {
-    const gallery = document.querySelector('.product-gallery__images');
-    const paginationDots = document.querySelectorAll('.product-gallery__pagination-dot');
-    
-    if (paginationDots.length > 0) {
-      paginationDots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-          // Remove active class from all dots
-          paginationDots.forEach(d => d.classList.remove('active'));
-          
-          // Add active class to clicked dot
-          dot.classList.add('active');
-          
-          // Move gallery to selected image
-          gallery.style.transform = `translateX(-${index * 100}%)`;
-        });
-      });
-    }
-  });
-  {% endjavascript %}
+</style>
+
