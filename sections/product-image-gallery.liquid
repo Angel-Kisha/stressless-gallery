@@ -1,3 +1,4 @@
+
 {% schema %}
   {
     "name": "Product Image Gallery",
@@ -16,8 +17,7 @@
     assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' 
   %}
   
-  <div 
-    class="product-gallery 
+  <div class="product-gallery 
     product-gallery--{{ section.settings.gallery_layout }}" 
     data-section-id="{{ section.id }}"
   >
@@ -32,43 +32,7 @@
   </div>
   
   {% stylesheet %}
-  .product-gallery__media-summary {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding: 10px;
-    background-color: #f7f7f7;
-  }
-  
-  .media-summary-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  
-  .media-type-badges {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8em;
-  }
-  
-  .badge svg {
-    width: 16px;
-    height: 16px;
-  }
-  
-  .badge--image { background-color: rgba(0, 123, 255, 0.1); color: #007bff; }
-  .badge--video { background-color: rgba(40, 167, 69, 0.1); color: #28a745; }
-  .badge--model { background-color: rgba(255, 193, 7, 0.1); color: #ffc107; }
+
   
   .product-gallery--grid .product-gallery__images {
     display: grid;
