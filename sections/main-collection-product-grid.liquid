@@ -175,9 +175,7 @@
                     lazy_load: lazy_load,
                     skip_styles: skip_card_product_styles,
                     quick_add: section.settings.quick_add,
-                    section_id: section.id,
-                    show_product_title: section.settings.show_product_title,
-                    show_price: section.settings.show_price
+                    section_id: section.id
                   %}
                 </li>
                 {%- assign skip_card_product_styles = true -%}
@@ -219,18 +217,6 @@
       "step": 1,
       "default": 4,
       "label": "t:sections.main-collection-product-grid.settings.columns_desktop.label"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_product_title",
-      "label": "Show Product Title",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_price",
-      "label": "Show Price",
-      "default": true
     },
     {
       "type": "select",
