@@ -92,8 +92,8 @@
         role="list"
         aria-label="{{ 'general.slider.name' | t }}"
       >
-        {%- for media in product.images -%}
-          <div class="product-media-item {% if forloop.last %} last-image {% endif %}">
+        {%- for media in product.images limit: 10 -%}
+          <div class="product-media-item">
             {{ media 
               | image_url: width: 1000 
               | image_tag: 
@@ -119,7 +119,7 @@
             <span class="slider-counter--current">1</span>
             <span aria-hidden="true"> / </span>
             <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
-            <span class="slider-counter--total">{{ product.images.size }}</span>
+            <span class="slider-counter--total">{{ product.images.size | minus: 2 }}</span>
           </div>
           <button
             type="button"
@@ -149,15 +149,12 @@
     }
   
     .product-media-item {
+      flex: 0 0 calc(33.333% - 10px);
       opacity: 1;
     }
-    .product-media-item.last-image {
-  flex: 0 0 100%;
-  margin-right: 0;
-}
   
     .product-media-image {
-      width: 460px;
+      width: 300px;
       height: {{ section.settings.image_height }}px;
       object-fit: {{ section.settings.image_fit }};
     }
@@ -190,90 +187,80 @@
   </style>
   
   <script>
-class SliderComponent extends HTMLElement {
-  constructor() {
-    super();
-    this.slider = this.querySelector('#ProductMediaSlider');
-    this.prevButton = this.querySelector('.slider-button--prev');
-    this.nextButton = this.querySelector('.slider-button--next');
-    this.currentSlideCounter = this.querySelector('.slider-counter--current');
-    this.totalSlideCounter = this.querySelector('.slider-counter--total');
-
-    // Get all image items
-    this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
-
-    // Initialize state
-    this.currentIndex = 0;
-    this.visibleSlides = 3;
-    this.totalImages = this.imageItems.length;
-    this.imageWidth = this.imageItems[0].offsetWidth + 10; // Including margin/gap
-    this.maxIndex = this.totalImages - this.visibleSlides; // Max index before last image
-
-    // Set total slides correctly
-    if (this.totalSlideCounter) {
-      this.totalSlideCounter.textContent = this.totalImages;
+    class SliderComponent extends HTMLElement {
+      constructor() {
+        super();
+        this.slider = this.querySelector('#ProductMediaSlider');
+        this.prevButton = this.querySelector('.slider-button--prev');
+        this.nextButton = this.querySelector('.slider-button--next');
+        this.currentSlideCounter = this.querySelector('.slider-counter--current');
+        
+        // Get all image items
+        this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
+        
+        // Initialize state
+        this.currentIndex = 0;
+        this.visibleSlides = 3;
+        this.totalImages = this.imageItems.length;
+        this.totalSlides = Math.max(1, this.totalImages - this.visibleSlides + 1);
+        
+        this.initializeSlider();
+      }
+      
+      initializeSlider() {
+        // Setup navigation buttons
+        if (this.prevButton) {
+          this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
+        }
+        
+        if (this.nextButton) {
+          this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
+        }
+        
+        // Initial render and button state
+        this.updateSliderContent();
+        this.updateNavigationButtons();
+      }
+      
+      scrollToNextSlide() {
+        if (this.currentIndex < this.totalSlides - 1) {
+          this.currentIndex++;
+          this.updateSliderContent();
+          this.updateNavigationButtons();
+        }
+      }
+      
+      scrollToPrevSlide() {
+        if (this.currentIndex > 0) {
+          this.currentIndex--;
+          this.updateSliderContent();
+          this.updateNavigationButtons();
+        }
+      }
+      
+      updateNavigationButtons() {
+        // Disable prev button if at first slide
+        if (this.prevButton) {
+          this.prevButton.disabled = (this.currentIndex === 0);
+        }
+        
+        // Disable next button if at last slide
+        if (this.nextButton) {
+          this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
+        }
+      }
+      
+      updateSliderContent() {
+        // Calculate the translation based on current index
+        const translateX = -this.currentIndex * (this.imageItems[0].offsetWidth + 10);
+        this.slider.style.transform = `translateX(${translateX}px)`;
+        
+        // Update slide counter
+        if (this.currentSlideCounter) {
+          this.currentSlideCounter.textContent = this.currentIndex + 1;
+        }
+      }
     }
-
-    this.initializeSlider();
-  }
-
-  initializeSlider() {
-    if (this.prevButton) {
-      this.prevButton.addEventListener("click", () => this.scrollToPrevSlide());
-    }
-
-    if (this.nextButton) {
-      this.nextButton.addEventListener("click", () => this.scrollToNextSlide());
-    }
-
-    this.updateSliderContent();
-    this.updateNavigationButtons();
-  }
-
-  scrollToNextSlide() {
-    if (this.currentIndex < this.maxIndex) {
-      this.currentIndex++;
-      this.updateSliderContent();
-      this.updateNavigationButtons();
-    }
-  }
-
-  scrollToPrevSlide() {
-    if (this.currentIndex > 0) {
-      this.currentIndex--;
-      this.updateSliderContent();
-      this.updateNavigationButtons();
-    }
-  }
-
-  updateSliderContent() {
-  let translateX;
   
-  if (this.currentIndex === this.totalSlides - 1) {
-    // If it's the last image, ensure it fully appears
-    translateX = -(this.slider.scrollWidth - this.slider.clientWidth);
-  } else {
-    translateX = -this.currentIndex * (this.imageItems[0].offsetWidth + 10);
-  }
-
-  this.slider.style.transform = `translateX(${translateX}px)`;
-
-  // Update slide counter
-  if (this.currentSlideCounter) {
-    this.currentSlideCounter.textContent = this.currentIndex + 1;
-  }
-}
-
-updateNavigationButtons() {
-  if (this.prevButton) {
-    this.prevButton.disabled = (this.currentIndex === 0);
-  }
-  if (this.nextButton) {
-    this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
-  }
-}
-}
-
-customElements.define("slider-component", SliderComponent);
-
+    customElements.define('slider-component', SliderComponent);
   </script>
