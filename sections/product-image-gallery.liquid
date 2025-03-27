@@ -92,7 +92,7 @@
         role="list"
         aria-label="{{ 'general.slider.name' | t }}"
       >
-        {%- for media in product.images limit: 10 -%}
+        {%- for media in product.images -%}
           <div class="product-media-item">
             {{ media 
               | image_url: width: 1000 
