@@ -100,26 +100,6 @@
             section_settings: section.settings 
           %}
         </div>
-  
-        {% if section.settings.gallery_layout == 'slider' and product.media.size > 1 %}
-          <div class="product-gallery__pagination">
-            {% for media in product.media %}
-              <div 
-                class="product-gallery__pagination-dot {% if forloop.first %}active{% endif %}"
-                data-slide="{{ forloop.index0 }}"
-              >
-                {% if media.media_type == 'image' %}
-                  <img src="{{ media.preview_image | image_url }}" alt="{{ media.alt | escape }}" width="640" height="460">
-                {% else %}
-                  <div class="pagination-dot-placeholder">
-                    {% if media.media_type == 'video' %}▶{% endif %}
-                    {% if media.media_type == 'model' %}3D{% endif %}
-                  </div>
-                {% endif %}
-              </div>
-            {% endfor %}
-          </div>
-        {% endif %}
       </div>
     {% else %}
       <div class="product-gallery__no-images">
