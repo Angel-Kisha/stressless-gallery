@@ -1,6 +1,7 @@
 {% schema %}
   {
     "name": "Product Image Gallery",
+
     "settings": [
       {
         "type": "checkbox",
@@ -18,7 +19,7 @@
   }
   {% endschema %}
   
-  {% liquid %}
+  {% liquid 
     # Ensure we are working with the current product's images
     assign product_images = product.images
   %}
