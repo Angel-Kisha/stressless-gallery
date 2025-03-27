@@ -1,0 +1,134 @@
+{% schema %}
+  {
+    "name": "Product Image Gallery",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "This section displays product images in a gallery format."
+      }
+    ],
+    "presets": [
+      {
+        "name": "Product Image Gallery",
+        "category": "Product"
+      }
+    ]
+  }
+  {% endschema %}
+  
+  {% liquid %}
+    # Ensure we have a product context
+    if product == blank
+      assign product = collections.all.first.products.first
+    endif
+  
+    assign product_images = product.images
+  %}
+  
+  <div class="product-gallery" data-section-id="{{ section.id }}" data-section-type="product-gallery">
+    {% if product_images.size > 0 %}
+      <div class="product-gallery__images">
+        {% for image in product_images %}
+          <div class="product-gallery__image-wrapper" data-image-index="{{ forloop.index0 }}">
+            {{ image | image_url: width: 640, height: 460 | image_tag: 
+              class: 'product-gallery__image', 
+              loading: 'lazy', 
+              alt: image.alt | escape 
+            }}
+          </div>
+        {% endfor %}
+      </div>
+  
+      {% if product_images.size > 1 %}
+        <div class="product-gallery__pagination">
+          {% for image in product_images %}
+            <div 
+              class="product-gallery__pagination-dot {% if forloop.first %}active{% endif %}"
+              data-slide="{{ forloop.index0 }}"
+            ></div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% else %}
+      <p>No product images available.</p>
+    {% endif %}
+  </div>
+  
+  {% stylesheet %}
+  .product-gallery {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  .product-gallery__images {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+  }
+  
+  .product-gallery__image-wrapper {
+    flex: 0 0 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .product-gallery__image {
+    max-width: 640px;
+    max-height: 460px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+  
+  .product-gallery__pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  .product-gallery__pagination-dot {
+    width: 60px;
+    height: 4px;
+    background-color: #e0e0e0;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .product-gallery__pagination-dot.active {
+    background-color: #333;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .product-gallery__image {
+      max-width: 100%;
+    }
+  }
+  {% endstylesheet %}
+  
+  {% javascript %}
+  document.addEventListener('DOMContentLoaded', function() {
+    const gallery = document.querySelector('.product-gallery__images');
+    const imageWrappers = document.querySelectorAll('.product-gallery__image-wrapper');
+    const paginationDots = document.querySelectorAll('.product-gallery__pagination-dot');
+    
+    if (paginationDots.length > 0) {
+      paginationDots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          // Remove active class from all dots
+          paginationDots.forEach(d => d.classList.remove('active'));
+          
+          // Add active class to clicked dot
+          dot.classList.add('active');
+          
+          // Move gallery to selected image
+          gallery.style.transform = `translateX(-${index * 100}%)`;
+        });
+      });
+    }
+  });
+  {% endjavascript %}
