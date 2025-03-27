@@ -193,31 +193,47 @@ class SliderComponent extends HTMLElement {
     this.prevButton = this.querySelector('.slider-button--prev');
     this.nextButton = this.querySelector('.slider-button--next');
     this.currentSlideCounter = this.querySelector('.slider-counter--current');
+    this.totalSlideCounter = this.querySelector('.slider-counter--total');
 
+    // Get all image items
     this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
+
+    // Initialize state
     this.currentIndex = 0;
-    this.visibleSlides = 3; // Number of images visible at once
+    this.visibleSlides = 3;
     this.totalImages = this.imageItems.length;
-    this.imageWidth = this.imageItems[0].offsetWidth + 10; // Including gap
+    this.imageWidth = this.imageItems[0].offsetWidth + 10; // Including spacing
     this.maxOffset = (this.totalImages - this.visibleSlides) * this.imageWidth;
+
+    // Set total slides correctly
+    this.totalSlides = this.totalImages;
 
     this.initializeSlider();
   }
 
   initializeSlider() {
+    // Setup navigation buttons
     if (this.prevButton) {
-      this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
+      this.prevButton.addEventListener("click", () => this.scrollToPrevSlide());
     }
+
     if (this.nextButton) {
-      this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
+      this.nextButton.addEventListener("click", () => this.scrollToNextSlide());
     }
+
+    // Set total slides counter
+    if (this.totalSlideCounter) {
+      this.totalSlideCounter.textContent = this.totalSlides;
+    }
+
+    // Initial render and button state
     this.updateSliderContent();
     this.updateNavigationButtons();
   }
 
   scrollToNextSlide() {
     const maxScroll = this.slider.scrollWidth - this.slider.clientWidth;
-    const currentScroll = Math.abs(parseInt(this.slider.style.transform.replace('translateX(', '').replace('px)', '')) || 0);
+    const currentScroll = Math.abs(parseInt(this.slider.style.transform.replace("translateX(", "").replace("px)", "")) || 0);
 
     if (currentScroll < maxScroll) {
       this.currentIndex++;
@@ -243,7 +259,7 @@ class SliderComponent extends HTMLElement {
   }
 
   updateNavigationButtons() {
-    const currentScroll = Math.abs(parseInt(this.slider.style.transform.replace('translateX(', '').replace('px)', '')) || 0);
+    const currentScroll = Math.abs(parseInt(this.slider.style.transform.replace("translateX(", "").replace("px)", "")) || 0);
     const maxScroll = this.slider.scrollWidth - this.slider.clientWidth;
 
     if (this.prevButton) {
@@ -255,10 +271,11 @@ class SliderComponent extends HTMLElement {
     }
 
     if (this.currentSlideCounter) {
-      this.currentSlideCounter.textContent = this.currentIndex + 1;
+      this.currentSlideCounter.textContent = Math.min(this.currentIndex + 1, this.totalSlides);
     }
   }
 }
 
-customElements.define('slider-component', SliderComponent);
+customElements.define("slider-component", SliderComponent);
+
   </script>
