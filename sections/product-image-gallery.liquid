@@ -18,16 +18,12 @@
   }
   {% endschema %}
   
-  {% liquid 
-    assign image_count = product.media.size
-  %}
-  
   <div class="product-gallery">
     {% if product.media.size > 0 %}
       <div class="product-gallery__container">
         <div class="product-gallery__images-wrapper">
           <div class="product-gallery__images">
-            {% for media in product.media limit:3 %}
+            {% for media in product.media %}
               <div class="gallery-image">
                 {% if media.media_type == 'image' %}
                   {{ media | image_url: width: 800 | image_tag: 
@@ -42,20 +38,9 @@
         </div>
   
         <div class="product-gallery__pagination">
-          {% for media in product.media limit:3 %}
-            <div 
-              class="pagination-dot {% if forloop.first %}active{% endif %}" 
-              data-slide="{{ forloop.index0 }}"
-            >
-              {% if media.media_type == 'image' %}
-                {{ media | image_url: width: 100 | image_tag: 
-                  loading: 'lazy', 
-                  class: 'pagination-thumbnail', 
-                  alt: media.alt | escape 
-                }}
-              {% endif %}
-            </div>
-          {% endfor %}
+          <div class="pagination-progress-bar">
+            <div class="pagination-progress-indicator"></div>
+          </div>
         </div>
       </div>
     {% else %}
@@ -79,12 +64,12 @@
   
   .product-gallery__images {
     display: flex;
-    width: 300%;
+    width: 100%;
     transition: transform 0.3s ease;
   }
   
   .gallery-image {
-    width: calc(100% / 3);
+    min-width: 100%;
     padding: 0 10px;
     box-sizing: border-box;
   }
@@ -96,48 +81,59 @@
   }
   
   .product-gallery__pagination {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
     margin-top: 15px;
   }
   
-  .pagination-dot {
-    width: 80px;
-    height: 80px;
-    border: 2px solid #e0e0e0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    overflow: hidden;
-  }
-  
-  .pagination-dot.active {
-    border-color: #007bff;
-  }
-  
-  .pagination-thumbnail {
+  .pagination-progress-bar {
     width: 100%;
+    height: 4px;
+    background-color: #e0e0e0;
+    position: relative;
+  }
+  
+  .pagination-progress-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
     height: 100%;
-    object-fit: cover;
+    background-color: #007bff;
+    width: 0;
+    transition: width 0.3s ease;
   }
   {% endstylesheet %}
   
   {% javascript %}
   document.addEventListener('DOMContentLoaded', function() {
     const imagesWrapper = document.querySelector('.product-gallery__images');
-    const paginationDots = document.querySelectorAll('.pagination-dot');
+    const progressIndicator = document.querySelector('.pagination-progress-indicator');
+    const totalImages = document.querySelectorAll('.gallery-image').length;
+    const imagesContainer = document.querySelector('.product-gallery__images-wrapper');
     
-    paginationDots.forEach((dot, index) => {
-      dot.addEventListener('click', () => {
-        // Remove active class from all dots
-        paginationDots.forEach(d => d.classList.remove('active'));
-        
-        // Add active class to clicked dot
-        dot.classList.add('active');
-        
-        // Move images
-        imagesWrapper.style.transform = `translateX(-${index * 33.33}%)`;
-      });
+    let currentIndex = 0;
+  
+    function updateProgressBar() {
+      const percentComplete = (currentIndex / (totalImages - 1)) * 100;
+      progressIndicator.style.width = `${percentComplete}%`;
+    }
+  
+    // Add scroll event listener
+    imagesContainer.addEventListener('scroll', function() {
+      const scrollPercentage = (this.scrollLeft / (this.scrollWidth - this.clientWidth)) * 100;
+      currentIndex = Math.round((totalImages - 1) * (scrollPercentage / 100));
+      updateProgressBar();
+    });
+  
+    // Optional: Add keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight') {
+        currentIndex = Math.min(currentIndex + 1, totalImages - 1);
+        imagesContainer.scrollLeft = (currentIndex / (totalImages - 1)) * (imagesContainer.scrollWidth - imagesContainer.clientWidth);
+        updateProgressBar();
+      } else if (e.key === 'ArrowLeft') {
+        currentIndex = Math.max(currentIndex - 1, 0);
+        imagesContainer.scrollLeft = (currentIndex / (totalImages - 1)) * (imagesContainer.scrollWidth - imagesContainer.clientWidth);
+        updateProgressBar();
+      }
     });
   });
   {% endjavascript %}
