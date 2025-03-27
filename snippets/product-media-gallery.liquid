@@ -239,11 +239,13 @@
             >
               {{
                 featured_media.preview_image
-                | image_url: width: 416
+                | image_url: width: custom_image_width
                 | image_tag:
                   loading: 'lazy',
                   sizes: sizes,
                   widths: '54, 74, 104, 162, 208, 324, 416',
+                  width: custom_image_width,
+    height: custom_image_height,
                   id: thumbnail_id,
                   alt: featured_media.alt
                 | escape
