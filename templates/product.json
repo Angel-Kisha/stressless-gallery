@@ -153,7 +153,6 @@
         "title": "",
         "content_alignment": "center",
         "show_product_title": false,
-        "show_price": false,
         "bold_product_name": false,
         "heading_size": "h1",
         "description": "",
@@ -200,7 +199,6 @@
         "title": "",
         "content_alignment": "start",
         "show_product_title": true,
-        "show_price": true,
         "bold_product_name": false,
         "heading_size": "h1",
         "description": "",
@@ -223,12 +221,6 @@
         "padding_top": 0,
         "padding_bottom": 0
       }
-    },
-    "product_image_gallery_DX8NCy": {
-      "type": "product-image-gallery",
-      "settings": {
-        "enable_full_width": true
-      }
     }
   },
   "order": [
@@ -237,7 +229,6 @@
     "page_title_wPKdnK",
     "featured_collection_ayHyed",
     "page_title_CCVj4h",
-    "featured_collection_kLMPjB",
-    "product_image_gallery_DX8NCy"
+    "featured_collection_kLMPjB"
   ]
 }
