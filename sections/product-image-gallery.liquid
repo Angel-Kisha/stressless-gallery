@@ -186,7 +186,7 @@
   </style>
   
   <script>
- class SliderComponent extends HTMLElement {
+class SliderComponent extends HTMLElement {
   constructor() {
     super();
     this.slider = this.querySelector('#ProductMediaSlider');
@@ -196,12 +196,10 @@
 
     this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
     this.currentIndex = 0;
-    this.visibleSlides = 3;
+    this.visibleSlides = 3; // Number of images visible at once
     this.totalImages = this.imageItems.length;
-
-    // Ensure the last image is fully visible
-    this.totalSlides = this.totalImages - this.visibleSlides;
-    if (this.totalSlides < 0) this.totalSlides = 0;
+    this.imageWidth = this.imageItems[0].offsetWidth + 10; // Including gap
+    this.maxOffset = (this.totalImages - this.visibleSlides) * this.imageWidth;
 
     this.initializeSlider();
   }
@@ -218,13 +216,19 @@
   }
 
   scrollToNextSlide() {
-    if (this.currentIndex < this.totalSlides) {
+    const maxScroll = this.slider.scrollWidth - this.slider.clientWidth;
+    const currentScroll = Math.abs(parseInt(this.slider.style.transform.replace('translateX(', '').replace('px)', '')) || 0);
+
+    if (currentScroll < maxScroll) {
       this.currentIndex++;
-      if (this.currentIndex === this.totalSlides) {
-        // Move exactly to the last image
-        this.currentIndex = this.totalSlides;
+      let newOffset = this.currentIndex * this.imageWidth;
+
+      // Ensure the last image is fully visible
+      if (newOffset > this.maxOffset) {
+        newOffset = this.maxOffset;
       }
-      this.updateSliderContent();
+
+      this.slider.style.transform = `translateX(-${newOffset}px)`;
       this.updateNavigationButtons();
     }
   }
@@ -232,29 +236,32 @@
   scrollToPrevSlide() {
     if (this.currentIndex > 0) {
       this.currentIndex--;
-      this.updateSliderContent();
+      let newOffset = this.currentIndex * this.imageWidth;
+      this.slider.style.transform = `translateX(-${newOffset}px)`;
       this.updateNavigationButtons();
     }
   }
 
   updateNavigationButtons() {
-    if (this.prevButton) {
-      this.prevButton.disabled = (this.currentIndex === 0);
-    }
-    if (this.nextButton) {
-      this.nextButton.disabled = (this.currentIndex === this.totalSlides);
-    }
-  }
+    const currentScroll = Math.abs(parseInt(this.slider.style.transform.replace('translateX(', '').replace('px)', '')) || 0);
+    const maxScroll = this.slider.scrollWidth - this.slider.clientWidth;
 
-  updateSliderContent() {
-    const translateX = -this.currentIndex * (this.imageItems[0].offsetWidth + 10);
-    this.slider.style.transform = `translateX(${translateX}px)`;
+    if (this.prevButton) {
+      this.prevButton.disabled = currentScroll === 0;
+    }
+
+    if (this.nextButton) {
+      this.nextButton.disabled = currentScroll >= maxScroll;
+    }
 
     if (this.currentSlideCounter) {
       this.currentSlideCounter.textContent = this.currentIndex + 1;
     }
   }
 }
+
+customElements.define('slider-component', SliderComponent);
+
 
 customElements.define('slider-component', SliderComponent);
 
