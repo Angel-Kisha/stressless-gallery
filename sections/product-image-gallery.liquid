@@ -17,13 +17,6 @@
     assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' 
   %}
 
-  {%- liquid
-  assign product = section.settings.product
-  if product == null
-    assign placeholder = true
-  endif
--%}
-
 
   
   <div class="product-gallery 
@@ -35,8 +28,7 @@
           <div class="img-size">
             {% render 'product-media-gallery',
               variant_images: variant_images,
-              section_settings: section.settings,
-              product: product
+              section_settings: section.settings
             %}
           </div>
         </div>
