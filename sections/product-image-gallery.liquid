@@ -1,220 +1,262 @@
 {% schema %}
-{
-  "name": "Product Image Gallery",
-  "settings": [
-    {
-      "type": "select",
-      "id": "image_fit",
-      "label": "Image Fit",
-      "options": [
-        {
-          "value": "cover",
-          "label": "Cover"
-        },
-        {
-          "value": "contain",
-          "label": "Contain"
-        }
-      ],
-      "default": "cover"
-    },
-    {
-      "type": "range",
-      "id": "image_height",
-      "min": 200,
-      "max": 800,
-      "step": 50,
-      "unit": "px",
-      "label": "Image Height",
-      "default": 500
-    }
-  ],
-  "presets": [
-    {
-      "name": "Product Image Gallery",
-      "category": "Product"
-    }
-  ]
-}
-{% endschema %}
-
-<div class="product-media-gallery isolate gradient">
-  <slider-component class="slider-mobile-gutter page-width">
-    <div
-      id="ProductMediaSlider"
-      class="product-media-grid"
-      role="list"
-      aria-label="{{ 'general.slider.name' | t }}"
-    >
-      {%- for media in product.images limit: 10 -%}
-        <div class="product-media-item">
-          {{ media 
-            | image_url: width: 1000 
-            | image_tag: 
-              loading: 'lazy', 
-              class: 'product-media-image',
-              alt: media.alt | escape
-          }}
-        </div>
-      {%- endfor -%}
-    </div>
-
-    {%- if product.images.size > 3 -%}
-      <div class="slider-buttons">
-        <button
-          type="button"
-          class="slider-button slider-button--prev"
-          name="previous"
-          aria-label="{{ 'general.slider.previous_slide' | t }}"
-        >
-          ←
-        </button>
-        <div class="slider-counter caption">
-          <span class="slider-counter--current">1</span>
-          <span aria-hidden="true"> / </span>
-          <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
-          <span class="slider-counter--total">{{ product.images.size | minus: 2 }}</span>
-        </div>
-        <button
-          type="button"
-          class="slider-button slider-button--next"
-          name="next"
-          aria-label="{{ 'general.slider.next_slide' | t }}"
-        >
-          →
-        </button>
+  {
+    "name": "Product Image Gallery",
+    "settings": [
+      {
+        "type": "select",
+        "id": "image_fit",
+        "label": "Image Fit",
+        "options": [
+          {
+            "value": "cover",
+            "label": "Cover"
+          },
+          {
+            "value": "contain",
+            "label": "Contain"
+          }
+        ],
+        "default": "cover"
+      },
+      {
+        "type": "range",
+        "id": "image_height",
+        "min": 200,
+        "max": 800,
+        "step": 50,
+        "unit": "px",
+        "label": "Image Height",
+        "default": 500
+      }
+    ],
+    "presets": [
+      {
+        "name": "Product Image Gallery",
+        "category": "Product"
+      }
+    ]
+  }
+  {% endschema %}
+  
+  <div class="product-media-gallery isolate gradient">
+    <slider-component class="slider-mobile-gutter page-width">
+      <div
+        id="ProductMediaSlider"
+        class="product-media-grid"
+        role="list"
+        aria-label="{{ 'general.slider.name' | t }}"
+      >
+        {%- for media in product.images limit: 10 -%}
+          <div class="product-media-item">
+            {{ media 
+              | image_url: width: 1000 
+              | image_tag: 
+                loading: 'lazy', 
+                class: 'product-media-image',
+                alt: media.alt | escape
+            }}
+          </div>
+        {%- endfor -%}
       </div>
-    {%- endif -%}
-  </slider-component>
-</div>
-
-<style>
-  .product-media-gallery {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-  }
-
-  .product-media-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    transition: transform 0.5s ease;
-  }
-
-  .product-media-image {
-    width: 100%;
-    height: {{ section.settings.image_height }}px;
-    object-fit: {{ section.settings.image_fit }};
-  }
-
-  .slider-buttons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
-  }
-
-  .slider-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-    font-size: 24px;
-  }
-
-  .slider-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .slider-counter {
-    font-size: 14px;
-    color: #888;
-    margin: 0 15px;
-  }
-</style>
-
-<script>
-  class SliderComponent extends HTMLElement {
-    constructor() {
-      super();
-      this.slider = this.querySelector('#ProductMediaSlider');
-      this.prevButton = this.querySelector('.slider-button--prev');
-      this.nextButton = this.querySelector('.slider-button--next');
-      this.currentSlideCounter = this.querySelector('.slider-counter--current');
-      
-      // Get all image items
-      this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
-      
-      // Initialize state
-      this.currentIndex = 0;
-      this.visibleSlides = 3;
-      this.totalImages = this.imageItems.length;
-      this.totalSlides = Math.max(1, this.totalImages - this.visibleSlides + 1);
-      
-      this.initializeSlider();
+  
+      {%- if product.images.size > 3 -%}
+        <div class="slider-buttons">
+          <button
+            type="button"
+            class="slider-button slider-button--prev"
+            name="previous"
+            aria-label="{{ 'general.slider.previous_slide' | t }}"
+          >
+            ←
+          </button>
+          <div class="slider-counter caption">
+            <span class="slider-counter--current">1</span>
+            <span aria-hidden="true"> / </span>
+            <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+            <span class="slider-counter--total">{{ product.images.size | minus: 2 }}</span>
+          </div>
+          <button
+            type="button"
+            class="slider-button slider-button--next"
+            name="next"
+            aria-label="{{ 'general.slider.next_slide' | t }}"
+          >
+            →
+          </button>
+        </div>
+      {%- endif -%}
+    </slider-component>
+  </div>
+  
+  <style>
+    .product-media-gallery {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
     }
-    
-    initializeSlider() {
-      // Setup navigation buttons
-      if (this.prevButton) {
-        this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
+  
+    .product-media-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      transition: transform 0.5s ease-in-out;
+    }
+  
+    .product-media-image {
+      width: 100%;
+      height: {{ section.settings.image_height }}px;
+      object-fit: {{ section.settings.image_fit }};
+      opacity: 1;
+      transition: opacity 0.5s ease-in-out;
+    }
+  
+    .product-media-item {
+      transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+  
+    .product-media-item--hidden {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+  
+    .slider-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+    }
+  
+    .slider-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      font-size: 24px;
+      transition: color 0.3s ease;
+    }
+  
+    .slider-button:hover {
+      color: #666;
+    }
+  
+    .slider-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  
+    .slider-counter {
+      font-size: 14px;
+      color: #888;
+      margin: 0 15px;
+    }
+  </style>
+  
+  <script>
+    class SliderComponent extends HTMLElement {
+      constructor() {
+        super();
+        this.slider = this.querySelector('#ProductMediaSlider');
+        this.prevButton = this.querySelector('.slider-button--prev');
+        this.nextButton = this.querySelector('.slider-button--next');
+        this.currentSlideCounter = this.querySelector('.slider-counter--current');
+        
+        // Get all image items
+        this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
+        
+        // Initialize state
+        this.currentIndex = 0;
+        this.visibleSlides = 3;
+        this.totalImages = this.imageItems.length;
+        this.totalSlides = Math.max(1, this.totalImages - this.visibleSlides + 1);
+        
+        this.initializeSlider();
       }
       
-      if (this.nextButton) {
-        this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
-      }
-      
-      // Initial render and button state
-      this.updateSliderContent();
-      this.updateNavigationButtons();
-    }
-    
-    scrollToNextSlide() {
-      if (this.currentIndex < this.totalSlides - 1) {
-        this.currentIndex++;
-        this.updateSliderContent();
-        this.updateNavigationButtons();
-      }
-    }
-    
-    scrollToPrevSlide() {
-      if (this.currentIndex > 0) {
-        this.currentIndex--;
-        this.updateSliderContent();
-        this.updateNavigationButtons();
-      }
-    }
-    
-    updateNavigationButtons() {
-      // Disable prev button if at first slide
-      if (this.prevButton) {
-        this.prevButton.disabled = (this.currentIndex === 0);
-      }
-      
-      // Disable next button if at last slide
-      if (this.nextButton) {
-        this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
-      }
-    }
-    
-    updateSliderContent() {
-      // Hide all images first
-      this.imageItems.forEach((item, index) => {
-        if (index >= this.currentIndex && index < this.currentIndex + this.visibleSlides) {
-          item.style.display = 'block';
-        } else {
-          item.style.display = 'none';
+      initializeSlider() {
+        // Setup navigation buttons
+        if (this.prevButton) {
+          this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
         }
-      });
+        
+        if (this.nextButton) {
+          this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
+        }
+        
+        // Initial render and button state
+        this.updateSliderContent();
+        this.updateNavigationButtons();
+      }
       
-      // Update slide counter
-      if (this.currentSlideCounter) {
-        this.currentSlideCounter.textContent = this.currentIndex + 1;
+      scrollToNextSlide() {
+        if (this.currentIndex < this.totalSlides - 1) {
+          // Add transition classes
+          this.animateSlideTransition('next');
+          
+          // Update index after brief delay to allow animation
+          setTimeout(() => {
+            this.currentIndex++;
+            this.updateSliderContent();
+            this.updateNavigationButtons();
+          }, 300);
+        }
+      }
+      
+      scrollToPrevSlide() {
+        if (this.currentIndex > 0) {
+          // Add transition classes
+          this.animateSlideTransition('prev');
+          
+          // Update index after brief delay to allow animation
+          setTimeout(() => {
+            this.currentIndex--;
+            this.updateSliderContent();
+            this.updateNavigationButtons();
+          }, 300);
+        }
+      }
+      
+      animateSlideTransition(direction) {
+        this.imageItems.forEach((item, index) => {
+          if (index >= this.currentIndex && index < this.currentIndex + this.visibleSlides) {
+            // Add transition effects for visible slides
+            item.classList.add('product-media-item--hidden');
+          }
+        });
+      }
+      
+      updateNavigationButtons() {
+        // Disable prev button if at first slide
+        if (this.prevButton) {
+          this.prevButton.disabled = (this.currentIndex === 0);
+        }
+        
+        // Disable next button if at last slide
+        if (this.nextButton) {
+          this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
+        }
+      }
+      
+      updateSliderContent() {
+        // Remove transition classes
+        this.imageItems.forEach(item => {
+          item.classList.remove('product-media-item--hidden');
+        });
+        
+        // Hide/show images based on current index
+        this.imageItems.forEach((item, index) => {
+          if (index >= this.currentIndex && index < this.currentIndex + this.visibleSlides) {
+            item.style.display = 'block';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+        
+        // Update slide counter
+        if (this.currentSlideCounter) {
+          this.currentSlideCounter.textContent = this.currentIndex + 1;
+        }
       }
     }
-  }
-
-  customElements.define('slider-component', SliderComponent);
-</script>
+  
+    customElements.define('slider-component', SliderComponent);
+  </script>
