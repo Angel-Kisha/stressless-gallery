@@ -1,4 +1,3 @@
-```liquid
 {% schema %}
   {
     "name": "Product Image Gallery",
@@ -37,196 +36,176 @@
       }
     ]
   }
-{% endschema %}
-
-<style>
-  .product-media-gallery {
-    position: relative;
-    width: 100%;
-  }
-
-  .product-media-grid {
-    display: flex;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
-    gap: 10px;
-    padding: 0;
-    list-style: none;
-  }
-
-  .product-media-grid .grid__item {
-    flex: 0 0 100%;
-    scroll-snap-align: start;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    display: none;
-  }
-
-  .product-media-grid .grid__item.is-active {
-    display: block;
-    opacity: 1;
-  }
-
-  .product-media-image {
-    width: 100%;
-    height: {{ section.settings.image_height }}px;
-    object-fit: {{ section.settings.image_fit }};
-  }
-
-  .slider-buttons {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    width: 100%;
-  }
-
-  .slider-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-  }
-
-  .slider-counter {
-    font-size: 14px;
-    color: #888;
-  }
-</style>
-
-{%- liquid
-  assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src'
-  assign products_to_display = product.images.size
-
-  assign columns_mobile_int = 2
-  assign show_mobile_slider = false
-  if products_to_display > columns_mobile_int
-    assign show_mobile_slider = true
-  endif
-
-  assign show_desktop_slider = false
-  if products_to_display > 4
-    assign show_desktop_slider = true
-  endif
--%}
-
-<div class="product-media-gallery isolate gradient">
-  <slider-component class="slider-mobile-gutter page-width{% if show_desktop_slider %} slider-component-desktop{% endif %}">
-    <ul
-      id="ProductMediaSlider"
-      class="grid product-media-grid contains-card grid--4-col-desktop grid--2-col-tablet-down{% if show_mobile_slider or show_desktop_slider %} slider{% if show_desktop_slider %} slider--desktop{% endif %}{% if show_mobile_slider %} slider--tablet grid--peek{% endif %}{% endif %}"
-      role="list"
-      aria-label="{{ 'general.slider.name' | t }}"
-    >
-      {%- for media in product.media -%}
-        <li
-          id="Slide-{{ forloop.index }}"
-          class="grid__item{% if show_mobile_slider or show_desktop_slider %} slider__slide{% endif %}{% if forloop.first %} is-active{% endif %}"
-        >
-          {% if media.media_type == 'image' %}
-            {{ media.preview_image 
-              | image_url: width: 1000 
-              | image_tag: 
-                loading: 'lazy', 
-                class: 'product-media-image',
-                alt: media.alt | escape
-            }}
-          {% endif %}
-        </li>
-      {%- endfor -%}
-    </ul>
-
-    {%- if products_to_display > 1 -%}
-      <div class="slider-buttons">
-        <button
-          type="button"
-          class="slider-button slider-button--prev"
-          name="previous"
-          aria-label="{{ 'general.slider.previous_slide' | t }}"
-          aria-controls="ProductMediaSlider"
-        >
-          ←
-        </button>
-        <div class="slider-counter caption">
-          <span class="slider-counter--current">1</span>
-          <span aria-hidden="true"> / </span>
-          <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
-          <span class="slider-counter--total">{{ products_to_display }}</span>
-        </div>
-        <button
-          type="button"
-          class="slider-button slider-button--next"
-          name="next"
-          aria-label="{{ 'general.slider.next_slide' | t }}"
-          aria-controls="ProductMediaSlider"
-        >
-          →
-        </button>
+  {% endschema %}
+  
+  {% liquid 
+    assign products_to_display = product.images.size 
+    assign total_slides = 1
+    if products_to_display > 3
+      assign total_slides = products_to_display | minus: 2
+    endif
+  %}
+  
+  <div class="product-media-gallery isolate gradient">
+    <slider-component class="slider-mobile-gutter page-width">
+      <div
+        id="ProductMediaSlider"
+        class="product-media-grid"
+        role="list"
+        aria-label="{{ 'general.slider.name' | t }}"
+      >
+        {%- for i in (0..2) -%}
+          {%- if forloop.index0 < product.images.size -%}
+            {%- assign media = product.images[forloop.index0] -%}
+            <div class="product-media-item">
+              {{ media 
+                | image_url: width: 1000 
+                | image_tag: 
+                  loading: 'lazy', 
+                  class: 'product-media-image',
+                  alt: media.alt | escape
+              }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
       </div>
-    {%- endif -%}
-  </slider-component>
-</div>
-
-<script>
-  class SliderComponent extends HTMLElement {
-    constructor() {
-      super();
-      this.slider = this.querySelector('ul');
-      this.sliderItems = this.slider.querySelectorAll('.grid__item');
-      this.prevButton = this.querySelector('.slider-button--prev');
-      this.nextButton = this.querySelector('.slider-button--next');
-      this.currentSlideCounter = this.querySelector('.slider-counter--current');
-      this.totalSlidesCounter = this.querySelector('.slider-counter--total');
-      
-      this.currentIndex = 0;
-      
-      this.initializeSlider();
+  
+      {%- if products_to_display > 3 -%}
+        <div class="slider-buttons">
+          <button
+            type="button"
+            class="slider-button slider-button--prev"
+            name="previous"
+            aria-label="{{ 'general.slider.previous_slide' | t }}"
+          >
+            ←
+          </button>
+          <div class="slider-counter caption">
+            <span class="slider-counter--current">1</span>
+            <span aria-hidden="true"> / </span>
+            <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+            <span class="slider-counter--total">{{ total_slides }}</span>
+          </div>
+          <button
+            type="button"
+            class="slider-button slider-button--next"
+            name="next"
+            aria-label="{{ 'general.slider.next_slide' | t }}"
+          >
+            →
+          </button>
+        </div>
+      {%- endif -%}
+    </slider-component>
+  </div>
+  
+  <style>
+    .product-media-gallery {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
     }
-    
-    initializeSlider() {
-      if (this.prevButton) {
-        this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
-      }
-      
-      if (this.nextButton) {
-        this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
-      }
+  
+    .product-media-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      transition: transform 0.5s ease;
     }
-    
-    scrollToNextSlide() {
-      this.currentIndex++;
-      if (this.currentIndex >= this.sliderItems.length) {
+  
+    .product-media-image {
+      width: 100%;
+      height: {{ section.settings.image_height }}px;
+      object-fit: {{ section.settings.image_fit }};
+    }
+  
+    .slider-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+    }
+  
+    .slider-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      font-size: 24px;
+    }
+  
+    .slider-counter {
+      font-size: 14px;
+      color: #888;
+      margin: 0 15px;
+    }
+  </style>
+  
+  <script>
+    class SliderComponent extends HTMLElement {
+      constructor() {
+        super();
+        this.slider = this.querySelector('#ProductMediaSlider');
+        this.prevButton = this.querySelector('.slider-button--prev');
+        this.nextButton = this.querySelector('.slider-button--next');
+        this.currentSlideCounter = this.querySelector('.slider-counter--current');
+        
+        this.images = {{ product.images | json }};
         this.currentIndex = 0;
+        this.totalSlides = Math.max(1, this.images.length - 2);
+        
+        this.initializeSlider();
       }
-      this.updateSliderPosition();
-    }
-    
-    scrollToPrevSlide() {
-      this.currentIndex--;
-      if (this.currentIndex < 0) {
-        this.currentIndex = this.sliderItems.length - 1;
+      
+      initializeSlider() {
+        if (this.prevButton) {
+          this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
+        }
+        
+        if (this.nextButton) {
+          this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
+        }
       }
-      this.updateSliderPosition();
-    }
-    
-    updateSliderPosition() {
-      // Remove active class from all slides
-      this.sliderItems.forEach(slide => slide.classList.remove('is-active'));
       
-      // Get current slide
-      const slideToShow = this.sliderItems[this.currentIndex];
+      scrollToNextSlide() {
+        if (this.currentIndex < this.totalSlides - 1) {
+          this.currentIndex++;
+          this.updateSliderContent();
+        }
+      }
       
-      // Add active class to current slide
-      slideToShow.classList.add('is-active');
+      scrollToPrevSlide() {
+        if (this.currentIndex > 0) {
+          this.currentIndex--;
+          this.updateSliderContent();
+        }
+      }
       
-      // Update slide counter
-      if (this.currentSlideCounter) {
-        this.currentSlideCounter.textContent = this.currentIndex + 1;
+      updateSliderContent() {
+        // Update slides with new set of 3 images
+        const sliderItems = this.slider.querySelectorAll('.product-media-item');
+        
+        for (let i = 0; i < 3; i++) {
+          const imageIndex = this.currentIndex + i;
+          if (imageIndex < this.images.length) {
+            const img = this.images[imageIndex];
+            const imgTag = `<img 
+              src="${img.src}" 
+              alt="${img.alt}" 
+              loading="lazy" 
+              class="product-media-image" 
+              style="width: 100%; height: 500px; object-fit: cover;"
+            >`;
+            sliderItems[i].innerHTML = imgTag;
+          }
+        }
+        
+        // Update slide counter
+        if (this.currentSlideCounter) {
+          this.currentSlideCounter.textContent = this.currentIndex + 1;
+        }
       }
     }
-  }
-
-  customElements.define('slider-component', SliderComponent);
-</script>
-```
+  
+    customElements.define('slider-component', SliderComponent);
+  </script>
