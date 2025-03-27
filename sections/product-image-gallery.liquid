@@ -17,7 +17,6 @@
     assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' 
   %}
 
-
   
   <div class="product-gallery 
     product-gallery--{{ section.settings.gallery_layout }}" 
@@ -25,7 +24,7 @@
   >
       <div class="product-gallery__images-container">
         <div class="product-gallery__images product__media-wrapper">
-          <div class="img-size">
+          <div class="">
             {% render 'product-media-gallery',
               variant_images: variant_images,
               section_settings: section.settings
@@ -36,11 +35,6 @@
   </div>
   
   {% stylesheet %}
-
-  .img-size {
-    max-width: 640px !important;
-    max-height: 460px !important;
-  }
   
   .product-gallery--grid .product-gallery__images {
     display: grid;
