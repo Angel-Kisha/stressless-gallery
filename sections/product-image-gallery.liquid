@@ -96,27 +96,21 @@
     }
   
     .product-media-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      display: flex;
+      width: 100%;
       transition: transform 0.5s ease-in-out;
+    }
+  
+    .product-media-item {
+      flex: 0 0 calc(33.333% - 10px);
+      margin-right: 10px;
+      opacity: 1;
     }
   
     .product-media-image {
       width: 100%;
       height: {{ section.settings.image_height }}px;
       object-fit: {{ section.settings.image_fit }};
-      opacity: 1;
-      transition: opacity 0.5s ease-in-out;
-    }
-  
-    .product-media-item {
-      transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-    }
-  
-    .product-media-item--hidden {
-      opacity: 0;
-      transform: translateX(-20px);
     }
   
     .slider-buttons {
@@ -132,11 +126,6 @@
       cursor: pointer;
       padding: 10px;
       font-size: 24px;
-      transition: color 0.3s ease;
-    }
-  
-    .slider-button:hover {
-      color: #666;
     }
   
     .slider-button:disabled {
@@ -189,39 +178,18 @@
       
       scrollToNextSlide() {
         if (this.currentIndex < this.totalSlides - 1) {
-          // Add transition classes
-          this.animateSlideTransition('next');
-          
-          // Update index after brief delay to allow animation
-          setTimeout(() => {
-            this.currentIndex++;
-            this.updateSliderContent();
-            this.updateNavigationButtons();
-          }, 300);
+          this.currentIndex++;
+          this.updateSliderContent();
+          this.updateNavigationButtons();
         }
       }
       
       scrollToPrevSlide() {
         if (this.currentIndex > 0) {
-          // Add transition classes
-          this.animateSlideTransition('prev');
-          
-          // Update index after brief delay to allow animation
-          setTimeout(() => {
-            this.currentIndex--;
-            this.updateSliderContent();
-            this.updateNavigationButtons();
-          }, 300);
+          this.currentIndex--;
+          this.updateSliderContent();
+          this.updateNavigationButtons();
         }
-      }
-      
-      animateSlideTransition(direction) {
-        this.imageItems.forEach((item, index) => {
-          if (index >= this.currentIndex && index < this.currentIndex + this.visibleSlides) {
-            // Add transition effects for visible slides
-            item.classList.add('product-media-item--hidden');
-          }
-        });
       }
       
       updateNavigationButtons() {
@@ -237,19 +205,9 @@
       }
       
       updateSliderContent() {
-        // Remove transition classes
-        this.imageItems.forEach(item => {
-          item.classList.remove('product-media-item--hidden');
-        });
-        
-        // Hide/show images based on current index
-        this.imageItems.forEach((item, index) => {
-          if (index >= this.currentIndex && index < this.currentIndex + this.visibleSlides) {
-            item.style.display = 'block';
-          } else {
-            item.style.display = 'none';
-          }
-        });
+        // Calculate the translation based on current index
+        const translateX = -this.currentIndex * (this.imageItems[0].offsetWidth + 10);
+        this.slider.style.transform = `translateX(${translateX}px)`;
         
         // Update slide counter
         if (this.currentSlideCounter) {
