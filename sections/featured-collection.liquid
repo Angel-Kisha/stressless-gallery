@@ -4,8 +4,6 @@
 {{ 'component-slider.css' | asset_url | stylesheet_tag }}
 {{ 'template-collection.css' | asset_url | stylesheet_tag }}
 
-<script src="{{ 'horizontal-slider.js' | asset_url }}" defer="defer"></script>
-
 {% if section.settings.image_shape == 'blob' %}
   {{ 'mask-blobs.css' | asset_url | stylesheet_tag }}
 {%- endif -%}
@@ -68,7 +66,7 @@
     id="collection-{{ section.id }}"
     data-id="{{ section.id }}"
   >
-    <div class="collection__title top-collection title-wrapper title-wrapper--no-top-margin page-width{% if show_mobile_slider %} title-wrapper--self-padded-tablet-down{% endif %}{% if show_desktop_slider %} collection__title--desktop-slider{% endif %}">
+    <div class="collection__title title-wrapper title-wrapper--no-top-margin page-width{% if show_mobile_slider %} title-wrapper--self-padded-tablet-down{% endif %}{% if show_desktop_slider %} collection__title--desktop-slider{% endif %}">
       {%- if section.settings.title != blank -%}
         <h2 class="title inline-richtext {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
           {{ section.settings.title }}
@@ -118,10 +116,7 @@
                   show_rating: section.settings.show_rating,
                   skip_styles: skip_card_product_styles,
                   section_id: section.id,
-                  quick_add: section.settings.quick_add,
-                  bold_product_name: section.settings.bold_product_name,
-                  content_alignment: section.settings.content_alignment,
-                  show_product_title: section.settings.show_product_title
+                  quick_add: section.settings.quick_add
                 %}
               </li>
               {%- assign skip_card_product_styles = true -%}
@@ -157,35 +152,36 @@
         {%- endif -%}
       </ul>
       {%- if show_mobile_slider or show_desktop_slider -%}
-        <slider-dots class="collection-slider-navigation">
-          <div class="slider-dots">
-            {%- liquid
-              # Calculate number of slides to generate dots
-              if section.settings.collection.products.size > 0
-                assign total_slides = section.settings.collection.products.size
-              else
-                assign total_slides = section.settings.columns_desktop
-              endif
-      
-              assign slides_per_view = section.settings.columns_mobile | plus: 0
-              if show_desktop_slider
-                assign slides_per_view = section.settings.columns_desktop
-              endif
-      
-              # Calculate dots precisely
-              assign total_dots = total_slides | divided_by: slides_per_view | ceil
-            -%}
-            
-            {%- for i in (1..total_dots) -%}
-              <button 
-                class="slider-dot {% if forloop.first %}active{% endif %}" 
-                type="button" 
-                aria-label="Go to slide {{ forloop.index }}"
-                data-slide-index="{{ forloop.index0 }}"
-              ></button>
-            {%- endfor -%}
+        <div class="slider-buttons">
+          <button
+            type="button"
+            class="slider-button slider-button--prev"
+            name="previous"
+            aria-label="{{ 'general.slider.previous_slide' | t }}"
+            aria-controls="Slider-{{ section.id }}"
+          >
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </button>
+          <div class="slider-counter caption">
+            <span class="slider-counter--current">1</span>
+            <span aria-hidden="true"> / </span>
+            <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+            <span class="slider-counter--total">{{ products_to_display }}</span>
           </div>
-        </slider-dots>
+          <button
+            type="button"
+            class="slider-button slider-button--next"
+            name="next"
+            aria-label="{{ 'general.slider.next_slide' | t }}"
+            aria-controls="Slider-{{ section.id }}"
+          >
+            <span class="svg-wrapper">
+              {{- 'icon-caret.svg' | inline_asset_content -}}
+            </span>
+          </button>
+        </div>
       {%- endif -%}
     </slider-component>
 
@@ -238,29 +234,6 @@
       "id": "title",
       "default": "t:sections.featured-collection.settings.title.default",
       "label": "t:sections.featured-collection.settings.title.label"
-    },
-    {
-      "type": "select",
-      "id": "content_alignment",
-      "label": "Content Alignment",
-      "options": [
-        { "value": "start", "label": "Start" },
-        { "value": "center", "label": "Center" },
-        { "value": "end", "label": "Right" }
-      ],
-      "default": "center"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_product_title",
-      "label": "Show Product Title",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "bold_product_name",
-      "label": "Bold Product Name",
-      "default" : false
     },
     {
       "type": "select",
