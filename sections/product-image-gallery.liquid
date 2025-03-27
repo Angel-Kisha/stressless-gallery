@@ -93,7 +93,7 @@
         aria-label="{{ 'general.slider.name' | t }}"
       >
         {%- for media in product.images -%}
-          <div class="product-media-item">
+          <div class="product-media-item {% if forloop.last %} last-image {% endif %}">
             {{ media 
               | image_url: width: 1000 
               | image_tag: 
