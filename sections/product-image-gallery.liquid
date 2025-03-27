@@ -247,21 +247,22 @@ class SliderComponent extends HTMLElement {
   }
 
   updateSliderContent() {
-    let translateX = -this.currentIndex * this.imageWidth;
-
-    // Ensure the last image is fully visible
-    const maxTranslateX = -(this.totalImages - this.visibleSlides) * this.imageWidth;
-    if (translateX < maxTranslateX) {
-      translateX = maxTranslateX;
-    }
-
-    this.slider.style.transform = `translateX(${translateX}px)`;
-
-    // Update slide counter
-    if (this.currentSlideCounter) {
-      this.currentSlideCounter.textContent = Math.min(this.currentIndex + this.visibleSlides, this.totalImages);
-    }
+  let translateX;
+  
+  if (this.currentIndex === this.totalSlides - 1) {
+    // If it's the last image, ensure it fully appears
+    translateX = -(this.slider.scrollWidth - this.slider.clientWidth);
+  } else {
+    translateX = -this.currentIndex * (this.imageItems[0].offsetWidth + 10);
   }
+
+  this.slider.style.transform = `translateX(${translateX}px)`;
+
+  // Update slide counter
+  if (this.currentSlideCounter) {
+    this.currentSlideCounter.textContent = this.currentIndex + 1;
+  }
+}
 
   updateNavigationButtons() {
     if (this.prevButton) {
