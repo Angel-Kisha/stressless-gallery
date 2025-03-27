@@ -149,19 +149,21 @@
         this.prevButton = this.querySelector('.slider-button--prev');
         this.nextButton = this.querySelector('.slider-button--next');
         this.currentSlideCounter = this.querySelector('.slider-counter--current');
+        this.totalSlideCounter = this.querySelector('.slider-counter--total');
         
-        // Get product images from the page directly
-        this.sliderItems = this.slider.querySelectorAll('.product-media-item');
-        this.images = Array.from(this.sliderItems).map(item => {
-          const img = item.querySelector('img');
-          return {
-            src: img ? img.src : '',
-            alt: img ? img.alt : ''
-          };
-        });
+        // Get all product images from the page
+        this.images = Array.from(this.querySelectorAll('.product-media-item img')).map(img => ({
+          src: img.src,
+          alt: img.alt
+        }));
         
         this.currentIndex = 0;
-        this.totalSlides = Math.max(1, this.images.length - 2);
+        this.totalSlides = Math.max(1, Math.ceil((this.images.length - 3) / 1) + 1);
+        
+        // Update total slides display
+        if (this.totalSlideCounter) {
+          this.totalSlideCounter.textContent = this.totalSlides;
+        }
         
         this.initializeSlider();
       }
@@ -174,12 +176,16 @@
         if (this.nextButton) {
           this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
         }
+        
+        // Initial setup of buttons
+        this.updateNavigationButtons();
       }
       
       scrollToNextSlide() {
         if (this.currentIndex < this.totalSlides - 1) {
           this.currentIndex++;
           this.updateSliderContent();
+          this.updateNavigationButtons();
         }
       }
       
@@ -187,27 +193,39 @@
         if (this.currentIndex > 0) {
           this.currentIndex--;
           this.updateSliderContent();
+          this.updateNavigationButtons();
+        }
+      }
+      
+      updateNavigationButtons() {
+        // Disable prev button if at first slide
+        if (this.prevButton) {
+          this.prevButton.disabled = (this.currentIndex === 0);
+        }
+        
+        // Disable next button if at last slide
+        if (this.nextButton) {
+          this.nextButton.disabled = (this.currentIndex === this.totalSlides - 1);
         }
       }
       
       updateSliderContent() {
+        const sliderItems = this.querySelectorAll('.product-media-item');
+        
         for (let i = 0; i < 3; i++) {
           const imageIndex = this.currentIndex + i;
+          const sliderItem = sliderItems[i];
+          
           if (imageIndex < this.images.length) {
             const img = this.images[imageIndex];
-            const sliderItem = this.sliderItems[i];
-            
-            // Only update if we have a valid image
-            if (img.src) {
-              sliderItem.innerHTML = `
-                <img 
-                  src="${img.src}" 
-                  alt="${img.alt}" 
-                  loading="lazy" 
-                  class="product-media-image" 
-                  style="width: 100%; height: 500px; object-fit: cover;"
-                >`;
-            }
+            sliderItem.innerHTML = `
+              <img 
+                src="${img.src}" 
+                alt="${img.alt}" 
+                loading="lazy" 
+                class="product-media-image" 
+                style="width: 100%; height: 500px; object-fit: cover;"
+              >`;
           }
         }
         
