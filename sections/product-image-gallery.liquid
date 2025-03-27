@@ -23,18 +23,10 @@
     {% if product_images.size > 0 %}
       <div class="product-gallery__images-container">
         <div class="product-gallery__images">
-          {% for image in product_images %}
-            <div class="product-gallery__image-wrapper" data-image-index="{{ forloop.index0 }}">
-              {{ image | image_url: width: 640, height: 460 | image_tag: 
-                class: 'product-gallery__image', 
-                loading: 'lazy', 
-                alt: image.alt | escape 
-              }}
-            </div>
-          {% endfor %}
+          {% render 'product-media-gallery', variant_images: variant_images %}
         </div>
   
-        {% if product_images.size > 1 %}
+        {% comment %} {% if product_images.size > 1 %}
           <div class="product-gallery__pagination">
             {% for image in product_images %}
               <div 
@@ -43,7 +35,7 @@
               ></div>
             {% endfor %}
           </div>
-        {% endif %}
+        {% endif %} {% endcomment %}
       </div>
     {% else %}
       <div class="product-gallery__no-images">
