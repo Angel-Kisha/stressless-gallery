@@ -264,15 +264,14 @@ class SliderComponent extends HTMLElement {
   }
 }
 
-  updateNavigationButtons() {
-    if (this.prevButton) {
-      this.prevButton.disabled = this.currentIndex === 0;
-    }
-
-    if (this.nextButton) {
-      this.nextButton.disabled = this.currentIndex >= this.maxIndex;
-    }
+updateNavigationButtons() {
+  if (this.prevButton) {
+    this.prevButton.disabled = (this.currentIndex === 0);
   }
+  if (this.nextButton) {
+    this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
+  }
+}
 }
 
 customElements.define("slider-component", SliderComponent);
