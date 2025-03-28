@@ -101,6 +101,8 @@
               loading="lazy" 
               alt="{{ media.alt | escape }}"
               data-full-src="{{ full_image_url }}"
+              width="auto"
+              height="auto"
             >
           </div>
         {%- endfor -%}
@@ -138,7 +140,7 @@
     <div id="imageZoomModal" class="image-zoom-modal">
       <span class="close-zoom">&times;</span>
       <div class="image-zoom-container">
-        <img class="image-zoom-content" id="zoomedImage">
+        <img class="image-zoom-content" id="zoomedImage" width="auto" height="auto">
       </div>
     </div>
   </div>
@@ -213,15 +215,18 @@
     .image-zoom-modal {
       display: none;
       position: fixed;
-      z-index: 9999;
+      z-index: 999999;
       left: 0;
       top: 0;
+      width: 100vw; /* Use viewport width */
+      height: 100vh;
       width: 100%;
       height: 100%;
       overflow: hidden;
       background-color: rgba(0,0,0,0.9);
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
 
     .image-zoom-modal.show {
@@ -242,6 +247,11 @@
       max-width: 90%;
       max-height: 90%;
       object-fit: contain;
+      cursor: zoom-in;
+      transition: transform 0.3s ease;
+    }
+
+    .image-zoom-content.zoomed {
       cursor: zoom-out;
     }
 
@@ -321,7 +331,7 @@
           
           // Close zoom modal when clicking outside image
           this.zoomModal.addEventListener('click', (e) => {
-            if (e.target === this.zoomModal) {
+            if (e.target === this.zoomModal || e.target === this.zoomedImage) {
               this.closeZoom();
             }
           });
@@ -343,11 +353,42 @@
           
           // Show the zoom modal
           this.zoomModal.classList.add('show');
+          
+          // Reset zoom state
+          this.zoomedImage.classList.remove('zoomed');
+          this.zoomedImage.style.transform = 'scale(1)';
+          
+          // Add zoom interaction to zoomed image
+          this.setupZoomInteraction();
+        }
+        
+        setupZoomInteraction() {
+          // Remove any existing click event listeners to prevent multiple bindings
+          this.zoomedImage.onclick = null;
+          
+          // Toggle zoom on click
+          this.zoomedImage.onclick = (e) => {
+            e.stopPropagation();
+            
+            if (!this.zoomedImage.classList.contains('zoomed')) {
+              // Zoom in
+              this.zoomedImage.classList.add('zoomed');
+              this.zoomedImage.style.transform = 'scale(2)';
+            } else {
+              // Zoom out
+              this.zoomedImage.classList.remove('zoomed');
+              this.zoomedImage.style.transform = 'scale(1)';
+            }
+          };
         }
         
         closeZoom() {
           // Hide the zoom modal
           this.zoomModal.classList.remove('show');
+          
+          // Reset zoom state
+          this.zoomedImage.classList.remove('zoomed');
+          this.zoomedImage.style.transform = 'scale(1)';
         }
         
         scrollToNextSlide() {
