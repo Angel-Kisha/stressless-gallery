@@ -243,6 +243,31 @@
       "step": 1,
       "default": 4,
       "label": "t:sections.featured-collection.settings.products_to_show.label"
+    },
+    {
+      "type": "select",
+      "id": "image_source",
+      "label": "Image Source",
+      "options": [
+        {
+          "value": "collection",
+          "label": "Collection Images"
+        },
+        {
+          "value": "product",
+          "label": "Product Images"
+        }
+      ],
+      "default": "collection"
+    },
+    {
+      "type": "range",
+      "id": "product_images_limit",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "label": "Number of Product Images to Show"
     },     
     {
       "type": "header",
