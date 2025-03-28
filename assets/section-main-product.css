@@ -469,6 +469,9 @@ product-description-detail {
 }
 
 @media screen and (max-width: 749px) {
+  .product-description-heading {
+    font-size: 18px;
+  }
   .product__title {
     margin-top: 1.5rem;
   }
