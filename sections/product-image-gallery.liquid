@@ -442,6 +442,11 @@
         closeZoom() {
           // Hide the zoom modal
           this.zoomModal.classList.remove('show');
+          
+          // Reset zoom state
+          this.isZoomed = false;
+          this.zoomedImage.classList.remove('zoomed');
+          this.zoomedImage.style.transform = 'scale(1)';
         }
         
         scrollToNextSlide() {
