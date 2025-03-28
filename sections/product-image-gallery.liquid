@@ -353,6 +353,13 @@
           
           // Show the zoom modal
           this.zoomModal.classList.add('show');
+          
+          // Reset zoom state
+          this.isZoomed = false;
+          this.zoomedImage.classList.remove('zoomed');
+          
+          // Add zoom interaction to zoomed image
+          this.setupZoomInteraction();
         }
         
         closeZoom() {
