@@ -143,16 +143,17 @@
     .product-media-grid {
       display: flex;
       width: 100%;
-      gap: 77px;
+      gap: 20px;
       transition: transform 0.5s ease-in-out;
     }
   
     .product-media-item {
       opacity: 1;
+      flex-shrink: 0;
     }
   
     .product-media-image {
-      width: 460px;
+      width: calc((100% - 60px) / 3);
       height: {{ section.settings.image_height }}px;
       object-fit: {{ section.settings.image_fit }};
     }
@@ -182,8 +183,24 @@
       color: #888;
       margin: 0 15px;
     }
-  </style>
   
+    /* Responsive Design */
+    @media screen and (min-width: 768px) {
+      .product-media-grid {
+        gap: 40px;
+      }
+  
+      .product-media-image {
+        width: calc((100% - 120px) / 4);
+      }
+    }
+  
+    @media screen and (max-width: 767px) {
+      .product-media-image {
+        width: calc((100% - 40px) / 3);
+      }
+    }
+  </style>
   <script>
     class SliderComponents extends HTMLElement {
       constructor() {
@@ -192,17 +209,45 @@
         this.prevButton = this.querySelector('.slider-button--prev');
         this.nextButton = this.querySelector('.slider-button--next');
         this.currentSlideCounter = this.querySelector('.slider-counter--current');
+        this.totalSlideCounter = this.querySelector('.slider-counter--total');
         
         // Get all image items
         this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
         
         // Initialize state
         this.currentIndex = 0;
-        this.visibleSlides = 3;
+        this.visibleSlides = this.getVisibleSlides();
         this.totalImages = this.imageItems.length;
-        this.totalSlides = this.totalImages - this.visibleSlides + 1;
+        this.totalSlides = this.calculateTotalSlides();
         
         this.initializeSlider();
+        this.setupResponsiveListener();
+      }
+      
+      getVisibleSlides() {
+        return window.innerWidth >= 768 ? 4 : 3;
+      }
+      
+      calculateTotalSlides() {
+        return Math.max(1, this.totalImages - this.visibleSlides + 1);
+      }
+      
+      setupResponsiveListener() {
+        window.addEventListener('resize', () => {
+          const newVisibleSlides = this.getVisibleSlides();
+          
+          if (newVisibleSlides !== this.visibleSlides) {
+            this.visibleSlides = newVisibleSlides;
+            this.totalSlides = this.calculateTotalSlides();
+            
+            // Reset index if it's out of bounds
+            this.currentIndex = Math.min(this.currentIndex, this.totalSlides - 1);
+            
+            this.updateSliderContent();
+            this.updateNavigationButtons();
+            this.updateSlideCounter();
+          }
+        });
       }
       
       initializeSlider() {
@@ -218,6 +263,7 @@
         // Initial render and button state
         this.updateSliderContent();
         this.updateNavigationButtons();
+        this.updateSlideCounter();
       }
       
       scrollToNextSlide() {
@@ -225,6 +271,7 @@
           this.currentIndex++;
           this.updateSliderContent();
           this.updateNavigationButtons();
+          this.updateSlideCounter();
         }
       }
       
@@ -233,6 +280,7 @@
           this.currentIndex--;
           this.updateSliderContent();
           this.updateNavigationButtons();
+          this.updateSlideCounter();
         }
       }
       
@@ -246,17 +294,23 @@
         if (this.nextButton) {
           this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
         }
-        
-        // Update slide counter
+      }
+      
+      updateSlideCounter() {
+        // Update slide counter with current and total slides
         if (this.currentSlideCounter) {
           this.currentSlideCounter.textContent = this.currentIndex + 1;
+        }
+        
+        if (this.totalSlideCounter) {
+          this.totalSlideCounter.textContent = this.totalSlides;
         }
       }
       
       updateSliderContent() {
         // Calculate the translation based on the width and gap
         const imageWidth = this.imageItems[0].offsetWidth;
-        const gap = 77; // Matches the gap in CSS
+        const gap = window.innerWidth >= 768 ? 40 : 20; // Different gap for desktop and mobile
         const translateX = -this.currentIndex * (imageWidth + gap);
         
         this.slider.style.transform = `translateX(${translateX}px)`;
