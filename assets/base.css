@@ -153,6 +153,10 @@ body:has(.section-header .drawer-menu) .announcement-bar-section .page-width {
   z-index: 0;
 }
 
+.position-relative {
+  position: relative;
+}
+
 .section + .section {
   margin-top: var(--spacing-sections-mobile);
 }
