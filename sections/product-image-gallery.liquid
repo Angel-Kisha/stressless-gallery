@@ -212,7 +212,6 @@
     }
 
     /* Zoom Modal Styles */
-  /* Zoom Modal Styles */
     .image-zoom-modal {
       display: none;
       position: fixed;
@@ -221,10 +220,14 @@
       top: 0;
       width: 100%;
       height: 100%;
-      overflow: hidden; /* Prevent modal scrolling */
+      overflow: hidden;
       background-color: rgba(0,0,0,0.9);
       align-items: center;
       justify-content: center;
+    }
+
+    .image-zoom-modal.show {
+      display: flex;
     }
 
     .image-zoom-container {
@@ -235,23 +238,18 @@
       height: 100%;
       padding: 20px;
       box-sizing: border-box;
-      overflow: hidden; /* Prevent container scrolling */
     }
 
     .image-zoom-content {
       max-width: 90%;
       max-height: 90%;
-      object-fit: contain; /* Ensure entire image is visible */
+      object-fit: contain;
       cursor: zoom-in;
       transition: transform 0.3s ease;
     }
 
     .image-zoom-content.zoomed {
       cursor: zoom-out;
-      max-width: 100%; /* Allow full-size image when zoomed */
-      max-height: 100%;
-      width: auto;
-      height: auto;
     }
 
     .close-zoom {
