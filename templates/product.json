@@ -121,7 +121,7 @@
       "type": "featured-collection",
       "settings": {
         "collection": "frontpage",
-        "products_to_show": 16,
+        "products_to_show": 15,
         "title": "特集コレクション",
         "content_alignment": "center",
         "show_product_title": true,
@@ -130,7 +130,7 @@
         "description": "",
         "show_description": false,
         "description_style": "body",
-        "columns_desktop": 4,
+        "columns_desktop": 2,
         "enable_desktop_slider": true,
         "full_width": true,
         "show_view_all": false,
