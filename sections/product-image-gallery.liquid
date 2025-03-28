@@ -215,7 +215,7 @@
     .image-zoom-modal {
       display: none;
       position: fixed;
-      z-index: 9999999999;
+      z-index: 999999;
       left: 0;
       top: 0;
       width: 100%;
@@ -328,7 +328,7 @@
           
           // Close zoom modal when clicking outside image
           this.zoomModal.addEventListener('click', (e) => {
-            if (e.target === this.zoomModal) {
+            if (e.target === this.zoomModal || e.target === this.zoomedImage) {
               this.closeZoom();
             }
           });
@@ -360,8 +360,11 @@
         }
         
         setupZoomInteraction() {
+          // Remove any existing click event listeners to prevent multiple bindings
+          this.zoomedImage.onclick = null;
+          
           // Toggle zoom on click
-          this.zoomedImage.addEventListener('click', (e) => {
+          this.zoomedImage.onclick = (e) => {
             e.stopPropagation();
             
             if (!this.zoomedImage.classList.contains('zoomed')) {
@@ -373,7 +376,7 @@
               this.zoomedImage.classList.remove('zoomed');
               this.zoomedImage.style.transform = 'scale(1)';
             }
-          });
+          };
         }
         
         closeZoom() {
