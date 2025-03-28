@@ -409,7 +409,7 @@
 {% endjavascript %}
 
 <style>
-/* Styles for transparent header when at the top of the page */
+  /* Styles for transparent header when at the top of the page */
 .header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) {
   width: 100%;
   display: block;
@@ -433,22 +433,12 @@
   background-color: var(--color-background) !important;
 }
 
-/* Remove color opacity when transparent and restore when scrolled */
-.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header),
-.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) .color-scheme-1,
-.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) .color-scheme-2,
-.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) .color-scheme-3,
-.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) .color-scheme-4,
-.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) .color-scheme-5 {
+/* Adjust color opacity when transparent and when scrolled */
+.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) {
   color: rgba(var(--color-foreground), 1);
 }
 
-.header-wrapper[data-sticky-type="always"].scrolled-past-header,
-.header-wrapper[data-sticky-type="always"].scrolled-past-header .color-scheme-1,
-.header-wrapper[data-sticky-type="always"].scrolled-past-header .color-scheme-2,
-.header-wrapper[data-sticky-type="always"].scrolled-past-header .color-scheme-3,
-.header-wrapper[data-sticky-type="always"].scrolled-past-header .color-scheme-4,
-.header-wrapper[data-sticky-type="always"].scrolled-past-header .color-scheme-5 {
+.header-wrapper[data-sticky-type="always"].scrolled-past-header {
   color: rgba(var(--color-foreground), 0.75);
   background-color: var(--color-background);
 }
