@@ -1,120 +1,123 @@
 {% schema %}
-  {
+{
   "name": "Product Image Gallery",
   "settings": [
-  {
-  "type": "select",
-  "id": "image_fit",
-  "label": "Image Fit",
-  "options": [
-  {
-  "value": "cover",
-  "label": "Cover"
-  },
-  {
-  "value": "contain",
-  "label": "Contain"
-  }
-  ],
-  "default": "cover"
-  },
-  {
-  "type": "range",
-  "id": "image_height",
-  "min": 200,
-  "max": 800,
-  "step": 50,
-  "unit": "px",
-  "label": "Image Height",
-  "default": 500
-  },
-  {
-  "type": "range",
-  "id": "padding_top",
-  "min": 0,
-  "max": 100,
-  "step": 5,
-  "unit": "px",
-  "label": "Padding Top",
-  "default": 20
-  },
-  {
-  "type": "range",
-  "id": "padding_bottom",
-  "min": 0,
-  "max": 100,
-  "step": 5,
-  "unit": "px",
-  "label": "Padding Bottom",
-  "default": 20
-  },
-  {
-  "type": "range",
-  "id": "padding_left",
-  "min": 0,
-  "max": 100,
-  "step": 5,
-  "unit": "px",
-  "label": "Padding Left",
-  "default": 20
-  },
-  {
-  "type": "range",
-  "id": "padding_right",
-  "min": 0,
-  "max": 100,
-  "step": 5,
-  "unit": "px",
-  "label": "Padding Right",
-  "default": 20
-  },
-  {
-  "type": "color",
-  "id": "background_color",
-  "label": "Background Color",
-  "default": "#ffffff"
-  }
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image Fit",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Cover"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "min": 200,
+      "max": 800,
+      "step": 50,
+      "unit": "px",
+      "label": "Image Height",
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Left",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Right",
+      "default": 20
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    }
   ],
   "presets": [
-  {
-  "name": "Product Image Gallery",
-  "category": "Product"
-  }
+    {
+      "name": "Product Image Gallery",
+      "category": "Product"
+    }
   ]
-  }
+}
 {% endschema %}
-  <div class="product-media-gallery position-relative gradient {% if product.images.size <= 2 %}product-media-gallery--centered{% endif %}" style="background-color: {{ section.settings.background_color }}; padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;">
-    <slider-components class="slider-mobile-gutter">
-      <div
-        id="ProductMediaSlider"
-        class="product-media-grid"
-        role="list"
-        aria-label="{{ 'general.slider.name' | t }}"
-      >
-        {%- for media in product.images limit: 10 -%}
-          <div class="product-media-item">
-            {% assign image_url = media | image_url: width: 2000 %}
-            {% assign full_image_url = media | image_url: width: 4000 %}
-            <img 
-              src="{{ image_url }}" 
-              class="product-media-image" 
-              loading="lazy" 
-              alt="{{ media.alt | escape }}"
-              data-full-src="{{ full_image_url }}"
-              width="auto"
-              height="auto"
-            >
-          </div>
-        {%- endfor -%}
-      </div>
+<div
+  class="product-media-gallery position-relative gradient {% if product.images.size <= 2 %}product-media-gallery--centered{% endif %}"
+  style="background-color: {{ section.settings.background_color }}; padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;"
+>
+  <slider-components class="slider-mobile-gutter">
+    <div
+      id="ProductMediaSlider"
+      class="product-media-grid"
+      role="list"
+      aria-label="{{ 'general.slider.name' | t }}"
+    >
+      {%- for media in product.images limit: 10 -%}
+        <div class="product-media-item">
+          {% assign image_url = media | image_url: width: 2000 %}
+          {% assign full_image_url = media | image_url: width: 4000 %}
+          <img
+            src="{{ image_url }}"
+            class="product-media-image"
+            loading="lazy"
+            alt="{{ media.alt | escape }}"
+            data-full-src="{{ full_image_url }}"
+            width="auto"
+            height="auto"
+          >
+        </div>
+      {%- endfor -%}
+    </div>
 
     {%- if product.images.size > 3 -%}
       <div class="slider-navigation">
         <div class="slider-dots">
           {% assign total_slides = product.images.size | minus: 2 %}
           {%- for _ in (1..total_slides) -%}
-            <button 
-              type="button" 
+            <button
+              type="button"
               class="slider-dot {% if forloop.first %}slider-dot--active{% endif %}"
               data-slide-index="{{ forloop.index0 }}"
               aria-label="Go to slide {{ forloop.index }}"
@@ -123,271 +126,272 @@
         </div>
       </div>
     {%- endif -%}
-    </slider-components>
+  </slider-components>
 
-    <!-- Zoom Modal -->
-    <div id="imageZoomModal" class="image-zoom-modal">
-      <span class="close-zoom">&times;</span>
-      <div class="image-zoom-container">
-        <img class="image-zoom-content" id="zoomedImage" width="auto" height="auto">
-      </div>
+  <!-- Zoom Modal -->
+  <div id="imageZoomModal" class="image-zoom-modal">
+    <span class="close-zoom">&times;</span>
+    <div class="image-zoom-container">
+      <img class="image-zoom-content" id="zoomedImage" width="auto" height="auto">
     </div>
   </div>
-  
-  <style>
-    .product-media-gallery {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-    }
-  
-    .product-media-grid {
-      display: flex;
-      width: 100%;
-      gap: 77px;
-      transition: transform 0.5s ease-in-out;
-    }
-  
-    .product-media-gallery--centered .product-media-grid {
-      justify-content: center;
-      gap: 20px;
-    }
-  
-    .product-media-gallery--centered .product-media-item {
-      flex-shrink: 0;
-    }
-  
-    .product-media-item {
-      opacity: 1;
-      cursor: zoom-in;
-    }
-  
-    .product-media-image {
-      width: 460px;
-      height: {{ section.settings.image_height }}px;
-      object-fit: {{ section.settings.image_fit }};
-      pointer-events: auto;
-    }
-  
-    .product-media-gallery--centered .product-media-image {
-      width: auto;
-      max-width: 100%;
-    }
-  
-    .slider-navigation {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 60px;
-    }
-  
-    .slider-dots {
-      display: flex;
-      gap: 4.5rem;
-      align-items: center;
-    }
-  
-    .slider-dot {
-      width: 60px;
-      height: 4px;
-      background-color: #a1a1a1;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-  
-    .slider-dot--active {
-      background-color: #f0f0e1;
-      width: 60px;
-      height: 4px;
-    }
+</div>
 
-    /* Zoom Modal Styles (unchanged) */
-    .image-zoom-modal {
-      display: none;
-      position: fixed;
-      z-index: 999999;
-      left: 0;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      background-color: rgba(0,0,0,0.9);
-      align-items: center;
-      justify-content: center;
-    }
-
-    .image-zoom-modal.show {
-      display: flex;
-    }
-
-    .image-zoom-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    .image-zoom-content {
-      max-width: 90%;
-      max-height: 90%;
-      object-fit: contain;
-      cursor: zoom-in;
-      transition: transform 0.3s ease;
-    }
-
-    .image-zoom-content.zoomed {
-      cursor: zoom-out;
-    }
-
-    .close-zoom {
-      position: absolute;
-      top: 15px;
-      right: 35px;
-      color: #f1f1f1;
-      font-size: 40px;
-      font-weight: bold;
-      cursor: pointer;
-      z-index: 10000;
-    }
-    @media screen and (max-width: 1024px) {
-      .product-media-gallery{
-        padding-left: 1.5rem !important;
+<style>
+      .product-media-gallery {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
       }
-  .product-media-grid {
-    gap: 40px; /* Slightly reduced gap */
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+
+      .product-media-grid {
+        display: flex;
+        width: 100%;
+        gap: 77px;
+        transition: transform 0.5s ease-in-out;
+      }
+
+      .product-media-gallery--centered .product-media-grid {
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .product-media-gallery--centered .product-media-item {
+        flex-shrink: 0;
+      }
+
+      .product-media-item {
+        opacity: 1;
+        cursor: zoom-in;
+      }
+
+      .product-media-image {
+        width: 460px;
+        height: {{ section.settings.image_height }}px;
+        object-fit: {{ section.settings.image_fit }};
+        pointer-events: auto;
+      }
+
+      .product-media-gallery--centered .product-media-image {
+        width: auto;
+        max-width: 100%;
+      }
+
+      .slider-navigation {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 60px;
+      }
+
+      .slider-dots {
+        display: flex;
+        gap: 4.5rem;
+        align-items: center;
+      }
+
+      .slider-dot {
+        width: 60px;
+        height: 4px;
+        background-color: #a1a1a1;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .slider-dot--active {
+        background-color: #f0f0e1;
+        width: 60px;
+        height: 4px;
+      }
+
+      /* Zoom Modal Styles (unchanged) */
+      .image-zoom-modal {
+        display: none;
+        position: fixed;
+        z-index: 999999;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background-color: rgba(0,0,0,0.9);
+        align-items: center;
+        justify-content: center;
+      }
+
+      .image-zoom-modal.show {
+        display: flex;
+      }
+
+      .image-zoom-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .image-zoom-content {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        cursor: zoom-in;
+        transition: transform 0.3s ease;
+      }
+
+      .image-zoom-content.zoomed {
+        cursor: zoom-out;
+      }
+
+      .close-zoom {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 10000;
+      }
+      @media screen and (max-width: 1024px) {
+
+    .product-media-grid {
+      gap: 40px; /* Slightly reduced gap */
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .product-media-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .product-media-item {
+      flex: 0 0 auto;
+      scroll-snap-align: center;
+      width: 60%; /* Slightly less width compared to 425px */
+      max-width: 500px;
+    }
+
+    .product-media-image {
+      width: 100%;
+      height: 400px; /* Larger height for tablet */
+      object-fit: {{ section.settings.image_fit }};
+    }
+
+    .slider-navigation {
+      margin-top: 30px;
+    }
+
+    .slider-dots {
+      gap: 15px;
+    }
+
+    .slider-dot {
+      width: 40px;
+      height: 4px;
+    }
+
+    .slider-dot--active {
+      width: 40px;
+      height: 4px;
+    }
   }
 
-  .product-media-grid::-webkit-scrollbar {
-    display: none;
-  }
+  @media screen and (max-width: 425px) {
+    .product-media-gallery{
+          padding-left: 1.5rem !important;
+          padding-right: 1.5rem !important;
+        }
+    .product-media-grid {
+      gap: 20px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
 
-  .product-media-item {
-    flex: 0 0 auto;
-    scroll-snap-align: center;
-    width: 60%; /* Slightly less width compared to 425px */
-    max-width: 500px;
-  }
+    .product-media-grid::-webkit-scrollbar {
+      display: none;
+    }
 
-  .product-media-image {
-    width: 100%;
-    height: 400px; /* Larger height for tablet */
-    object-fit: {{ section.settings.image_fit }};
-  }
+    .product-media-item {
+      flex: 0 0 auto;
+      scroll-snap-align: center;
+      width: 45%; /* Larger width for better visibility */
+      max-width: 500px;
+    }
 
-  .slider-navigation {
-    margin-top: 30px;
-  }
+    .product-media-image {
+      width: 100%;
+      height: 100px; /* Smaller height for mobile */
+      object-fit: {{ section.settings.image_fit }};
+    }
 
-  .slider-dots {
-    gap: 15px;
-  }
+    .slider-navigation {
+      margin-top: 20px;
+    }
 
-  .slider-dot {
-    width: 40px;
-    height: 4px;
-  }
+    .slider-dots {
+      gap: 10px;
+    }
 
-  .slider-dot--active {
-    width: 40px;
-    height: 4px;
-  }
-}
+    .slider-dot {
+      width: 30px;
+      height: 3px;
+    }
 
-@media screen and (max-width: 425px) {
-  .product-media-grid {
-    gap: 20px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    .slider-dot--active {
+      width: 30px;
+      height: 3px;
+    }
   }
-
-  .product-media-grid::-webkit-scrollbar {
-    display: none;
-  }
-
-  .product-media-item {
-    flex: 0 0 auto;
-    scroll-snap-align: center;
-    width: 45%; /* Larger width for better visibility */
-    max-width: 500px;
-  }
-
-  .product-media-image {
-    width: 100%;
-    height: 100px; /* Smaller height for mobile */
-    object-fit: {{ section.settings.image_fit }};
-  }
-
-  .slider-navigation {
-    margin-top: 20px;
-  }
-
-  .slider-dots {
-    gap: 10px;
-  }
-
-  .slider-dot {
-    width: 30px;
-    height: 3px;
-  }
-
-  .slider-dot--active {
-    width: 30px;
-    height: 3px;
-  }
-}
-  </style>
+</style>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     class SliderComponents extends HTMLElement {
       constructor() {
-          super();
-          this.slider = this.querySelector('#ProductMediaSlider');
-          this.sliderDots = this.querySelectorAll('.slider-dot');
-          
-          // Get all image items
-          this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
-          
-          // Initialize state
-          this.currentIndex = 0;
-          this.visibleSlides = 3;
-          this.totalImages = this.imageItems.length;
-          this.totalSlides = this.totalImages - this.visibleSlides + 1;
-          
-          // Zoom modal elements
-          this.zoomModal = document.getElementById('imageZoomModal');
-          this.zoomedImage = document.getElementById('zoomedImage');
-          this.closeZoomBtn = this.zoomModal.querySelector('.close-zoom');
-          
-          this.initializeSlider();
-          this.initializeZoom();
-        }
-        
-      
+        super();
+        this.slider = this.querySelector('#ProductMediaSlider');
+        this.sliderDots = this.querySelectorAll('.slider-dot');
+
+        // Get all image items
+        this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
+
+        // Initialize state
+        this.currentIndex = 0;
+        this.visibleSlides = 3;
+        this.totalImages = this.imageItems.length;
+        this.totalSlides = this.totalImages - this.visibleSlides + 1;
+
+        // Zoom modal elements
+        this.zoomModal = document.getElementById('imageZoomModal');
+        this.zoomedImage = document.getElementById('zoomedImage');
+        this.closeZoomBtn = this.zoomModal.querySelector('.close-zoom');
+
+        this.initializeSlider();
+        this.initializeZoom();
+      }
+
       initializeSlider() {
         // Skip slider initialization if less than 3 images
         if (this.totalImages <= 3) {
           return;
         }
-        
+
         // Add click event to slider dots
-        this.sliderDots.forEach(dot => {
+        this.sliderDots.forEach((dot) => {
           dot.addEventListener('click', (e) => {
             const slideIndex = parseInt(e.target.getAttribute('data-slide-index'));
             this.goToSlide(slideIndex);
           });
         });
       }
-      
+
       goToSlide(index) {
         if (index >= 0 && index < this.totalSlides) {
           this.currentIndex = index;
@@ -395,51 +399,51 @@
           this.updateActiveDot();
         }
       }
-      
+
       updateActiveDot() {
         // Remove active class from all dots
-        this.sliderDots.forEach(dot => {
+        this.sliderDots.forEach((dot) => {
           dot.classList.remove('slider-dot--active');
         });
-        
+
         // Add active class to current dot
         this.sliderDots[this.currentIndex].classList.add('slider-dot--active');
       }
-      
+
       // Rest of the methods remain the same as in the previous version (initializeZoom, openZoom, closeZoom, etc.)
-      
+
       updateSliderContent() {
         // Calculate the translation based on the width and gap
         const imageWidth = this.imageItems[0].offsetWidth;
         const gap = 77; // Matches the gap in CSS
         const translateX = -this.currentIndex * (imageWidth + gap);
-        
+
         this.slider.style.transform = `translateX(${translateX}px)`;
       }
-      
+
       // Include the existing initializeZoom method from previous version
       initializeZoom() {
         // Add click event to all product media images
-        this.imageItems.forEach(item => {
+        this.imageItems.forEach((item) => {
           const image = item.querySelector('.product-media-image');
           image.addEventListener('click', (e) => {
             e.preventDefault();
             this.openZoom(image);
           });
         });
-        
+
         // Close zoom modal when clicking close button
         if (this.closeZoomBtn) {
           this.closeZoomBtn.addEventListener('click', () => this.closeZoom());
         }
-        
+
         // Close zoom modal when clicking outside image
         this.zoomModal.addEventListener('click', (e) => {
           if (e.target === this.zoomModal || e.target === this.zoomedImage) {
             this.closeZoom();
           }
         });
-        
+
         // Close zoom modal with Escape key
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape' && this.zoomModal.classList.contains('show')) {
@@ -447,7 +451,7 @@
           }
         });
       }
-      
+
       // Include existing zoom methods from previous version (openZoom, closeZoom, setupZoomInteraction)
       openZoom(image) {
         const fullImageSrc = image.getAttribute('data-full-src');
@@ -457,12 +461,12 @@
         this.zoomedImage.style.transform = 'scale(1)';
         this.setupZoomInteraction();
       }
-      
+
       setupZoomInteraction() {
         this.zoomedImage.onclick = null;
         this.zoomedImage.onclick = (e) => {
           e.stopPropagation();
-          
+
           if (!this.zoomedImage.classList.contains('zoomed')) {
             this.zoomedImage.classList.add('zoomed');
             this.zoomedImage.style.transform = 'scale(2)';
@@ -472,14 +476,14 @@
           }
         };
       }
-      
+
       closeZoom() {
         this.zoomModal.classList.remove('show');
         this.zoomedImage.classList.remove('zoomed');
         this.zoomedImage.style.transform = 'scale(1)';
       }
     }
-  
+
     customElements.define('slider-components', SliderComponents);
   });
 </script>
