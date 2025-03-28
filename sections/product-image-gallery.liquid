@@ -109,18 +109,29 @@
       </div>
 
     {%- if product.images.size > 3 -%}
-      <div class="slider-navigation">
-        <div class="slider-dots">
-          {% assign total_slides = product.images.size | minus: 2 %}
-          {%- for _ in (1..total_slides) -%}
-            <button 
-              type="button" 
-              class="slider-dot {% if forloop.first %}slider-dot--active{% endif %}"
-              data-slide-index="{{ forloop.index0 }}"
-              aria-label="Go to slide {{ forloop.index }}"
-            ></button>
-          {%- endfor -%}
+      <div class="slider-buttons">
+        <button
+          type="button"
+          class="slider-button slider-button--prev"
+          name="previous"
+          aria-label="{{ 'general.slider.previous_slide' | t }}"
+        >
+          ←
+        </button>
+        <div class="slider-counter caption">
+          <span class="slider-counter--current">1</span>
+          <span aria-hidden="true"> / </span>
+          <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+          <span class="slider-counter--total">{{ product.images.size | minus: 2 }}</span>
         </div>
+        <button
+          type="button"
+          class="slider-button slider-button--next"
+          name="next"
+          aria-label="{{ 'general.slider.next_slide' | t }}"
+        >
+          →
+        </button>
       </div>
     {%- endif -%}
     </slider-components>
@@ -174,47 +185,48 @@
       max-width: 100%;
     }
   
-    .slider-navigation {
+    .slider-buttons {
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-top: 15px;
+      margin-top: 10px;
     }
   
-    .slider-dots {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-  
-    .slider-dot {
-      width: 60px;
-      height: 4px;
-      background-color: #a1a1a1;
+    .slider-button {
+      background: none;
       border: none;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      padding: 10px;
+      font-size: 24px;
     }
   
-    .slider-dot--active {
-      background-color: #f0f0e1;
-      width: 60px;
-      height: 4px;
+    .slider-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  
+    .slider-counter {
+      font-size: 14px;
+      color: #888;
+      margin: 0 15px;
     }
 
-    /* Zoom Modal Styles (unchanged) */
+    /* Zoom Modal Styles */
     .image-zoom-modal {
       display: none;
       position: fixed;
       z-index: 999999;
       left: 0;
       top: 0;
-      width: 100vw;
+      width: 100vw; /* Use viewport width */
       height: 100vh;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
       background-color: rgba(0,0,0,0.9);
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
 
     .image-zoom-modal.show {
@@ -254,14 +266,16 @@
       z-index: 10000;
     }
   </style>
+  <script>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    class SliderComponents extends HTMLElement {
-      constructor() {
+    document.addEventListener('DOMContentLoaded', () => {
+      class SliderComponents extends HTMLElement {
+        constructor() {
           super();
           this.slider = this.querySelector('#ProductMediaSlider');
-          this.sliderDots = this.querySelectorAll('.slider-dot');
+          this.prevButton = this.querySelector('.slider-button--prev');
+          this.nextButton = this.querySelector('.slider-button--next');
+          this.currentSlideCounter = this.querySelector('.slider-counter--current');
           
           // Get all image items
           this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
@@ -281,114 +295,146 @@
           this.initializeZoom();
         }
         
-      
-      initializeSlider() {
-        // Skip slider initialization if less than 3 images
-        if (this.totalImages <= 3) {
-          return;
-        }
-        
-        // Add click event to slider dots
-        this.sliderDots.forEach(dot => {
-          dot.addEventListener('click', (e) => {
-            const slideIndex = parseInt(e.target.getAttribute('data-slide-index'));
-            this.goToSlide(slideIndex);
-          });
-        });
-      }
-      
-      goToSlide(index) {
-        if (index >= 0 && index < this.totalSlides) {
-          this.currentIndex = index;
-          this.updateSliderContent();
-          this.updateActiveDot();
-        }
-      }
-      
-      updateActiveDot() {
-        // Remove active class from all dots
-        this.sliderDots.forEach(dot => {
-          dot.classList.remove('slider-dot--active');
-        });
-        
-        // Add active class to current dot
-        this.sliderDots[this.currentIndex].classList.add('slider-dot--active');
-      }
-      
-      // Rest of the methods remain the same as in the previous version (initializeZoom, openZoom, closeZoom, etc.)
-      
-      updateSliderContent() {
-        // Calculate the translation based on the width and gap
-        const imageWidth = this.imageItems[0].offsetWidth;
-        const gap = 77; // Matches the gap in CSS
-        const translateX = -this.currentIndex * (imageWidth + gap);
-        
-        this.slider.style.transform = `translateX(${translateX}px)`;
-      }
-      
-      // Include the existing initializeZoom method from previous version
-      initializeZoom() {
-        // Add click event to all product media images
-        this.imageItems.forEach(item => {
-          const image = item.querySelector('.product-media-image');
-          image.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.openZoom(image);
-          });
-        });
-        
-        // Close zoom modal when clicking close button
-        if (this.closeZoomBtn) {
-          this.closeZoomBtn.addEventListener('click', () => this.closeZoom());
-        }
-        
-        // Close zoom modal when clicking outside image
-        this.zoomModal.addEventListener('click', (e) => {
-          if (e.target === this.zoomModal || e.target === this.zoomedImage) {
-            this.closeZoom();
+        initializeSlider() {
+          // Skip slider initialization if less than 3 images
+          if (this.totalImages <= 3) {
+            return;
           }
-        });
-        
-        // Close zoom modal with Escape key
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && this.zoomModal.classList.contains('show')) {
-            this.closeZoom();
-          }
-        });
-      }
-      
-      // Include existing zoom methods from previous version (openZoom, closeZoom, setupZoomInteraction)
-      openZoom(image) {
-        const fullImageSrc = image.getAttribute('data-full-src');
-        this.zoomedImage.src = fullImageSrc;
-        this.zoomModal.classList.add('show');
-        this.zoomedImage.classList.remove('zoomed');
-        this.zoomedImage.style.transform = 'scale(1)';
-        this.setupZoomInteraction();
-      }
-      
-      setupZoomInteraction() {
-        this.zoomedImage.onclick = null;
-        this.zoomedImage.onclick = (e) => {
-          e.stopPropagation();
           
-          if (!this.zoomedImage.classList.contains('zoomed')) {
-            this.zoomedImage.classList.add('zoomed');
-            this.zoomedImage.style.transform = 'scale(2)';
-          } else {
-            this.zoomedImage.classList.remove('zoomed');
-            this.zoomedImage.style.transform = 'scale(1)';
+          // Setup navigation buttons
+          if (this.prevButton) {
+            this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
           }
-        };
+          
+          if (this.nextButton) {
+            this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
+          }
+          
+          // Initial render and button state
+          this.updateSliderContent();
+          this.updateNavigationButtons();
+        }
+        
+        initializeZoom() {
+          // Add click event to all product media images
+          this.imageItems.forEach(item => {
+            const image = item.querySelector('.product-media-image');
+            image.addEventListener('click', (e) => {
+              e.preventDefault();
+              this.openZoom(image);
+            });
+          });
+          
+          // Close zoom modal when clicking close button
+          if (this.closeZoomBtn) {
+            this.closeZoomBtn.addEventListener('click', () => this.closeZoom());
+          }
+          
+          // Close zoom modal when clicking outside image
+          this.zoomModal.addEventListener('click', (e) => {
+            if (e.target === this.zoomModal || e.target === this.zoomedImage) {
+              this.closeZoom();
+            }
+          });
+          
+          // Close zoom modal with Escape key
+          document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.zoomModal.classList.contains('show')) {
+              this.closeZoom();
+            }
+          });
+        }
+        
+        openZoom(image) {
+          // Get full-size image URL
+          const fullImageSrc = image.getAttribute('data-full-src');
+          
+          // Set the zoomed image source
+          this.zoomedImage.src = fullImageSrc;
+          
+          // Show the zoom modal
+          this.zoomModal.classList.add('show');
+          
+          // Reset zoom state
+          this.zoomedImage.classList.remove('zoomed');
+          this.zoomedImage.style.transform = 'scale(1)';
+          
+          // Add zoom interaction to zoomed image
+          this.setupZoomInteraction();
+        }
+        
+        setupZoomInteraction() {
+          // Remove any existing click event listeners to prevent multiple bindings
+          this.zoomedImage.onclick = null;
+          
+          // Toggle zoom on click
+          this.zoomedImage.onclick = (e) => {
+            e.stopPropagation();
+            
+            if (!this.zoomedImage.classList.contains('zoomed')) {
+              // Zoom in
+              this.zoomedImage.classList.add('zoomed');
+              this.zoomedImage.style.transform = 'scale(2)';
+            } else {
+              // Zoom out
+              this.zoomedImage.classList.remove('zoomed');
+              this.zoomedImage.style.transform = 'scale(1)';
+            }
+          };
+        }
+        
+        closeZoom() {
+          // Hide the zoom modal
+          this.zoomModal.classList.remove('show');
+          
+          // Reset zoom state
+          this.zoomedImage.classList.remove('zoomed');
+          this.zoomedImage.style.transform = 'scale(1)';
+        }
+        
+        scrollToNextSlide() {
+          if (this.currentIndex < this.totalSlides - 1) {
+            this.currentIndex++;
+            this.updateSliderContent();
+            this.updateNavigationButtons();
+          }
+        }
+        
+        scrollToPrevSlide() {
+          if (this.currentIndex > 0) {
+            this.currentIndex--;
+            this.updateSliderContent();
+            this.updateNavigationButtons();
+          }
+        }
+        
+        updateNavigationButtons() {
+          // Disable prev button if at first slide
+          if (this.prevButton) {
+            this.prevButton.disabled = (this.currentIndex === 0);
+          }
+          
+          // Disable next button if at last slide
+          if (this.nextButton) {
+            this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
+          }
+          
+          // Update slide counter
+          if (this.currentSlideCounter) {
+            this.currentSlideCounter.textContent = this.currentIndex + 1;
+          }
+        }
+        
+        updateSliderContent() {
+          // Calculate the translation based on the width and gap
+          const imageWidth = this.imageItems[0].offsetWidth;
+          const gap = 77; // Matches the gap in CSS
+          const translateX = -this.currentIndex * (imageWidth + gap);
+          
+          this.slider.style.transform = `translateX(${translateX}px)`;
+        }
       }
-      
-      closeZoom() {
-        this.zoomModal.classList.remove('show');
-        this.zoomedImage.classList.remove('zoomed');
-        this.zoomedImage.style.transform = 'scale(1)';
-      }
-    }
-  
-    customElements.define('slider-components', SliderComponents);
-  });
-</script>
+    
+      customElements.define('slider-components', SliderComponents);
+    });
+  </script>
