@@ -120,14 +120,11 @@
     "featured_collection_K898ek": {
       "type": "featured-collection",
       "settings": {
-        "collection": "",
+        "collection": "frontpage",
         "products_to_show": 15,
-        "image_source": "product",
-        "product_images_limit": 4,
-        "background_color": "#FFFFFF",
-        "title": "特集コレクション",
+        "title": "",
         "content_alignment": "center",
-        "show_product_title": true,
+        "show_product_title": false,
         "bold_product_name": false,
         "heading_size": "h1",
         "description": "",
@@ -183,9 +180,6 @@
       "settings": {
         "collection": "frontpage",
         "products_to_show": 4,
-        "image_source": "collection",
-        "product_images_limit": 4,
-        "background_color": "#FFFFFF",
         "title": "",
         "content_alignment": "start",
         "show_product_title": true,
