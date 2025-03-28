@@ -448,41 +448,6 @@
   </script>
 {%- endif -%}
 
-<style>
-  /* Add these styles to complement the existing header styles */
-  .shopify-section-header-sticky.at-top {
-    background: transparent !important;
-    box-shadow: none !important;
-    /* Ensure text remains readable */
-    color: inherit;
-  }
-
-  .shopify-section-header-sticky.at-top .header {
-    background: transparent !important;
-  }
-</style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const stickyHeader = document.querySelector('sticky-header[data-sticky-type="always"]');
-    
-    if (stickyHeader) {
-      const handleScroll = () => {
-        const scrollPosition = window.scrollY;
-        
-        if (scrollPosition === 0) {
-          stickyHeader.classList.add('at-top');
-        } else {
-          stickyHeader.classList.remove('at-top');
-        }
-      };
-
-      window.addEventListener('scroll', handleScroll);
-      handleScroll(); // Initial check
-    }
-  });
-</script>
-
 {% schema %}
 {
   "name": "t:sections.header.name",
