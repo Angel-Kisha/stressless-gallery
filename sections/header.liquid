@@ -313,6 +313,9 @@ class StickyHeader extends HTMLElement {
 
     if (this.headerIsAlwaysSticky) {
       this.header.classList.add('shopify-section-header-sticky');
+      
+      // Immediately check scroll position on load
+      this.checkHeaderPosition();
     }
 
     this.currentScrollTop = 0;
@@ -328,30 +331,9 @@ class StickyHeader extends HTMLElement {
     this.createObserver();
   }
 
-  setHeaderHeight() {
-    document.documentElement.style.setProperty('--header-height', `${this.header.offsetHeight}px`);
-  }
-
-  disconnectedCallback() {
-    this.removeEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
-    window.removeEventListener('scroll', this.onScrollHandler);
-  }
-
-  createObserver() {
-    let observer = new IntersectionObserver((entries, observer) => {
-      this.headerBounds = entries[0].intersectionRect;
-      observer.disconnect();
-    });
-
-    observer.observe(this.header);
-  }
-
-  onScroll() {
+  checkHeaderPosition() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-    if (this.predictiveSearch && this.predictiveSearch.isOpen) return;
-
-    // New condition to remove background when at the top for always-sticky headers
+    
     if (this.headerIsAlwaysSticky) {
       if (scrollTop <= 0) {
         this.header.classList.add('header-at-top');
@@ -359,7 +341,19 @@ class StickyHeader extends HTMLElement {
         this.header.classList.remove('header-at-top');
       }
     }
+  }
 
+  onScroll() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (this.predictiveSearch && this.predictiveSearch.isOpen) return;
+
+    // Check and update header position for always-sticky headers
+    if (this.headerIsAlwaysSticky) {
+      this.checkHeaderPosition();
+    }
+
+    // Rest of the existing scroll logic remains the same
     if (scrollTop > this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
       this.header.classList.add('scrolled-past-header');
       if (this.preventHide) return;
