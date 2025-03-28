@@ -314,7 +314,7 @@
   -%}
 {%- endif -%}
 
-
+{% javascript %}
 <script type="text/javascript">
   class StickyHeader extends HTMLElement {
     constructor() {
@@ -421,6 +421,9 @@
 
   customElements.define('sticky-header', StickyHeader);
 </script>
+
+{% endjavascript %}
+
 
 <style>
  /* Styles for transparent header when at the top of the page */
