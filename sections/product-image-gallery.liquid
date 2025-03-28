@@ -303,6 +303,12 @@
   }
 
   @media screen and (max-width: 768px) {
+    .product-media-gallery {
+    padding-top: calc({{ section.settings.padding_top }}px / 2) !important;
+    padding-bottom: calc({{ section.settings.padding_bottom }}px / 2) !important;
+    padding-left: calc({{ section.settings.padding_left }}px / 2) !important;
+    padding-right: calc({{ section.settings.padding_right }}px / 2) !important;
+  }
     .product-media-grid {
       gap: 20px;
       -webkit-overflow-scrolling: touch;
