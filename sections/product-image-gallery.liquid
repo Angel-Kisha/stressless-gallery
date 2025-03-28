@@ -83,7 +83,7 @@
   ]
   }
 {% endschema %}
-  <div class="product-media-gallery isolate gradient {% if product.images.size <= 2 %}product-media-gallery--centered{% endif %}" style="background-color: {{ section.settings.background_color }}; padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;">
+  <div class="product-media-gallery position-relative gradient {% if product.images.size <= 2 %}product-media-gallery--centered{% endif %}" style="background-color: {{ section.settings.background_color }}; padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;">
     <slider-components class="slider-mobile-gutter">
       <div
         id="ProductMediaSlider"
