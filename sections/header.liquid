@@ -443,6 +443,31 @@
   }
 </script>
 
+<style>
+  .header {
+    transition: background-color 0.3s ease !important;
+  }
+
+  .header--scrolled {
+    background-color: #fff; /* Replace with your desired background color */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Optional: adds a subtle shadow when scrolled */
+  }
+</style>
+{%- style -%}
+  /* This will override the existing style block */
+  .header {
+    padding: {{ section.settings.padding_top | times: 0.5 | round: 0 }}px 3rem {{ section.settings.padding_bottom | times: 0.5 | round: 0 }}px 3rem;
+    transition: background-color 0.3s ease; /* Add transition for smooth background change */
+  }
+
+  @media screen and (min-width: 990px) {
+    .header {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
 {%- if request.page_type == 'index' -%}
   {% assign potential_action_target = request.origin | append: routes.search_url | append: "?q={search_term_string}" %}
   <script type="application/ld+json">
