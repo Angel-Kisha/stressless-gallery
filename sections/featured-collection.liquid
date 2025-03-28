@@ -38,7 +38,7 @@
   }
 {%- endstyle -%}
 
-{% liquid
+{%- liquid
   assign products_to_display = section.settings.collection.all_products_count
 
   if section.settings.collection.all_products_count > section.settings.products_to_show
@@ -94,6 +94,8 @@
         role="list"
         aria-label="{{ 'general.slider.name' | t }}"
       >
+        {% assign skip_card_product_styles = false %}
+
         {%- if section.settings.collection.products.size > 0 -%}
           {% paginate section.settings.collection.products by section.settings.products_to_show %}
             {%- for product in section.settings.collection.products limit: section.settings.products_to_show -%}
@@ -105,52 +107,53 @@
                   style="--animation-order: {{ forloop.index }};"
                 {% endif %}
               >
-                {% if section.settings.image_source == 'collection' %}
-                  {% render 'card-product',
-                    card_product: product,
-                    media_aspect_ratio: section.settings.image_ratio,
-                    image_shape: section.settings.image_shape,
-                    show_secondary_image: section.settings.show_secondary_image,
-                    show_vendor: section.settings.show_vendor,
-                    show_rating: section.settings.show_rating,
-                    section_id: section.id,
-                    quick_add: section.settings.quick_add,
-                    bold_product_name: section.settings.bold_product_name,
-                    content_alignment: section.settings.content_alignment,
-                    show_product_title: section.settings.show_product_title
-                  %}
-                {% endif %}
-
-                {% if section.settings.image_source == 'product' %}
-                  <div class="product-images-container">
-                    {% assign images_to_show = section.settings.product_images_limit | default: 4 %}
-                    {% for image in product.images limit: images_to_show %}
-                      <div class="product-image-wrapper">
-                        <img 
-                          src="{{ image | image_url}}" 
-                          alt="{{ image.alt | escape }}"
-                          class="product-image"
-                          loading="lazy"
-                          width = "400"
-                          height = "400"
-                        />
-                        {% if section.settings.show_product_title %}
-                          <div class="product-title" style="text-align: {{ section.settings.content_alignment }};">
-                            <span {% if section.settings.bold_product_name %}style="font-weight: bold;"{% endif %}>
-                              {{ product.title }}
-                            </span>
-                          </div>
-                        {% endif %}
-                      </div>
-                    {% endfor %}
-                  </div>
-                {% endif %}
+                {% render 'card-product',
+                  card_product: product,
+                  media_aspect_ratio: section.settings.image_ratio,
+                  image_shape: section.settings.image_shape,
+                  show_secondary_image: section.settings.show_secondary_image,
+                  show_vendor: section.settings.show_vendor,
+                  show_rating: section.settings.show_rating,
+                  skip_styles: skip_card_product_styles,
+                  section_id: section.id,
+                  quick_add: section.settings.quick_add,
+                  bold_product_name: section.settings.bold_product_name,
+                  content_alignment: section.settings.content_alignment,
+                  show_product_title: section.settings.show_product_title
+                %}
               </li>
+              {%- assign skip_card_product_styles = true -%}
             {%- endfor -%}
           {% endpaginate %}
+        {%- else -%}
+          {%- for i in (1..section.settings.columns_desktop) -%}
+            <li
+              class="grid__item{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+              {% if settings.animations_reveal_on_scroll %}
+                data-cascade
+                style="--animation-order: {{ forloop.index }};"
+              {% endif %}
+            >
+              {% liquid
+                assign ridx = forloop.rindex
+                case ridx
+                  when 5
+                    assign ridx = 1
+                  when 6
+                    assign ridx = 2
+                endcase
+              %}
+              {%- assign placeholder_image = 'product-apparel-' | append: ridx -%}
+              {% render 'card-product',
+                show_vendor: section.settings.show_vendor,
+                media_aspect_ratio: section.settings.image_ratio,
+                image_shape: section.settings.image_shape,
+                placeholder_image: placeholder_image
+              %}
+            </li>
+          {%- endfor -%}
         {%- endif -%}
       </ul>
-      
       {%- if show_mobile_slider or show_desktop_slider -%}
         <div class="slider-buttons">
           <button
@@ -201,6 +204,7 @@
     {%- endif -%}
   </div>
 </div>
+
 {% schema %}
 {
   "name": "t:sections.featured-collection.name",
@@ -223,38 +227,7 @@
       "step": 1,
       "default": 4,
       "label": "t:sections.featured-collection.settings.products_to_show.label"
-    },
-    {
-      "type": "select",
-      "id": "image_source",
-      "label": "Image Source",
-      "options": [
-        {
-          "value": "collection",
-          "label": "Collection Images"
-        },
-        {
-          "value": "product",
-          "label": "Product Images"
-        }
-      ],
-      "default": "collection"
-    },
-    {
-      "type": "range",
-      "id": "product_images_limit",
-      "min": 1,
-      "max": 10,
-      "step": 1,
-      "default": 4,
-      "label": "Number of Product Images to Show"
-    },
-    {
-      "type": "color",
-      "id": "background_color",
-      "label": "Background Color",
-      "default": "#FFFFFF"
-    },
+    },     
     {
       "type": "header",
       "content": "t:sections.featured-collection.settings.header_text.content"
