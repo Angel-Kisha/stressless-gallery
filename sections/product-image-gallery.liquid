@@ -1,136 +1,137 @@
 {% schema %}
   {
-  "name": "Product Image Gallery",
-  "settings": [
-  {
-  "type": "select",
-  "id": "image_fit",
-  "label": "Image Fit",
-  "options": [
-  {
-  "value": "cover",
-  "label": "Cover"
-  },
-  {
-  "value": "contain",
-  "label": "Contain"
-  }
-  ],
-  "default": "cover"
-  },
-  {
-  "type": "range",
-  "id": "image_height",
-  "min": 200,
-  "max": 800,
-  "step": 50,
-  "unit": "px",
-  "label": "Image Height",
-  "default": 500
-  },
-  {
-  "type": "range",
-  "id": "padding_top",
-  "min": 0,
-  "max": 100,
-  "step": 5,
-  "unit": "px",
-  "label": "Padding Top",
-  "default": 20
-  },
-  {
-  "type": "range",
-  "id": "padding_bottom",
-  "min": 0,
-  "max": 100,
-  "step": 5,
-  "unit": "px",
-  "label": "Padding Bottom",
-  "default": 20
-  },
-  {
-  "type": "range",
-  "id": "padding_left",
-  "min": 0,
-  "max": 100,
-  "step": 5,
-  "unit": "px",
-  "label": "Padding Left",
-  "default": 20
-  },
-  {
-  "type": "range",
-  "id": "padding_right",
-  "min": 0,
-  "max": 100,
-  "step": 5,
-  "unit": "px",
-  "label": "Padding Right",
-  "default": 20
-  },
-  {
-  "type": "color",
-  "id": "background_color",
-  "label": "Background Color",
-  "default": "#ffffff"
-  }
-  ],
-  "presets": [
-  {
-  "name": "Product Image Gallery",
-  "category": "Product"
-  }
-  ]
+    "name": "Product Image Gallery",
+    "settings": [
+      {
+        "type": "select",
+        "id": "image_fit",
+        "label": "Image Fit",
+        "options": [
+          {
+            "value": "cover",
+            "label": "Cover"
+          },
+          {
+            "value": "contain",
+            "label": "Contain"
+          }
+        ],
+        "default": "cover"
+      },
+      {
+        "type": "range",
+        "id": "image_height",
+        "min": 200,
+        "max": 800,
+        "step": 50,
+        "unit": "px",
+        "label": "Image Height",
+        "default": 500
+      },
+      {
+        "type": "range",
+        "id": "padding_top",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "px",
+        "label": "Padding Top",
+        "default": 20
+      },
+      {
+        "type": "range",
+        "id": "padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "px",
+        "label": "Padding Bottom",
+        "default": 20
+      },
+      {
+        "type": "range",
+        "id": "padding_left",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "px",
+        "label": "Padding Left",
+        "default": 20
+      },
+      {
+        "type": "range",
+        "id": "padding_right",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "unit": "px",
+        "label": "Padding Right",
+        "default": 20
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background Color",
+        "default": "#ffffff"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Product Image Gallery",
+        "category": "Product"
+      }
+    ]
   }
   {% endschema %}
-    <div class="product-media-gallery isolate gradient" style="background-color: {{ section.settings.background_color }}; padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;">
-      <slider-components class="slider-mobile-gutter">
-        <div
-          id="ProductMediaSlider"
-          class="product-media-grid"
-          role="list"
-          aria-label="{{ 'general.slider.name' | t }}"
-        >
-          {%- for media in product.images limit: 10 -%}
-            <div class="product-media-item">
-              {{ media 
-                | image_url: width: 1000 
-                | image_tag: 
-                  loading: 'lazy', 
-                  class: 'product-media-image',
-                  alt: media.alt | escape
-              }}
-            </div>
-          {%- endfor -%}
-        </div>
   
-        {%- if product.images.size > 3 -%}
-          <div class="slider-buttons">
-            <button
-              type="button"
-              class="slider-button slider-button--prev"
-              name="previous"
-              aria-label="{{ 'general.slider.previous_slide' | t }}"
-            >
-              ←
-            </button>
-            <div class="slider-counter caption">
-              <span class="slider-counter--current">1</span>
-              <span aria-hidden="true"> / </span>
-              <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
-              <span class="slider-counter--total">{{ product.images.size | minus: 2 }}</span>
-            </div>
-            <button
-              type="button"
-              class="slider-button slider-button--next"
-              name="next"
-              aria-label="{{ 'general.slider.next_slide' | t }}"
-            >
-              →
-            </button>
+  <div class="product-media-gallery isolate gradient" style="background-color: {{ section.settings.background_color }}; padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;">
+    <slider-components class="slider-mobile-gutter">
+      <div
+        id="ProductMediaSlider"
+        class="product-media-grid"
+        role="list"
+        aria-label="{{ 'general.slider.name' | t }}"
+      >
+        {%- for media in product.images limit: 10 -%}
+          <div class="product-media-item">
+            {{ media 
+              | image_url: width: 1000 
+              | image_tag: 
+                loading: 'lazy', 
+                class: 'product-media-image',
+                alt: media.alt | escape
+            }}
           </div>
-        {%- endif -%}
-      </slider-components>
+        {%- endfor -%}
+      </div>
+  
+      {%- if product.images.size > 3 -%}
+        <div class="slider-buttons">
+          <button
+            type="button"
+            class="slider-button slider-button--prev"
+            name="previous"
+            aria-label="{{ 'general.slider.previous_slide' | t }}"
+          >
+            ←
+          </button>
+          <div class="slider-counter caption">
+            <span class="slider-counter--current">1</span>
+            <span aria-hidden="true"> / </span>
+            <span class="visually-hidden">{{ 'general.slider.of' | t }}</span>
+            <span class="slider-counter--total">{{ product.images.size | minus: 2 }}</span>
+          </div>
+          <button
+            type="button"
+            class="slider-button slider-button--next"
+            name="next"
+            aria-label="{{ 'general.slider.next_slide' | t }}"
+          >
+            →
+          </button>
+        </div>
+      {%- endif -%}
+    </slider-components>
   </div>
   
   <style>
@@ -143,17 +144,16 @@
     .product-media-grid {
       display: flex;
       width: 100%;
-      gap: 20px;
+      gap: 77px;
       transition: transform 0.5s ease-in-out;
     }
   
     .product-media-item {
       opacity: 1;
-      flex-shrink: 0;
     }
   
     .product-media-image {
-      width: calc((100% - 60px) / 3);
+      width: 460px;
       height: {{ section.settings.image_height }}px;
       object-fit: {{ section.settings.image_fit }};
     }
@@ -183,24 +183,8 @@
       color: #888;
       margin: 0 15px;
     }
-  
-    /* Responsive Design */
-    @media screen and (min-width: 768px) {
-      .product-media-grid {
-        gap: 40px;
-      }
-  
-      .product-media-image {
-        width: calc((100% - 120px) / 4);
-      }
-    }
-  
-    @media screen and (max-width: 767px) {
-      .product-media-image {
-        width: calc((100% - 40px) / 3);
-      }
-    }
   </style>
+  
   <script>
     class SliderComponents extends HTMLElement {
       constructor() {
@@ -209,45 +193,17 @@
         this.prevButton = this.querySelector('.slider-button--prev');
         this.nextButton = this.querySelector('.slider-button--next');
         this.currentSlideCounter = this.querySelector('.slider-counter--current');
-        this.totalSlideCounter = this.querySelector('.slider-counter--total');
         
         // Get all image items
         this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
         
         // Initialize state
         this.currentIndex = 0;
-        this.visibleSlides = this.getVisibleSlides();
+        this.visibleSlides = 3;
         this.totalImages = this.imageItems.length;
-        this.totalSlides = this.calculateTotalSlides();
+        this.totalSlides = this.totalImages - this.visibleSlides + 1;
         
         this.initializeSlider();
-        this.setupResponsiveListener();
-      }
-      
-      getVisibleSlides() {
-        return window.innerWidth >= 768 ? 4 : 3;
-      }
-      
-      calculateTotalSlides() {
-        return Math.max(1, this.totalImages - this.visibleSlides + 1);
-      }
-      
-      setupResponsiveListener() {
-        window.addEventListener('resize', () => {
-          const newVisibleSlides = this.getVisibleSlides();
-          
-          if (newVisibleSlides !== this.visibleSlides) {
-            this.visibleSlides = newVisibleSlides;
-            this.totalSlides = this.calculateTotalSlides();
-            
-            // Reset index if it's out of bounds
-            this.currentIndex = Math.min(this.currentIndex, this.totalSlides - 1);
-            
-            this.updateSliderContent();
-            this.updateNavigationButtons();
-            this.updateSlideCounter();
-          }
-        });
       }
       
       initializeSlider() {
@@ -263,7 +219,6 @@
         // Initial render and button state
         this.updateSliderContent();
         this.updateNavigationButtons();
-        this.updateSlideCounter();
       }
       
       scrollToNextSlide() {
@@ -271,7 +226,6 @@
           this.currentIndex++;
           this.updateSliderContent();
           this.updateNavigationButtons();
-          this.updateSlideCounter();
         }
       }
       
@@ -280,7 +234,6 @@
           this.currentIndex--;
           this.updateSliderContent();
           this.updateNavigationButtons();
-          this.updateSlideCounter();
         }
       }
       
@@ -294,23 +247,17 @@
         if (this.nextButton) {
           this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
         }
-      }
-      
-      updateSlideCounter() {
-        // Update slide counter with current and total slides
+        
+        // Update slide counter
         if (this.currentSlideCounter) {
           this.currentSlideCounter.textContent = this.currentIndex + 1;
-        }
-        
-        if (this.totalSlideCounter) {
-          this.totalSlideCounter.textContent = this.totalSlides;
         }
       }
       
       updateSliderContent() {
         // Calculate the translation based on the width and gap
         const imageWidth = this.imageItems[0].offsetWidth;
-        const gap = window.innerWidth >= 768 ? 40 : 20; // Different gap for desktop and mobile
+        const gap = 77; // Matches the gap in CSS
         const translateX = -this.currentIndex * (imageWidth + gap);
         
         this.slider.style.transform = `translateX(${translateX}px)`;
