@@ -37,32 +37,6 @@
   --text-alignment: var(--collection-card-text-alignment);
 }
 
-/* Styles for transparent header when at the top of the page */
-.header-wrapper[data-sticky-type='always'].header-transparent {
-  width: 100%;
-  display: block;
-  position: absolute;
-  background: transparent !important;
-}
-
-.header-wrapper[data-sticky-type='always'].header-transparent .header {
-  background: transparent !important;
-  color: rgba(var(--color-foreground), 1) !important;
-}
-
-/* Restore background when scrolled */
-.header-wrapper[data-sticky-type='always'].scrolled-past-header {
-  width: 100%;
-  display: block;
-  position: fixed;
-  background-color: var(--color-background) !important;
-}
-
-.header-wrapper[data-sticky-type='always'].scrolled-past-header .header {
-  background-color: var(--color-background) !important;
-  color: rgba(var(--color-foreground), 0.75) !important;
-}
-
 .article-card-wrapper .card,
 .contains-card--article {
   --border-radius: var(--blog-card-corner-radius);
@@ -461,7 +435,6 @@ table:not([class]) {
   box-shadow: 0 0 0 0.1rem rgba(var(--color-foreground), 0.2);
   /* draws the table border  */
 }
-
 
 table:not([class]) td,
 table:not([class]) th {
