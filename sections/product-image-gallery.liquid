@@ -19,26 +19,6 @@
   "default": "cover"
   },
   {
-  "type": "select",
-  "id": "image_zoom",
-  "options": [
-  {
-  "value": "lightbox",
-  "label": "Lightbox"
-  },
-  {
-  "value": "hover",
-  "label": "Hover Zoom"
-  },
-  {
-  "value": "none",
-  "label": "None"
-  }
-  ],
-  "default": "lightbox",
-  "label": "Image Zoom"
-  },
-  {
   "type": "range",
   "id": "image_height",
   "min": 200,
@@ -102,42 +82,29 @@
   }
   ]
   }
-  {% endschema %}
-  {%- if section.settings.image_zoom == 'hover' -%}
-  <script id="EnableZoomOnHover-main" src="{{ 'magnify.js' | asset_url }}" defer="defer"></script>
-  {%- endif -%}
-    <div class="product-media-gallery isolate gradient {% if product.images.size <= 2 %}product-media-gallery--centered{% endif %}" style="background-color: {{ section.settings.background_color }}; padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;">
-      <slider-components class="slider-mobile-gutter">
-        <div
-          id="ProductMediaSlider"
-          class="product-media-grid"
-          role="list"
-          aria-label="{{ 'general.slider.name' | t }}"
-        >
-          {%- for media in product.images limit: 10 -%}
-            <div class="product-media-item" data-media-id="{{ media.id }}">
-              <button 
-                type="button" 
-                class="product-media-button"
-                {% if section.settings.image_zoom == 'hover' %}
-                  data-zoom-on-hover
-                {% endif %}
-                {% if section.settings.image_zoom == 'lightbox' %}
-                  data-open-modal
-                {% endif %}
-                {% comment %} aria-label="{{ 'products.product.media_gallery_open_image' | t }}" {% endcomment %}
-              >
-                {{ media 
-                  | image_url: width: 1000 
-                  | image_tag: 
-                    loading: 'lazy', 
-                    class: 'product-media-image',
-                    alt: media.alt | escape
-                }}
-              </button>
-            </div>
-          {%- endfor -%}
-        </div>
+{% endschema %}
+  <div class="product-media-gallery isolate gradient {% if product.images.size <= 2 %}product-media-gallery--centered{% endif %}" style="background-color: {{ section.settings.background_color }}; padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;">
+    <slider-components class="slider-mobile-gutter">
+      <div
+        id="ProductMediaSlider"
+        class="product-media-grid"
+        role="list"
+        aria-label="{{ 'general.slider.name' | t }}"
+      >
+        {%- for media in product.images limit: 10 -%}
+          <div class="product-media-item">
+            {% assign image_url = media | image_url: width: 2000 %}
+            {% assign full_image_url = media | image_url: width: 4000 %}
+            <img 
+              src="{{ image_url }}" 
+              class="product-media-image" 
+              loading="lazy" 
+              alt="{{ media.alt | escape }}"
+              data-full-src="{{ full_image_url }}"
+            >
+          </div>
+        {%- endfor -%}
+      </div>
 
     {%- if product.images.size > 3 -%}
       <div class="slider-buttons">
@@ -165,10 +132,17 @@
         </button>
       </div>
     {%- endif -%}
-  </slider-components>
-</div>
+    </slider-components>
 
-{% render 'product-media-modal', product: product %}
+    <!-- Zoom Modal -->
+    <div id="imageZoomModal" class="image-zoom-modal">
+      <span class="close-zoom">&times;</span>
+      <div class="image-zoom-container">
+        <img class="image-zoom-content" id="zoomedImage">
+      </div>
+    </div>
+  </div>
+  
   <style>
     .product-media-gallery {
       position: relative;
@@ -194,19 +168,14 @@
   
     .product-media-item {
       opacity: 1;
-    }
-  
-    .product-media-button {
-      background: none;
-      border: none;
-      padding: 0;
-      cursor: pointer;
+      cursor: zoom-in;
     }
   
     .product-media-image {
       width: 460px;
       height: {{ section.settings.image_height }}px;
       object-fit: {{ section.settings.image_fit }};
+      pointer-events: auto;
     }
   
     .product-media-gallery--centered .product-media-image {
@@ -239,116 +208,191 @@
       color: #888;
       margin: 0 15px;
     }
+
+    /* Zoom Modal Styles */
+    .image-zoom-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: rgba(0,0,0,0.9);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-zoom-modal.show {
+      display: flex;
+    }
+
+    .image-zoom-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .image-zoom-content {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      cursor: zoom-out;
+    }
+
+    .close-zoom {
+      position: absolute;
+      top: 15px;
+      right: 35px;
+      color: #f1f1f1;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10000;
+    }
   </style>
   <script>
-    class SliderComponents extends HTMLElement {
-      constructor() {
-        super();
-        this.slider = this.querySelector('#ProductMediaSlider');
-        this.prevButton = this.querySelector('.slider-button--prev');
-        this.nextButton = this.querySelector('.slider-button--next');
-        this.currentSlideCounter = this.querySelector('.slider-counter--current');
-        
-        // Get all image items
-        this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
-        
-        // Initialize state
-        this.currentIndex = 0;
-        this.visibleSlides = 3;
-        this.totalImages = this.imageItems.length;
-        this.totalSlides = this.totalImages - this.visibleSlides + 1;
-        
-        this.initializeSlider();
-        this.initializeModalTriggers();
-      }
-      
-      initializeModalTriggers() {
-        // Add click event to each product media button to open modal or handle zoom
-        this.imageItems.forEach(item => {
-          const button = item.querySelector('.product-media-button');
+    document.addEventListener('DOMContentLoaded', () => {
+      class SliderComponents extends HTMLElement {
+        constructor() {
+          super();
+          this.slider = this.querySelector('#ProductMediaSlider');
+          this.prevButton = this.querySelector('.slider-button--prev');
+          this.nextButton = this.querySelector('.slider-button--next');
+          this.currentSlideCounter = this.querySelector('.slider-counter--current');
           
-          // Lightbox mode
-          if (button.hasAttribute('data-open-modal')) {
-            button.addEventListener('click', () => {
-              const mediaId = item.getAttribute('data-media-id');
-              const productModal = document.getElementById('ProductModal-{{ section.id }}');
-              
-              if (productModal) {
-                // Find the corresponding media in the modal
-                const modalMedia = productModal.querySelector(`[data-media-id="${mediaId}"]`);
-                
-                if (modalMedia) {
-                  // Trigger click on modal media to open
-                  modalMedia.click();
-                }
-              }
-            });
+          // Get all image items
+          this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
+          
+          // Initialize state
+          this.currentIndex = 0;
+          this.visibleSlides = 3;
+          this.totalImages = this.imageItems.length;
+          this.totalSlides = this.totalImages - this.visibleSlides + 1;
+          
+          // Zoom modal elements
+          this.zoomModal = document.getElementById('imageZoomModal');
+          this.zoomedImage = document.getElementById('zoomedImage');
+          this.closeZoomBtn = this.zoomModal.querySelector('.close-zoom');
+          
+          this.initializeSlider();
+          this.initializeZoom();
+        }
+        
+        initializeSlider() {
+          // Skip slider initialization if less than 3 images
+          if (this.totalImages <= 3) {
+            return;
           }
-        });
-      }
-      
-      initializeSlider() {
-        // Skip slider initialization if less than 3 images
-        if (this.totalImages <= 3) {
-          return;
-        }
-        
-        // Setup navigation buttons
-        if (this.prevButton) {
-          this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
-        }
-        
-        if (this.nextButton) {
-          this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
-        }
-        
-        // Initial render and button state
-        this.updateSliderContent();
-        this.updateNavigationButtons();
-      }
-      
-      scrollToNextSlide() {
-        if (this.currentIndex < this.totalSlides - 1) {
-          this.currentIndex++;
+          
+          // Setup navigation buttons
+          if (this.prevButton) {
+            this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
+          }
+          
+          if (this.nextButton) {
+            this.nextButton.addEventListener('click', () => this.scrollToNextSlide());
+          }
+          
+          // Initial render and button state
           this.updateSliderContent();
           this.updateNavigationButtons();
         }
-      }
-      
-      scrollToPrevSlide() {
-        if (this.currentIndex > 0) {
-          this.currentIndex--;
-          this.updateSliderContent();
-          this.updateNavigationButtons();
-        }
-      }
-      
-      updateNavigationButtons() {
-        // Disable prev button if at first slide
-        if (this.prevButton) {
-          this.prevButton.disabled = (this.currentIndex === 0);
+        
+        initializeZoom() {
+          // Add click event to all product media images
+          this.imageItems.forEach(item => {
+            const image = item.querySelector('.product-media-image');
+            image.addEventListener('click', (e) => {
+              e.preventDefault();
+              this.openZoom(image);
+            });
+          });
+          
+          // Close zoom modal when clicking close button
+          if (this.closeZoomBtn) {
+            this.closeZoomBtn.addEventListener('click', () => this.closeZoom());
+          }
+          
+          // Close zoom modal when clicking outside image
+          this.zoomModal.addEventListener('click', (e) => {
+            if (e.target === this.zoomModal) {
+              this.closeZoom();
+            }
+          });
+          
+          // Close zoom modal with Escape key
+          document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.zoomModal.classList.contains('show')) {
+              this.closeZoom();
+            }
+          });
         }
         
-        // Disable next button if at last slide
-        if (this.nextButton) {
-          this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
+        openZoom(image) {
+          // Get full-size image URL
+          const fullImageSrc = image.getAttribute('data-full-src');
+          
+          // Set the zoomed image source
+          this.zoomedImage.src = fullImageSrc;
+          
+          // Show the zoom modal
+          this.zoomModal.classList.add('show');
         }
         
-        // Update slide counter
-        if (this.currentSlideCounter) {
-          this.currentSlideCounter.textContent = this.currentIndex + 1;
+        closeZoom() {
+          // Hide the zoom modal
+          this.zoomModal.classList.remove('show');
+        }
+        
+        scrollToNextSlide() {
+          if (this.currentIndex < this.totalSlides - 1) {
+            this.currentIndex++;
+            this.updateSliderContent();
+            this.updateNavigationButtons();
+          }
+        }
+        
+        scrollToPrevSlide() {
+          if (this.currentIndex > 0) {
+            this.currentIndex--;
+            this.updateSliderContent();
+            this.updateNavigationButtons();
+          }
+        }
+        
+        updateNavigationButtons() {
+          // Disable prev button if at first slide
+          if (this.prevButton) {
+            this.prevButton.disabled = (this.currentIndex === 0);
+          }
+          
+          // Disable next button if at last slide
+          if (this.nextButton) {
+            this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
+          }
+          
+          // Update slide counter
+          if (this.currentSlideCounter) {
+            this.currentSlideCounter.textContent = this.currentIndex + 1;
+          }
+        }
+        
+        updateSliderContent() {
+          // Calculate the translation based on the width and gap
+          const imageWidth = this.imageItems[0].offsetWidth;
+          const gap = 77; // Matches the gap in CSS
+          const translateX = -this.currentIndex * (imageWidth + gap);
+          
+          this.slider.style.transform = `translateX(${translateX}px)`;
         }
       }
-      
-      updateSliderContent() {
-        // Calculate the translation based on the width and gap
-        const imageWidth = this.imageItems[0].offsetWidth;
-        const gap = 77; // Matches the gap in CSS
-        const translateX = -this.currentIndex * (imageWidth + gap);
-        
-        this.slider.style.transform = `translateX(${translateX}px)`;
-      }
-    }
-  
-    customElements.define('slider-components', SliderComponents);
+    
+      customElements.define('slider-components', SliderComponents);
+    });
   </script>
