@@ -347,34 +347,34 @@
     }
 
     onScroll() {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-      if (this.predictiveSearch && this.predictiveSearch.isOpen) return;
+    if (this.predictiveSearch && this.predictiveSearch.isOpen) return;
 
-      if (scrollTop > this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
-        this.header.classList.add('scrolled-past-header');
-        if (this.preventHide) return;
+    if (scrollTop > this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
+      this.header.classList.add('scrolled-past-header');
+      if (this.preventHide) return;
+      requestAnimationFrame(this.hide.bind(this));
+    } else if (scrollTop < this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
+      this.header.classList.add('scrolled-past-header');
+      if (!this.preventReveal) {
+        requestAnimationFrame(this.reveal.bind(this));
+      } else {
+        window.clearTimeout(this.isScrolling);
+
+        this.isScrolling = setTimeout(() => {
+          this.preventReveal = false;
+        }, 66);
+
         requestAnimationFrame(this.hide.bind(this));
-      } else if (scrollTop < this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
-        this.header.classList.add('scrolled-past-header');
-        if (!this.preventReveal) {
-          requestAnimationFrame(this.reveal.bind(this));
-        } else {
-          window.clearTimeout(this.isScrolling);
-
-          this.isScrolling = setTimeout(() => {
-            this.preventReveal = false;
-          }, 66);
-
-          requestAnimationFrame(this.hide.bind(this));
-        }
-      } else if (scrollTop <= this.headerBounds.top) {
-        this.header.classList.remove('scrolled-past-header');
-        requestAnimationFrame(this.reset.bind(this));
       }
-
-      this.currentScrollTop = scrollTop;
+    } else if (scrollTop <= this.headerBounds.top) {
+      this.header.classList.remove('scrolled-past-header');
+      requestAnimationFrame(this.reset.bind(this));
     }
+
+    this.currentScrollTop = scrollTop;
+  }
 
     hide() {
       if (this.headerIsAlwaysSticky) return;
