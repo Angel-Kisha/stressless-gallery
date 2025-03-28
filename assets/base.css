@@ -443,7 +443,6 @@ table:not([class]) th {
 }
 
 @media screen and (max-width: 749px) {
-
   .product-quantity-label {
     font-size: 18px !important;
   }
@@ -1963,7 +1962,7 @@ input[type="checkbox"] {
 .product-quantity-label {
   color: #ffffff;
   font-size: 24px;
-  font-family: 'Hiragino';
+  font-family: "Hiragino";
   font-weight: 600;
   letter-spacing: 2px;
 }
@@ -2032,17 +2031,15 @@ input[type="checkbox"] {
   width: 80% !important;
   background-color: #0c468b;
   color: #ffffff;
-
 }
 
 .bg-blue:after {
-    box-shadow: none !important;
+  box-shadow: none !important;
 }
 
 .button-text {
-  font-family: 'Hiragino';
+  font-family: "Hiragino";
   font-weight: 600;
-
 }
 
 .quantity__button {
