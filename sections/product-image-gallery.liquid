@@ -411,16 +411,13 @@
         this.slider = this.querySelector('#ProductMediaSlider');
         this.sliderDots = this.querySelectorAll('.slider-dot');
 
-        // Get all image items
         this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
 
-        // Initialize state
         this.currentIndex = 0;
         this.visibleSlides = 3;
         this.totalImages = this.imageItems.length;
         this.totalSlides = this.totalImages - this.visibleSlides + 1;
 
-        // Zoom modal elements
         this.zoomModal = document.getElementById('imageZoomModal');
         this.zoomedImage = document.getElementById('zoomedImage');
         this.closeZoomBtn = this.zoomModal.querySelector('.close-zoom');
@@ -430,12 +427,11 @@
       }
 
       initializeSlider() {
-        // Skip slider initialization if less than 3 images
+
         if (this.totalImages <= 3) {
           return;
         }
 
-        // Add click event to slider dots
         this.sliderDots.forEach((dot) => {
           dot.addEventListener('click', (e) => {
             const slideIndex = parseInt(e.target.getAttribute('data-slide-index'));
