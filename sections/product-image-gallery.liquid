@@ -466,7 +466,6 @@
       }
 
       initializeZoom() {
-        // Add click event to all product media images
         this.imageItems.forEach((item) => {
           const image = item.querySelector('.product-media-image');
           image.addEventListener('click', (e) => {
@@ -475,12 +474,10 @@
           });
         });
 
-        // Close zoom modal when clicking close button
         if (this.closeZoomBtn) {
           this.closeZoomBtn.addEventListener('click', () => this.closeZoom());
         }
 
-        // Close zoom modal when clicking outside image
         this.zoomModal.addEventListener('click', (e) => {
           if (e.target === this.zoomModal || e.target === this.zoomedImage) {
             this.closeZoom();
@@ -495,7 +492,6 @@
         });
       }
 
-      // Include existing zoom methods from previous version (openZoom, closeZoom, setupZoomInteraction)
       openZoom(image) {
         const fullImageSrc = image.getAttribute('data-full-src');
         this.zoomedImage.src = fullImageSrc;
