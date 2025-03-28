@@ -434,38 +434,38 @@ customElements.define('sticky-header', StickyHeader);
 
 <style>
   /* Styles for transparent header when at the top of the page */
-  .header-wrapper[data-sticky-type='always']:not(.scrolled-past-header) {
-    width: 100%;
-    display: block;
-    position: absolute;
-    background: transparent !important;
-  }
+.header-wrapper[data-sticky-type='always']:not(.scrolled-past-header) {
+  width: 100%;
+  display: block;
+  position: absolute;
+  background: transparent !important;
+}
 
-  .header-wrapper[data-sticky-type='always']:not(.scrolled-past-header) .header {
-    background: transparent !important;
-  }
+.header-wrapper[data-sticky-type='always']:not(.scrolled-past-header) .header {
+  background: transparent !important;
+}
 
-  /* Restore background when scrolled */
-  .header-wrapper[data-sticky-type='always'].scrolled-past-header {
-    width: 100%;
-    display: block;
-    position: fixed;
-    background-color: var(--color-background) !important;
-  }
+/* Restore background when scrolled */
+.header-wrapper[data-sticky-type='always'].scrolled-past-header {
+  width: 100%;
+  display: block;
+  position: fixed;
+  background-color: var(--color-background) !important;
+}
 
-  .header-wrapper[data-sticky-type='always'].scrolled-past-header .header {
-    background-color: var(--color-background) !important;
-  }
+.header-wrapper[data-sticky-type='always'].scrolled-past-header .header {
+  background-color: var(--color-background) !important;
+}
 
-  /* Adjust color opacity when transparent and when scrolled */
-  .header-wrapper[data-sticky-type='always']:not(.scrolled-past-header) {
-    color: rgba(var(--color-foreground), 1) !important;
-  }
+/* Adjust color opacity when transparent and when scrolled */
+.header-wrapper[data-sticky-type='always']:not(.scrolled-past-header) {
+  color: rgba(var(--color-foreground), 1) !important;
+}
 
-  .header-wrapper[data-sticky-type='always'].scrolled-past-header {
-    color: rgba(var(--color-foreground), 0.75) !important;
-    background-color: var(--color-background) !important;
-  }
+.header-wrapper[data-sticky-type='always'].scrolled-past-header {
+  color: rgba(var(--color-foreground), 0.75) !important;
+  background-color: var(--color-background) !important;
+}
 </style>
 
 <script type="application/ld+json">
