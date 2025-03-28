@@ -406,27 +406,25 @@
 
 <style>
 /* Styles for always sticky header with transparency */
-.header-wrapper[data-sticky-type="always"].header-transparent {
+.header-wrapper[data-sticky-type="always"].header-top-transparent {
   background: transparent !important;
-  position: absolute;
-  width: 100%;
+  box-shadow: none !important;
 }
 
-.header-wrapper[data-sticky-type="always"].header-transparent .header {
+.header-wrapper[data-sticky-type="always"].header-top-transparent .header {
   background: transparent !important;
+  box-shadow: none !important;
 }
 
-.header-wrapper[data-sticky-type="always"].header-transparent,
-.header-wrapper[data-sticky-type="always"].header-transparent .color-scheme-1,
-.header-wrapper[data-sticky-type="always"].header-transparent .color-scheme-2,
-.header-wrapper[data-sticky-type="always"].header-transparent .color-scheme-3,
-.header-wrapper[data-sticky-type="always"].header-transparent .color-scheme-4,
-.header-wrapper[data-sticky-type="always"].header-transparent .color-scheme-5 {
-  color: rgba(var(--color-foreground), 1);
+.header-wrapper[data-sticky-type="always"].header-top-transparent .list-menu__item,
+.header-wrapper[data-sticky-type="always"].header-top-transparent .header__heading-link,
+.header-wrapper[data-sticky-type="always"].header-top-transparent .header__icon {
+  color: white !important;
 }
 
 .header-wrapper[data-sticky-type="always"].header-scrolled {
   background-color: var(--color-background) !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
   position: fixed;
   width: 100%;
 }
@@ -435,13 +433,10 @@
   background-color: var(--color-background) !important;
 }
 
-.header-wrapper[data-sticky-type="always"].header-scrolled,
-.header-wrapper[data-sticky-type="always"].header-scrolled .color-scheme-1,
-.header-wrapper[data-sticky-type="always"].header-scrolled .color-scheme-2,
-.header-wrapper[data-sticky-type="always"].header-scrolled .color-scheme-3,
-.header-wrapper[data-sticky-type="always"].header-scrolled .color-scheme-4,
-.header-wrapper[data-sticky-type="always"].header-scrolled .color-scheme-5 {
-  color: rgba(var(--color-foreground), 0.75);
+.header-wrapper[data-sticky-type="always"].header-scrolled .list-menu__item,
+.header-wrapper[data-sticky-type="always"].header-scrolled .header__heading-link,
+.header-wrapper[data-sticky-type="always"].header-scrolled .header__icon {
+  color: rgba(var(--color-foreground), 0.75) !important;
 }
 </style>
 
