@@ -418,10 +418,22 @@ customElements.define('sticky-header', StickyHeader);
 {% endjavascript %}
 
 {%- style -%}
-  /* Styles for removing background when header is at top */
+  /* Transparent header at the top */
   .shopify-section-header-sticky.header-at-top {
     background: transparent !important;
     box-shadow: none !important;
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+  }
+
+  /* Ensure links and icons are visible on transparent background */
+  .header-at-top .header__heading-link,
+  .header-at-top .header__icons a,
+  .header-at-top .header__icons .svg-wrapper {
+    color: #000; /* Adjust color as needed */
   }
 {%- endstyle -%}
 
