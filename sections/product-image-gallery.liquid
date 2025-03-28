@@ -268,27 +268,6 @@
   </style>
   <script>
 
-document.addEventListener('DOMContentLoaded', () => {
-    const slider = document.querySelector('#ProductMediaSlider');
-    const indicators = document.querySelectorAll('.slider-indicator');
-    let currentIndex = 0;
-    
-    function updateSlider(index) {
-      slider.style.transform = `translateX(-${index * 100}%)`;
-      indicators.forEach(indicator => indicator.classList.remove('active'));
-      indicators[index].classList.add('active');
-    }
-    
-    indicators.forEach((indicator, index) => {
-      indicator.addEventListener('click', () => {
-        currentIndex = index;
-        updateSlider(index);
-      });
-    });
-    
-    updateSlider(currentIndex);
-  });
-  
     document.addEventListener('DOMContentLoaded', () => {
       class SliderComponents extends HTMLElement {
         constructor() {
