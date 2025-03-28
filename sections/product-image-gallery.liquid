@@ -102,7 +102,7 @@
               alt="{{ media.alt | escape }}"
               data-full-src="{{ full_image_url }}"
               width="auto"
-              height="auto"
+              height=""
             >
           </div>
         {%- endfor -%}
@@ -215,7 +215,7 @@
     .image-zoom-modal {
       display: none;
       position: fixed;
-      z-index: 999999;
+      z-index: 9999;
       left: 0;
       top: 0;
       width: 100%;
@@ -244,12 +244,7 @@
       max-width: 90%;
       max-height: 90%;
       object-fit: contain;
-      cursor: zoom-in;
-      transition: transform 0.3s ease;
-    }
-    .image-zoom-content.zoomed {
       cursor: zoom-out;
-      transform: scale(2);
     }
 
     .close-zoom {
