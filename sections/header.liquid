@@ -456,8 +456,8 @@
 {%- style -%}
   /* This will override the existing style block */
   .header {
-    padding: {{ section.settings.padding_top | times: 0.5 | round: 0 }}px 3rem {{ section.settings.padding_bottom | times: 0.5 | round: 0 }}px 3rem;
-    transition: background-color 0.3s ease; /* Add transition for smooth background change */
+    padding: {{ section.settings.padding_top | times: 0.5 | round: 0 }}px 3rem {{ section.settings.padding_bottom | times: 0.5 | round: 0 }}px 3rem !important;
+    transition: background-color 0.3s ease !important; /* Add transition for smooth background change */
   }
 
   @media screen and (min-width: 990px) {
