@@ -462,7 +462,9 @@ product-description-detail {
 }
 
 @media screen and (max-width: 749px) {
-
+.product__title{
+  margin-top: 0.5em;
+}
   .product-code{
     font-size: 14px !important;
   }
