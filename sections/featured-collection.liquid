@@ -126,7 +126,8 @@
                   %}
                 {% endif %}
                 {% if section.settings.image_source == 'products' %}
-                {% render 'product-media-gallery', variant_images: variant_images %}
+                {% render 'product-media-gallery',
+                  variant_images: variant_images %}
                 {% endif %}
               </li>
               {%- assign skip_card_product_styles = true -%}
