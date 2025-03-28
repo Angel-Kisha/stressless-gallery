@@ -148,6 +148,15 @@
       transition: transform 0.5s ease-in-out;
     }
   
+    .product-media-gallery--centered .product-media-grid {
+      justify-content: center;
+      gap: 20px;
+    }
+  
+    .product-media-gallery--centered .product-media-item {
+      flex-shrink: 0;
+    }
+  
     .product-media-item {
       opacity: 1;
     }
@@ -156,6 +165,11 @@
       width: 460px;
       height: {{ section.settings.image_height }}px;
       object-fit: {{ section.settings.image_fit }};
+    }
+  
+    .product-media-gallery--centered .product-media-image {
+      width: auto;
+      max-width: 100%;
     }
   
     .slider-buttons {
@@ -184,7 +198,6 @@
       margin: 0 15px;
     }
   </style>
-  
   <script>
     class SliderComponents extends HTMLElement {
       constructor() {
@@ -207,6 +220,11 @@
       }
       
       initializeSlider() {
+        // Skip slider initialization if less than 3 images
+        if (this.totalImages <= 3) {
+          return;
+        }
+        
         // Setup navigation buttons
         if (this.prevButton) {
           this.prevButton.addEventListener('click', () => this.scrollToPrevSlide());
