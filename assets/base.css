@@ -445,7 +445,7 @@ table:not([class]) th {
 @media screen and (max-width: 749px) {
 
   .product-quantity-label {
-    font-size: 18px;
+    font-size: 18px !important;
   }
 
   .page-width-nopadding {
