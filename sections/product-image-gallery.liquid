@@ -133,6 +133,7 @@
     </slider-components>
   </div>
   
+  {% render 'product-media-modal', product: product %}
   <style>
     .product-media-gallery {
       position: relative;
@@ -158,6 +159,13 @@
   
     .product-media-item {
       opacity: 1;
+    }
+  
+    .product-media-button {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
     }
   
     .product-media-image {
@@ -216,6 +224,28 @@
         this.totalSlides = this.totalImages - this.visibleSlides + 1;
         
         this.initializeSlider();
+        this.initializeModalTriggers();
+      }
+      
+      initializeModalTriggers() {
+        // Add click event to each product media button to open modal
+        this.imageItems.forEach(item => {
+          const button = item.querySelector('.product-media-button');
+          button.addEventListener('click', () => {
+            const mediaId = item.getAttribute('data-media-id');
+            const productModal = document.getElementById('ProductModal-{{ section.id }}');
+            
+            if (productModal) {
+              // Find the corresponding media in the modal
+              const modalMedia = productModal.querySelector(`[data-media-id="${mediaId}"]`);
+              
+              if (modalMedia) {
+                // Trigger click on modal media to open
+                modalMedia.click();
+              }
+            }
+          });
+        });
       }
       
       initializeSlider() {
