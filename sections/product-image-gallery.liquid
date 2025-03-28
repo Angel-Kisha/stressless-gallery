@@ -125,7 +125,7 @@
                 {% if section.settings.image_zoom == 'lightbox' %}
                   data-open-modal
                 {% endif %}
-                aria-label="{{ 'products.product.media_gallery_open_image' | t }}"
+                {% comment %} aria-label="{{ 'products.product.media_gallery_open_image' | t }}" {% endcomment %}
               >
                 {{ media 
                   | image_url: width: 1000 
