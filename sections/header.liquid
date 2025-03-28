@@ -303,54 +303,50 @@
     }
 
     connectedCallback() {
-      this.header = document.querySelector('.section-header');
-      this.headerIsAlwaysSticky = this.getAttribute('data-sticky-type') === 'always' || this.getAttribute('data-sticky-type') === 'reduce-logo-size';
-      this.headerBounds = {};
+    this.header = document.querySelector('.section-header');
+    this.headerWrapper = document.querySelector('.header-wrapper');
+    this.headerIsAlwaysSticky = this.getAttribute('data-sticky-type') === 'always' || this.getAttribute('data-sticky-type') === 'reduce-logo-size';
+    this.headerBounds = {};
 
-      this.setHeaderHeight();
+    this.setHeaderHeight();
 
-      window.matchMedia('(max-width: 990px)').addEventListener('change', this.setHeaderHeight.bind(this));
+    window.matchMedia('(max-width: 990px)').addEventListener('change', this.setHeaderHeight.bind(this));
 
-      if (this.headerIsAlwaysSticky) {
-        this.header.classList.add('shopify-section-header-sticky');
-      };
-
-      this.currentScrollTop = 0;
-      this.preventReveal = false;
-      this.predictiveSearch = this.querySelector('predictive-search');
-
-      this.onScrollHandler = this.onScroll.bind(this);
-      this.hideHeaderOnScrollUp = () => this.preventReveal = true;
-
-      this.addEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
-      window.addEventListener('scroll', this.onScrollHandler, false);
-
-      this.createObserver();
+    if (this.headerIsAlwaysSticky) {
+      this.header.classList.add('shopify-section-header-sticky');
+      // Add initial transparent state
+      this.headerWrapper.classList.add('header-transparent');
     }
 
-    setHeaderHeight() {
-      document.documentElement.style.setProperty('--header-height', `${this.header.offsetHeight}px`);
-    }
+    this.currentScrollTop = 0;
+    this.preventReveal = false;
+    this.predictiveSearch = this.querySelector('predictive-search');
 
-    disconnectedCallback() {
-      this.removeEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
-      window.removeEventListener('scroll', this.onScrollHandler);
-    }
+    this.onScrollHandler = this.onScroll.bind(this);
+    this.hideHeaderOnScrollUp = () => this.preventReveal = true;
 
-    createObserver() {
-      let observer = new IntersectionObserver((entries, observer) => {
-        this.headerBounds = entries[0].intersectionRect;
-        observer.disconnect();
-      });
+    this.addEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
+    window.addEventListener('scroll', this.onScrollHandler, false);
 
-      observer.observe(this.header);
-    }
+    this.createObserver();
+  }
 
-    onScroll() {
+  onScroll() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
     if (this.predictiveSearch && this.predictiveSearch.isOpen) return;
 
+    if (this.headerIsAlwaysSticky) {
+      if (scrollTop > this.headerBounds.bottom) {
+        this.headerWrapper.classList.remove('header-transparent');
+        this.headerWrapper.classList.add('header-scrolled');
+      } else {
+        this.headerWrapper.classList.add('header-transparent');
+        this.headerWrapper.classList.remove('header-scrolled');
+      }
+    }
+
+    // Rest of the original onScroll method remains the same
     if (scrollTop > this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
       this.header.classList.add('scrolled-past-header');
       if (this.preventHide) return;
