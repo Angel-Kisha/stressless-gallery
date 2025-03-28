@@ -247,9 +247,9 @@
       cursor: zoom-in;
       transition: transform 0.3s ease;
     }
+
     .image-zoom-content.zoomed {
       cursor: zoom-out;
-      transform: scale(2);
     }
 
     .close-zoom {
@@ -289,9 +289,6 @@
           
           this.initializeSlider();
           this.initializeZoom();
-
-          this.isZoomed = false;
-          this.zoomScale = 2; 
         }
         
         initializeSlider() {
@@ -355,86 +352,26 @@
           this.zoomModal.classList.add('show');
           
           // Reset zoom state
-          this.isZoomed = false;
           this.zoomedImage.classList.remove('zoomed');
+          this.zoomedImage.style.transform = 'scale(1)';
           
           // Add zoom interaction to zoomed image
           this.setupZoomInteraction();
         }
         
         setupZoomInteraction() {
-          let startX, startY, initialScale = 1;
-          
-          const resetZoom = () => {
-            this.zoomedImage.style.transform = 'scale(1)';
-            this.isZoomed = false;
-            this.zoomedImage.classList.remove('zoomed');
-          };
-          
           // Toggle zoom on click
           this.zoomedImage.addEventListener('click', (e) => {
             e.stopPropagation();
             
-            if (!this.isZoomed) {
+            if (!this.zoomedImage.classList.contains('zoomed')) {
               // Zoom in
-              this.zoomedImage.style.transform = `scale(${this.zoomScale})`;
               this.zoomedImage.classList.add('zoomed');
-              this.isZoomed = true;
+              this.zoomedImage.style.transform = 'scale(2)';
             } else {
               // Zoom out
-              resetZoom();
-            }
-          });
-          
-          // Pinch-to-zoom for touch devices
-          let initialDistance = 0;
-          this.zoomedImage.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-              initialDistance = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-              );
-            }
-          });
-          
-          this.zoomedImage.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 2) {
-              const currentDistance = Math.hypot(
-                e.touches[0].pageX - e.touches[1].pageX,
-                e.touches[0].pageY - e.touches[1].pageY
-              );
-              
-              const scale = currentDistance / initialDistance;
-              this.zoomedImage.style.transform = `scale(${scale})`;
-            }
-          });
-          
-          // Dragging when zoomed
-          let isDragging = false;
-          let startX, startY;
-          
-          this.zoomedImage.addEventListener('mousedown', (e) => {
-            if (this.isZoomed) {
-              isDragging = true;
-              startX = e.clientX - this.zoomedImage.offsetLeft;
-              startY = e.clientY - this.zoomedImage.offsetTop;
-              this.zoomedImage.style.cursor = 'grabbing';
-            }
-          });
-          
-          document.addEventListener('mousemove', (e) => {
-            if (isDragging && this.isZoomed) {
-              const x = e.clientX - startX;
-              const y = e.clientY - startY;
-              this.zoomedImage.style.left = `${x}px`;
-              this.zoomedImage.style.top = `${y}px`;
-            }
-          });
-          
-          document.addEventListener('mouseup', () => {
-            if (isDragging) {
-              isDragging = false;
-              this.zoomedImage.style.cursor = 'zoom-out';
+              this.zoomedImage.classList.remove('zoomed');
+              this.zoomedImage.style.transform = 'scale(1)';
             }
           });
         }
@@ -444,7 +381,6 @@
           this.zoomModal.classList.remove('show');
           
           // Reset zoom state
-          this.isZoomed = false;
           this.zoomedImage.classList.remove('zoomed');
           this.zoomedImage.style.transform = 'scale(1)';
         }
