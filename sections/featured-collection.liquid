@@ -38,6 +38,8 @@
   }
 {%- endstyle -%}
 
+{% assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' %}
+
 {% liquid
   assign products_to_display = section.settings.collection.all_products_count
 
