@@ -138,7 +138,6 @@
     .product-media-gallery {
       position: relative;
       width: 100%;
-      margin: auto;
       overflow: hidden;
     }
   
@@ -202,7 +201,7 @@
         this.currentIndex = 0;
         this.visibleSlides = 3;
         this.totalImages = this.imageItems.length;
-        this.totalSlides = this.totalImages - this.visibleSlides + 1;
+        this.totalSlides = Math.max(1, this.totalImages - this.visibleSlides + 1);
         
         this.initializeSlider();
       }
@@ -248,20 +247,17 @@
         if (this.nextButton) {
           this.nextButton.disabled = (this.currentIndex >= this.totalSlides - 1);
         }
+      }
+      
+      updateSliderContent() {
+        // Calculate the translation based on current index
+        const translateX = -this.currentIndex * (this.imageItems[0].offsetWidth + 10);
+        this.slider.style.transform = `translateX(${translateX}px)`;
         
         // Update slide counter
         if (this.currentSlideCounter) {
           this.currentSlideCounter.textContent = this.currentIndex + 1;
         }
-      }
-      
-      updateSliderContent() {
-        // Calculate the translation based on the width and gap
-        const imageWidth = this.imageItems[0].offsetWidth;
-        const gap = 77; // Matches the gap in CSS
-        const translateX = -this.currentIndex * (imageWidth + gap);
-        
-        this.slider.style.transform = `translateX(${translateX}px)`;
       }
     }
   
