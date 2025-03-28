@@ -260,27 +260,28 @@
   document.addEventListener('DOMContentLoaded', () => {
     class SliderComponents extends HTMLElement {
       constructor() {
-        super();
-        this.slider = this.querySelector('#ProductMediaSlider');
-        this.sliderDots = this.querySelectorAll('.slider-dot');
+          super();
+          this.slider = this.querySelector('#ProductMediaSlider');
+          this.sliderDots = this.querySelectorAll('.slider-dot');
+          
+          // Get all image items
+          this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
+          
+          // Initialize state
+          this.currentIndex = 0;
+          this.visibleSlides = 3;
+          this.totalImages = this.imageItems.length;
+          this.totalSlides = this.totalImages - this.visibleSlides + 1;
+          
+          // Zoom modal elements
+          this.zoomModal = document.getElementById('imageZoomModal');
+          this.zoomedImage = document.getElementById('zoomedImage');
+          this.closeZoomBtn = this.zoomModal.querySelector('.close-zoom');
+          
+          this.initializeSlider();
+          this.initializeZoom();
+        }
         
-        // Get all image items
-        this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
-        
-        // Initialize state
-        this.currentIndex = 0;
-        this.visibleSlides = 3;
-        this.totalImages = this.imageItems.length;
-        this.totalSlides = this.totalImages - this.visibleSlides + 1;
-        
-        // Zoom modal elements
-        this.zoomModal = document.getElementById('imageZoomModal');
-        this.zoomedImage = document.getElementById('zoomedImage');
-        this.closeZoomBtn = this.zoomModal.querySelector('.close-zoom');
-        
-        this.initializeSlider();
-        this.initializeZoom();
-      }
       
       initializeSlider() {
         // Skip slider initialization if less than 3 images
