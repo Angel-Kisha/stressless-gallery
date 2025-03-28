@@ -41,6 +41,9 @@
 {% assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' %}
 
 {% liquid
+  assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' %}
+
+{% liquid
   assign products_to_display = section.settings.collection.all_products_count
 
   if section.settings.collection.all_products_count > section.settings.products_to_show
@@ -59,7 +62,6 @@
     assign show_desktop_slider = true
   endif
 -%}
-
 <div
   class="color-{{ section.settings.color_scheme }} isolate gradient"
 >
