@@ -124,7 +124,8 @@
                     content_alignment: section.settings.content_alignment,
                     show_product_title: section.settings.show_product_title
                   %}
-                {% else %}
+                {% endif %}
+                {% if section.settings.image_source == 'products' %}
                 {% render 'product-media-gallery', variant_images: variant_images %}
                 {% endif %}
               </li>
