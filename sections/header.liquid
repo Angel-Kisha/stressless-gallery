@@ -315,7 +315,7 @@
     if (this.headerIsAlwaysSticky) {
       this.header.classList.add('shopify-section-header-sticky');
       // Add initial transparent state
-      this.headerWrapper.classList.add('header-transparent');
+      this.headerWrapper.classList.add('header-top-transparent');
     }
 
     this.currentScrollTop = 0;
@@ -337,11 +337,11 @@
     if (this.predictiveSearch && this.predictiveSearch.isOpen) return;
 
     if (this.headerIsAlwaysSticky) {
-      if (scrollTop > this.headerBounds.bottom) {
-        this.headerWrapper.classList.remove('header-transparent');
+      if (scrollTop > 50) { // Adjust this value to control when transparency changes
+        this.headerWrapper.classList.remove('header-top-transparent');
         this.headerWrapper.classList.add('header-scrolled');
       } else {
-        this.headerWrapper.classList.add('header-transparent');
+        this.headerWrapper.classList.add('header-top-transparent');
         this.headerWrapper.classList.remove('header-scrolled');
       }
     }
