@@ -20,6 +20,16 @@
       },
       {
         "type": "range",
+        "id": "image_width",
+        "min": 400,
+        "max": 1200,
+        "step": 50,
+        "unit": "px",
+        "label": "Image Width",
+        "default": 700
+      },
+      {
+        "type": "range",
         "id": "image_height",
         "min": 200,
         "max": 800,
@@ -27,6 +37,16 @@
         "unit": "px",
         "label": "Image Height",
         "default": 500
+      },
+      {
+        "type": "range",
+        "id": "gap_between_images",
+        "min": 20,
+        "max": 150,
+        "step": 5,
+        "unit": "px",
+        "label": "Gap Between Images",
+        "default": 75
       },
       {
         "type": "range",
@@ -95,7 +115,7 @@
         {%- for media in product.images limit: 10 -%}
           <div class="product-media-item">
             {{ media 
-              | image_url: width: 1000 
+              | image_url: width: 1500 
               | image_tag: 
                 loading: 'lazy', 
                 class: 'product-media-image',
@@ -144,16 +164,17 @@
     .product-media-grid {
       display: flex;
       width: 100%;
-      gap: 77px;
+      gap: {{ section.settings.gap_between_images }}px;
       transition: transform 0.5s ease-in-out;
     }
   
     .product-media-item {
       opacity: 1;
+      flex-shrink: 0;
     }
   
     .product-media-image {
-      width: 460px;
+      width: {{ section.settings.image_width }}px;
       height: {{ section.settings.image_height }}px;
       object-fit: {{ section.settings.image_fit }};
     }
@@ -257,7 +278,7 @@
       updateSliderContent() {
         // Calculate the translation based on the width and gap
         const imageWidth = this.imageItems[0].offsetWidth;
-        const gap = 77; // Matches the gap in CSS
+        const gap = {{ section.settings.gap_between_images }}; 
         const translateX = -this.currentIndex * (imageWidth + gap);
         
         this.slider.style.transform = `translateX(${translateX}px)`;
