@@ -110,10 +110,14 @@
 
     {%- if product.images.size > 3 -%}
       <div class="slider-navigation">
-        <div class="slider-navigation-bars">
-          {%- assign nav_bar_count = product.images.size | minus: 2 -%}
-          {%- for i in (1..nav_bar_count) -%}
-            <div class="slider-navigation-bar" data-index="{{ forloop.index0 }}"></div>
+        <div class="slider-dots">
+          {%- for _ in (1..product.images.size) -%}
+            <button 
+              type="button" 
+              class="slider-dot {% if forloop.first %}slider-dot--active{% endif %}"
+              data-slide-index="{{ forloop.index0 }}"
+              aria-label="{{ 'general.slider.go_to_slide' | t }} {{ forloop.index }}"
+            ></button>
           {%- endfor -%}
         </div>
       </div>
@@ -176,25 +180,29 @@
       margin-top: 15px;
     }
   
-    .slider-navigation-bars {
+    .slider-dots {
       display: flex;
-      align-items: center;
       gap: 10px;
+      align-items: center;
     }
   
-    .slider-navigation-bar {
-      width: 50px;
-      height: 4px;
+    .slider-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
       background-color: #e0e0e0;
+      border: none;
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
   
-    .slider-navigation-bar.active {
+    .slider-dot--active {
       background-color: #333;
+      width: 14px;
+      height: 14px;
     }
 
-    /* Zoom Modal Styles */
+    /* Zoom Modal Styles (unchanged from previous version) */
     .image-zoom-modal {
       display: none;
       position: fixed;
@@ -252,7 +260,7 @@
         constructor() {
           super();
           this.slider = this.querySelector('#ProductMediaSlider');
-          this.navigationBars = this.querySelectorAll('.slider-navigation-bar');
+          this.sliderDots = this.querySelectorAll('.slider-dot');
           
           // Get all image items
           this.imageItems = Array.from(this.querySelectorAll('.product-media-item'));
@@ -278,33 +286,34 @@
             return;
           }
           
-          // Setup navigation bar clicks
-          this.navigationBars.forEach((bar, index) => {
-            bar.addEventListener('click', () => this.navigateToSlide(index));
+          // Add click event to slider dots
+          this.sliderDots.forEach(dot => {
+            dot.addEventListener('click', (e) => {
+              const slideIndex = parseInt(e.target.getAttribute('data-slide-index'));
+              this.goToSlide(slideIndex);
+            });
           });
-          
-          // Initial render and navigation state
-          this.updateSliderContent();
-          this.updateNavigationState();
         }
         
-        navigateToSlide(index) {
-          this.currentIndex = index;
-          this.updateSliderContent();
-          this.updateNavigationState();
-        }
-        
-        updateNavigationState() {
-          // Remove active class from all bars
-          this.navigationBars.forEach(bar => {
-            bar.classList.remove('active');
-          });
-          
-          // Add active class to current bar
-          if (this.navigationBars[this.currentIndex]) {
-            this.navigationBars[this.currentIndex].classList.add('active');
+        goToSlide(index) {
+          if (index >= 0 && index < this.totalSlides) {
+            this.currentIndex = index;
+            this.updateSliderContent();
+            this.updateActiveDot();
           }
         }
+        
+        updateActiveDot() {
+          // Remove active class from all dots
+          this.sliderDots.forEach(dot => {
+            dot.classList.remove('slider-dot--active');
+          });
+          
+          // Add active class to current dot
+          this.sliderDots[this.currentIndex].classList.add('slider-dot--active');
+        }
+        
+        // Rest of the methods remain the same as in the previous version (initializeZoom, openZoom, closeZoom, etc.)
         
         updateSliderContent() {
           // Calculate the translation based on the width and gap
@@ -313,9 +322,9 @@
           const translateX = -this.currentIndex * (imageWidth + gap);
           
           this.slider.style.transform = `translateX(${translateX}px)`;
-          this.updateNavigationState();
         }
         
+        // Include the existing initializeZoom method from previous version
         initializeZoom() {
           // Add click event to all product media images
           this.imageItems.forEach(item => {
@@ -346,38 +355,25 @@
           });
         }
         
+        // Include existing zoom methods from previous version (openZoom, closeZoom, setupZoomInteraction)
         openZoom(image) {
-          // Get full-size image URL
           const fullImageSrc = image.getAttribute('data-full-src');
-          
-          // Set the zoomed image source
           this.zoomedImage.src = fullImageSrc;
-          
-          // Show the zoom modal
           this.zoomModal.classList.add('show');
-          
-          // Reset zoom state
           this.zoomedImage.classList.remove('zoomed');
           this.zoomedImage.style.transform = 'scale(1)';
-          
-          // Add zoom interaction to zoomed image
           this.setupZoomInteraction();
         }
         
         setupZoomInteraction() {
-          // Remove any existing click event listeners to prevent multiple bindings
           this.zoomedImage.onclick = null;
-          
-          // Toggle zoom on click
           this.zoomedImage.onclick = (e) => {
             e.stopPropagation();
             
             if (!this.zoomedImage.classList.contains('zoomed')) {
-              // Zoom in
               this.zoomedImage.classList.add('zoomed');
               this.zoomedImage.style.transform = 'scale(2)';
             } else {
-              // Zoom out
               this.zoomedImage.classList.remove('zoomed');
               this.zoomedImage.style.transform = 'scale(1)';
             }
@@ -385,10 +381,7 @@
         }
         
         closeZoom() {
-          // Hide the zoom modal
           this.zoomModal.classList.remove('show');
-          
-          // Reset zoom state
           this.zoomedImage.classList.remove('zoomed');
           this.zoomedImage.style.transform = 'scale(1)';
         }
