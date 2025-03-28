@@ -304,6 +304,7 @@
 
     connectedCallback() {
       this.header = document.querySelector('.section-header');
+      this.headerBg = this.header.querySelector('.header');
       this.headerIsAlwaysSticky = this.getAttribute('data-sticky-type') === 'always' || this.getAttribute('data-sticky-type') === 'reduce-logo-size';
       this.headerBounds = {};
 
@@ -313,7 +314,7 @@
 
       if (this.headerIsAlwaysSticky) {
         this.header.classList.add('shopify-section-header-sticky');
-      };
+      }
 
       this.currentScrollTop = 0;
       this.preventReveal = false;
@@ -353,10 +354,12 @@
 
       if (scrollTop > this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
         this.header.classList.add('scrolled-past-header');
+        this.addScrolledBackground();
         if (this.preventHide) return;
         requestAnimationFrame(this.hide.bind(this));
       } else if (scrollTop < this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
         this.header.classList.add('scrolled-past-header');
+        this.addScrolledBackground();
         if (!this.preventReveal) {
           requestAnimationFrame(this.reveal.bind(this));
         } else {
@@ -370,10 +373,19 @@
         }
       } else if (scrollTop <= this.headerBounds.top) {
         this.header.classList.remove('scrolled-past-header');
+        this.removeScrolledBackground();
         requestAnimationFrame(this.reset.bind(this));
       }
 
       this.currentScrollTop = scrollTop;
+    }
+
+    addScrolledBackground() {
+      this.headerBg.classList.add('header--scrolled');
+    }
+
+    removeScrolledBackground() {
+      this.headerBg.classList.remove('header--scrolled');
     }
 
     hide() {
