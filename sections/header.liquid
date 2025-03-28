@@ -417,6 +417,14 @@ class StickyHeader extends HTMLElement {
 customElements.define('sticky-header', StickyHeader);
 {% endjavascript %}
 
+{%- style -%}
+  /* Styles for removing background when header is at top */
+  .shopify-section-header-sticky.header-at-top {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+{%- endstyle -%}
+
 <script type="application/ld+json">
   {
     "@context": "http://schema.org",
