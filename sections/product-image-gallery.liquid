@@ -459,13 +459,12 @@
 
       updateSliderContent() {
         const imageWidth = this.imageItems[0].offsetWidth;
-        const gap = 77; // Matches the gap in CSS
+        const gap = 77; 
         const translateX = -this.currentIndex * (imageWidth + gap);
 
         this.slider.style.transform = `translateX(${translateX}px)`;
       }
 
-      // Include the existing initializeZoom method from previous version
       initializeZoom() {
         // Add click event to all product media images
         this.imageItems.forEach((item) => {
