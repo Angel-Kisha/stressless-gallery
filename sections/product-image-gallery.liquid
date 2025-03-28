@@ -108,26 +108,25 @@
         {%- endfor -%}
       </div>
 
-    {%- if product.images.size > 3 -%}
-      <div class="slider-navigation">
-        <div class="slider-navigation-bars">
-          {%- assign nav_bar_count = product.images.size | minus: 2 -%}
-          {%- for i in (1..nav_bar_count) -%}
-            <div class="slider-navigation-bar" data-index="{{ forloop.index0 }}"></div>
-          {%- endfor -%}
+      {%- if product.images.size > 3 -%}
+        <div class="slider-navigation">
+          <div class="slider-navigation-bars">
+            {%- assign nav_bar_count = product.images.size | minus: 2 -%}
+            {%- for i in (1..nav_bar_count) -%}
+              <div class="slider-navigation-bar" data-index="{{ forloop.index0 }}"></div>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+      </slider-components>
+      
+      <!-- Zoom Modal -->
+      <div id="imageZoomModal" class="image-zoom-modal">
+        <span class="close-zoom">&times;</span>
+        <div class="image-zoom-container">
+          <img class="image-zoom-content" id="zoomedImage" width="auto" height="auto">
         </div>
       </div>
-    {%- endif -%}
-    </slider-components>
-
-    <!-- Zoom Modal -->
-    <div id="imageZoomModal" class="image-zoom-modal">
-      <span class="close-zoom">&times;</span>
-      <div class="image-zoom-container">
-        <img class="image-zoom-content" id="zoomedImage" width="auto" height="auto">
-      </div>
-    </div>
-  </div>
   
   <style>
     .product-media-gallery {
