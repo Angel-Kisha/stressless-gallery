@@ -123,28 +123,7 @@
                     show_product_title: section.settings.show_product_title
                   %}
                 {% else %}
-                  <div class="product-media-gallery isolate gradient" style="background-color: {{ section.settings.background_color }};">
-                    <slider-component class="slider-mobile-gutter">
-                      <div
-                        id="ProductMediaSlider-{{ product.id }}"
-                        class="product-media-grid"
-                        role="list"
-                        aria-label="{{ 'general.slider.name' | t }}"
-                      >
-                        {%- for media in product.images limit: section.settings.product_images_limit -%}
-                          <div class="product-media-item">
-                            {{ media 
-                              | image_url: width: 1000 
-                              | image_tag: 
-                                loading: 'lazy', 
-                                class: 'product-media-image',
-                                alt: media.alt | escape
-                            }}
-                          </div>
-                        {%- endfor -%}
-                      </div>
-                    </slider-component>
-                  </div>
+                {% render 'product-media-gallery', variant_images: variant_images %}
                 {% endif %}
               </li>
               {%- assign skip_card_product_styles = true -%}
