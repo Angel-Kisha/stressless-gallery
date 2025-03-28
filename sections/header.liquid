@@ -303,50 +303,54 @@
     }
 
     connectedCallback() {
-    this.header = document.querySelector('.section-header');
-    this.headerWrapper = document.querySelector('.header-wrapper');
-    this.headerIsAlwaysSticky = this.getAttribute('data-sticky-type') === 'always' || this.getAttribute('data-sticky-type') === 'reduce-logo-size';
-    this.headerBounds = {};
+      this.header = document.querySelector('.section-header');
+      this.headerIsAlwaysSticky = this.getAttribute('data-sticky-type') === 'always' || this.getAttribute('data-sticky-type') === 'reduce-logo-size';
+      this.headerBounds = {};
 
-    this.setHeaderHeight();
+      this.setHeaderHeight();
 
-    window.matchMedia('(max-width: 990px)').addEventListener('change', this.setHeaderHeight.bind(this));
+      window.matchMedia('(max-width: 990px)').addEventListener('change', this.setHeaderHeight.bind(this));
 
-    if (this.headerIsAlwaysSticky) {
-      this.header.classList.add('shopify-section-header-sticky');
-      // Add initial transparent state
-      this.headerWrapper.classList.add('header-top-transparent');
+      if (this.headerIsAlwaysSticky) {
+        this.header.classList.add('shopify-section-header-sticky');
+      };
+
+      this.currentScrollTop = 0;
+      this.preventReveal = false;
+      this.predictiveSearch = this.querySelector('predictive-search');
+
+      this.onScrollHandler = this.onScroll.bind(this);
+      this.hideHeaderOnScrollUp = () => this.preventReveal = true;
+
+      this.addEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
+      window.addEventListener('scroll', this.onScrollHandler, false);
+
+      this.createObserver();
     }
 
-    this.currentScrollTop = 0;
-    this.preventReveal = false;
-    this.predictiveSearch = this.querySelector('predictive-search');
+    setHeaderHeight() {
+      document.documentElement.style.setProperty('--header-height', `${this.header.offsetHeight}px`);
+    }
 
-    this.onScrollHandler = this.onScroll.bind(this);
-    this.hideHeaderOnScrollUp = () => this.preventReveal = true;
+    disconnectedCallback() {
+      this.removeEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
+      window.removeEventListener('scroll', this.onScrollHandler);
+    }
 
-    this.addEventListener('preventHeaderReveal', this.hideHeaderOnScrollUp);
-    window.addEventListener('scroll', this.onScrollHandler, false);
+    createObserver() {
+      let observer = new IntersectionObserver((entries, observer) => {
+        this.headerBounds = entries[0].intersectionRect;
+        observer.disconnect();
+      });
 
-    this.createObserver();
-  }
+      observer.observe(this.header);
+    }
 
-  onScroll() {
+    onScroll() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
     if (this.predictiveSearch && this.predictiveSearch.isOpen) return;
 
-    if (this.headerIsAlwaysSticky) {
-      if (scrollTop > 50) { // Adjust this value to control when transparency changes
-        this.headerWrapper.classList.remove('header-top-transparent');
-        this.headerWrapper.classList.add('header-scrolled');
-      } else {
-        this.headerWrapper.classList.add('header-top-transparent');
-        this.headerWrapper.classList.remove('header-scrolled');
-      }
-    }
-
-    // Rest of the original onScroll method remains the same
     if (scrollTop > this.currentScrollTop && scrollTop > this.headerBounds.bottom) {
       this.header.classList.add('scrolled-past-header');
       if (this.preventHide) return;
@@ -405,38 +409,48 @@
 {% endjavascript %}
 
 <style>
-/* Styles for always sticky header with transparency */
-.header-wrapper[data-sticky-type="always"].header-top-transparent {
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-.header-wrapper[data-sticky-type="always"].header-top-transparent .header {
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-.header-wrapper[data-sticky-type="always"].header-top-transparent .list-menu__item,
-.header-wrapper[data-sticky-type="always"].header-top-transparent .header__heading-link,
-.header-wrapper[data-sticky-type="always"].header-top-transparent .header__icon {
-  color: white !important;
-}
-
-.header-wrapper[data-sticky-type="always"].header-scrolled {
-  background-color: var(--color-background) !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-  position: fixed;
+/* Styles for transparent header when at the top of the page */
+.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) {
   width: 100%;
+  display: block;
+  position: absolute;
+  background: transparent !important;
 }
 
-.header-wrapper[data-sticky-type="always"].header-scrolled .header {
+.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) .header {
+  background: transparent !important;
+}
+
+/* Restore background when scrolled */
+.header-wrapper[data-sticky-type="always"].scrolled-past-header {
+  width: 100%;
+  display: block;
+  position: fixed;
   background-color: var(--color-background) !important;
 }
 
-.header-wrapper[data-sticky-type="always"].header-scrolled .list-menu__item,
-.header-wrapper[data-sticky-type="always"].header-scrolled .header__heading-link,
-.header-wrapper[data-sticky-type="always"].header-scrolled .header__icon {
-  color: rgba(var(--color-foreground), 0.75) !important;
+.header-wrapper[data-sticky-type="always"].scrolled-past-header .header {
+  background-color: var(--color-background) !important;
+}
+
+/* Remove color opacity when transparent and restore when scrolled */
+.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header),
+.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) .color-scheme-1,
+.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) .color-scheme-2,
+.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) .color-scheme-3,
+.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) .color-scheme-4,
+.header-wrapper[data-sticky-type="always"]:not(.scrolled-past-header) .color-scheme-5 {
+  color: rgba(var(--color-foreground), 1);
+}
+
+.header-wrapper[data-sticky-type="always"].scrolled-past-header,
+.header-wrapper[data-sticky-type="always"].scrolled-past-header .color-scheme-1,
+.header-wrapper[data-sticky-type="always"].scrolled-past-header .color-scheme-2,
+.header-wrapper[data-sticky-type="always"].scrolled-past-header .color-scheme-3,
+.header-wrapper[data-sticky-type="always"].scrolled-past-header .color-scheme-4,
+.header-wrapper[data-sticky-type="always"].scrolled-past-header .color-scheme-5 {
+  color: rgba(var(--color-foreground), 0.75);
+  background-color: var(--color-background);
 }
 </style>
 
