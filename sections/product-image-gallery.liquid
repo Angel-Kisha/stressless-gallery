@@ -85,7 +85,7 @@
   {% endschema %}
   
   <div class="product-media-gallery isolate gradient" style="background-color: {{ section.settings.background_color }}; padding: {{ section.settings.padding_top }}px {{ section.settings.padding_right }}px {{ section.settings.padding_bottom }}px {{ section.settings.padding_left }}px;">
-    <slider-component class="slider-mobile-gutter">
+    <slider-components class="slider-mobile-gutter">
       <div
         id="ProductMediaSlider"
         class="product-media-grid"
@@ -131,7 +131,7 @@
           </button>
         </div>
       {%- endif -%}
-    </slider-component>
+    </slider-components>
   </div>
   
   <style>
@@ -186,7 +186,7 @@
   </style>
   
   <script>
-    class SliderComponent extends HTMLElement {
+    class SliderComponents extends HTMLElement {
       constructor() {
         super();
         this.slider = this.querySelector('#ProductMediaSlider');
