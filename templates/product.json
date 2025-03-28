@@ -123,10 +123,10 @@
         "image_fit": "cover",
         "image_height": 400,
         "padding_top": 100,
-        "padding_bottom": 50,
+        "padding_bottom": 85,
         "padding_left": 0,
         "padding_right": 30,
-        "background_color": "#ffffff"
+        "background_color": "#334fb4"
       }
     },
     "page_title_CCVj4h": {
