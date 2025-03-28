@@ -38,7 +38,7 @@
   }
 {%- endstyle -%}
 
-{%- liquid
+{% liquid
   assign products_to_display = section.settings.collection.all_products_count
 
   if section.settings.collection.all_products_count > section.settings.products_to_show
@@ -107,20 +107,36 @@
                   style="--animation-order: {{ forloop.index }};"
                 {% endif %}
               >
-                {% render 'card-product',
-                  card_product: product,
-                  media_aspect_ratio: section.settings.image_ratio,
-                  image_shape: section.settings.image_shape,
-                  show_secondary_image: section.settings.show_secondary_image,
-                  show_vendor: section.settings.show_vendor,
-                  show_rating: section.settings.show_rating,
-                  skip_styles: skip_card_product_styles,
-                  section_id: section.id,
-                  quick_add: section.settings.quick_add,
-                  bold_product_name: section.settings.bold_product_name,
-                  content_alignment: section.settings.content_alignment,
-                  show_product_title: section.settings.show_product_title
-                %}
+                {% if section.settings.image_source == 'collection' %}
+                  {% render 'card-product',
+                    card_product: product,
+                    media_aspect_ratio: section.settings.image_ratio,
+                    image_shape: section.settings.image_shape,
+                    show_secondary_image: section.settings.show_secondary_image,
+                    show_vendor: section.settings.show_vendor,
+                    show_rating: section.settings.show_rating,
+                    skip_styles: skip_card_product_styles,
+                    section_id: section.id,
+                    quick_add: section.settings.quick_add,
+                    bold_product_name: section.settings.bold_product_name,
+                    content_alignment: section.settings.content_alignment,
+                    show_product_title: section.settings.show_product_title
+                  %}
+                {% else %}
+                  <div class="product-media-grid">
+                    {%- for media in product.images limit: section.settings.product_images_limit -%}
+                      <div class="product-media-item">
+                        {{ media 
+                          | image_url: width: 1000 
+                          | image_tag: 
+                            loading: 'lazy', 
+                            class: 'product-media-image',
+                            alt: media.alt | escape
+                        }}
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                {% endif %}
               </li>
               {%- assign skip_card_product_styles = true -%}
             {%- endfor -%}
