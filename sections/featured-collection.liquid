@@ -126,17 +126,8 @@
                   %}
                 {% endif %}
                 {% if section.settings.image_source == 'product' %}
-                  {%- for media in product.images limit: 10 -%}
-                    <div class="product-media-item">
-                      {{ media 
-                        | image_url: width: 1000 
-                        | image_tag: 
-                          loading: 'lazy', 
-                          class: 'product-media-image',
-                          alt: media.alt | escape
-                      }}
-                    </div>
-                  {%- endfor -%}
+                {% render 'product-media-gallery',
+                  variant_images: variant_images %}
                 {% endif %}
               </li>
               {%- assign skip_card_product_styles = true -%}
