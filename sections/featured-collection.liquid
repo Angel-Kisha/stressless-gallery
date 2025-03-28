@@ -127,7 +127,7 @@
                     {% for image in product.images limit: images_to_show %}
                       <div class="product-image-wrapper">
                         <img 
-                          src="{{ image | img_url: 'medium' }}" 
+                          src="{{ image | image_url}}" 
                           alt="{{ image.alt | escape }}"
                           class="product-image"
                           loading="lazy"
