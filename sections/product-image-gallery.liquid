@@ -194,7 +194,7 @@
       background-color: #333;
     }
 
-    /* Zoom Modal Styles remain the same */
+    /* Zoom Modal Styles */
     .image-zoom-modal {
       display: none;
       position: fixed;
@@ -306,8 +306,6 @@
           }
         }
         
-        // Zoom modal methods remain the same
-        
         updateSliderContent() {
           // Calculate the translation based on the width and gap
           const imageWidth = this.imageItems[0].offsetWidth;
@@ -317,8 +315,6 @@
           this.slider.style.transform = `translateX(${translateX}px)`;
           this.updateNavigationState();
         }
-        
-        // Rest of the methods (openZoom, closeZoom, etc.) remain the same
         
         initializeZoom() {
           // Add click event to all product media images
