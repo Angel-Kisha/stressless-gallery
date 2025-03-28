@@ -463,6 +463,10 @@ product-description-detail {
 
 @media screen and (max-width: 749px) {
 
+  .product-code{
+    font-size: 14px !important;
+  }
+
   .product-label-dropdown-text {
     font-size: 18px !important;
   }
