@@ -125,9 +125,18 @@
                     show_product_title: section.settings.show_product_title
                   %}
                 {% endif %}
-                {% if section.settings.image_source == 'products' %}
-                {% render 'product-media-gallery',
-                  variant_images: variant_images %}
+                {% if section.settings.image_source == 'product' %}
+                  {%- for media in product.images limit: 10 -%}
+                    <div class="product-media-item">
+                      {{ media 
+                        | image_url: width: 1000 
+                        | image_tag: 
+                          loading: 'lazy', 
+                          class: 'product-media-image',
+                          alt: media.alt | escape
+                      }}
+                    </div>
+                  {%- endfor -%}
                 {% endif %}
               </li>
               {%- assign skip_card_product_styles = true -%}
