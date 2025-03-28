@@ -449,19 +449,15 @@
       }
 
       updateActiveDot() {
-        // Remove active class from all dots
+
         this.sliderDots.forEach((dot) => {
           dot.classList.remove('slider-dot--active');
         });
 
-        // Add active class to current dot
         this.sliderDots[this.currentIndex].classList.add('slider-dot--active');
       }
 
-      // Rest of the methods remain the same as in the previous version (initializeZoom, openZoom, closeZoom, etc.)
-
       updateSliderContent() {
-        // Calculate the translation based on the width and gap
         const imageWidth = this.imageItems[0].offsetWidth;
         const gap = 77; // Matches the gap in CSS
         const translateX = -this.currentIndex * (imageWidth + gap);
