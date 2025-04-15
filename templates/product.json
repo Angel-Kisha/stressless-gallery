@@ -56,6 +56,17 @@
             "description_padding_top": 16,
             "description_padding_bottom": 16
           }
+        },
+        "detail_JYip9T": {
+          "type": "detail",
+          "settings": {
+            "detail_header": "Product Details",
+            "detail_text": "Enter your product details here.",
+            "detail_margin_top": 16,
+            "detail_padding_top": 0,
+            "header_alignment": "left",
+            "text_alignment": "left"
+          }
         }
       },
       "block_order": [
@@ -65,7 +76,8 @@
         "quantity-selector",
         "variant-picker",
         "buy_buttons",
-        "description_7wWhyW"
+        "description_7wWhyW",
+        "detail_JYip9T"
       ],
       "settings": {
         "enable_sticky_info": false,
