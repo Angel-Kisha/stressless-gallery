@@ -56,17 +56,6 @@
             "description_padding_top": 16,
             "description_padding_bottom": 16
           }
-        },
-        "detail_JYip9T": {
-          "type": "detail",
-          "settings": {
-            "detail_header": "Product Details",
-            "detail_text": "Enter your product details here.",
-            "detail_margin_top": 16,
-            "detail_padding_top": 0,
-            "header_alignment": "left",
-            "text_alignment": "left"
-          }
         }
       },
       "block_order": [
@@ -76,8 +65,7 @@
         "quantity-selector",
         "variant-picker",
         "buy_buttons",
-        "description_7wWhyW",
-        "detail_JYip9T"
+        "description_7wWhyW"
       ],
       "settings": {
         "enable_sticky_info": false,
@@ -112,33 +100,6 @@
         "show_rating": false,
         "padding_top": 36,
         "padding_bottom": 28
-      }
-    },
-    "page_title_wPKdnK": {
-      "type": "page-title",
-      "settings": {
-        "title": "GALLERY",
-        "description": "ギャラリー",
-        "show_description": true,
-        "alignment": "text-center",
-        "color_scheme": "scheme-4",
-        "font_size_title": 46,
-        "font_size_description": 20,
-        "margin_top": 0,
-        "padding_top": 40,
-        "padding_bottom": 40
-      }
-    },
-    "product_image_gallery_pNwyAy": {
-      "type": "product-image-gallery",
-      "settings": {
-        "image_fit": "cover",
-        "image_height": 400,
-        "padding_top": 100,
-        "padding_bottom": 35,
-        "padding_left": 0,
-        "padding_right": 0,
-        "background_color": "#334fb4"
       }
     },
     "page_title_CCVj4h": {
@@ -191,8 +152,6 @@
   "order": [
     "main",
     "related-products",
-    "page_title_wPKdnK",
-    "product_image_gallery_pNwyAy",
     "page_title_CCVj4h",
     "featured_collection_kLMPjB"
   ]
