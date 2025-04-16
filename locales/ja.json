@@ -184,9 +184,9 @@
         "price_range": "{{ minimum }}～{{ maximum }}",
         "price_at_each_html": "{{ price }}/ユニットで"
       },
-      "taxes_included": "税込。",
-      "duties_included": "関税込。",
-      "duties_and_taxes_included": "関税と税金が含まれます。"
+      "taxes_included": "(税込)",
+      "duties_included": "(関税込)",
+      "duties_and_taxes_included": "(関税と税金が含まれます)"
     },
     "modal": {
       "label": "メディアギャラリー"

@@ -107,6 +107,47 @@ body:has(.section-header .drawer-menu) .announcement-bar-section .page-width {
   padding-right: 3rem;
 }
 
+.flex {
+  display: flex;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+.align-center {
+  align-items: center;
+}
+.align-baseline {
+  align-items: baseline;
+}
+
+.justify-center {
+  justify-content: center;
+}
+.gap-10 {
+  gap: 10px;
+}
+
+.q-button {
+  display: flex;
+  align-items: center;
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 10px;
+  width: 100%;
+}
+
+.q-buy-button {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 70%;
+}
+
 @media screen and (min-width: 750px) {
   .page-width {
     padding: 0 5rem;
@@ -2026,7 +2067,6 @@ input[type="checkbox"] {
 }
 
 .bg-blue {
-  width: 80% !important;
   background-color: #0c468b;
   color: #ffffff;
 }

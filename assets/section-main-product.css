@@ -503,8 +503,8 @@ product-description-detail {
 }
 
 .product-form__buttons {
-  max-width: 44rem;
-  place-items: center;
+  /* max-width: 30rem;
+  place-items: center; */
 }
 
 .product--no-media .product__info-container > modal-opener {
