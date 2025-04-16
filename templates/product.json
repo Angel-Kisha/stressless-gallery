@@ -64,9 +64,9 @@
           "type": "description",
           "settings": {
             "show_description_heading": true,
-            "description_heading": "SPEC　＞　商品詳細",
-            "description_padding_top": 16,
-            "description_padding_bottom": 16
+            "description_heading": "商品詳細",
+            "description_padding_top": 12,
+            "description_padding_bottom": 12
           }
         }
       },
