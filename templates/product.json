@@ -26,6 +26,7 @@
         },
         "sku_VYTTKh": {
           "type": "sku",
+          "repeater": "{{ product.metafields.shopify[\"color-pattern\"].value }}",
           "settings": {
             "text_style": "subtitle"
           }
