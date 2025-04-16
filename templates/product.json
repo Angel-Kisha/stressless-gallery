@@ -38,7 +38,7 @@
           "type": "variant_picker",
           "settings": {
             "picker_type": "dropdown",
-            "swatch_shape": "circle"
+            "swatch_shape": "none"
           }
         },
         "buy_buttons": {
