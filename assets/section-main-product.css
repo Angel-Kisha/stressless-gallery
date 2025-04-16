@@ -245,6 +245,29 @@ product-info {
   display: flex;
   gap: 2rem;
   align-items: center;
+  border-top: 1px solid #dfe5ea;
+  padding-top: 16px;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background-color: #ccc;
+  margin: 0 10px;
+  border: 1px solid #dfe5ea;
+  padding-left: 10px;
+}
+
+.deselect-button {
+  background: none;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
+
+.product-label-dropdown:last-of-type {
+  border-bottom: 1px solid #dfe5ea;
+  padding-bottom: 16px;
 }
 
 .product-label-dropdown-text {

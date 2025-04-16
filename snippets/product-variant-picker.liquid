@@ -54,10 +54,10 @@
         </fieldset>
       {%- else -%}
         <div class="product-form__input product-form__input--dropdown product-label-dropdown">
-          <label class="form__label product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+          <label class="w-30 form__label product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
             {{ option.name }}
           </label>
-          <div class="select">
+          <div class="select w-55">
             {%- if picker_type == 'swatch_dropdown' -%}
               <span
                 data-selected-value
@@ -72,7 +72,6 @@
               name="options[{{ option.name | escape }}]"
               form="{{ product_form_id }}"
             >
-            <option disabled selected value="">選択してください</option>
               {% render 'product-variant-options',
                 product: product,
                 option: option,
@@ -80,9 +79,13 @@
                 picker_type: picker_type
               %}
             </select>
-            <span class="svg-wrapper svg-black">
+            <span class="svg-wrapper">
               {{- 'icon-caret.svg' | inline_asset_content -}}
             </span>
+          </div>
+          <div class="divider"></div>
+          <div class="w-15">
+            <button class="deselect-button">選択解除</button>
           </div>
         </div>
       {%- endif -%}
