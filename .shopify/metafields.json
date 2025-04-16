@@ -1,0 +1,86 @@
+{
+  "article": [],
+  "blog": [],
+  "collection": [
+    {
+      "key": "english_title",
+      "namespace": "custom",
+      "name": "English Title",
+      "description": "English translation of collection title",
+      "type": {
+        "name": "single_line_text_field",
+        "category": "TEXT"
+      }
+    }
+  ],
+  "company": [],
+  "company_location": [],
+  "location": [],
+  "market": [],
+  "order": [],
+  "page": [],
+  "product": [
+    {
+      "key": "color-pattern",
+      "namespace": "shopify",
+      "name": "Color",
+      "description": "Defines the primary color or pattern, such as blue or striped",
+      "type": {
+        "name": "list.metaobject_reference",
+        "category": "REFERENCE"
+      }
+    },
+    {
+      "key": "seat-type",
+      "namespace": "shopify",
+      "name": "Seat type",
+      "description": "Describes the design of a chair or bench seat, such as padded or bucket ",
+      "type": {
+        "name": "list.metaobject_reference",
+        "category": "REFERENCE"
+      }
+    },
+    {
+      "key": "size_specification",
+      "namespace": "custom",
+      "name": "Size Specification",
+      "description": "Product size details",
+      "type": {
+        "name": "rich_text_field",
+        "category": "TEXT"
+      }
+    },
+    {
+      "key": "material_specification",
+      "namespace": "custom",
+      "name": "Material Specification",
+      "description": "Product material details",
+      "type": {
+        "name": "rich_text_field",
+        "category": "TEXT"
+      }
+    },
+    {
+      "key": "others_specification",
+      "namespace": "custom",
+      "name": "Others Specification",
+      "description": "Other details",
+      "type": {
+        "name": "rich_text_field",
+        "category": "TEXT"
+      }
+    },
+    {
+      "key": "guarantee_specification",
+      "namespace": "custom",
+      "name": "Guarantee Specification",
+      "description": "Guarantee details",
+      "type": {
+        "name": "rich_text_field",
+        "category": "TEXT"
+      }
+    }
+  ],
+  "variant": [],
+  "shop": []
+}

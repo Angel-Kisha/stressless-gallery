@@ -98,35 +98,55 @@
           {% endcase %}
         {% endfor %}
 
-        <div class="specifications-table">
-          {% if product.metafields.custom.size_specification %}
-            <div class="spec-row">
-              <div class="spec-label">サイズ</div>
-              <div class="spec-content">{{ product.metafields.custom.size_specification | metafield_tag }}</div>
-            </div>
-          {% endif %}
+        {% assign has_specification = false %}
 
-          {% if product.metafields.custom.material_specification %}
-            <div class="spec-row">
-              <div class="spec-label">素材</div>
-              <div class="spec-content">{{ product.metafields.custom.material_specification | metafield_tag }}</div>
-            </div>
-          {% endif %}
-
-          {% if product.metafields.custom.others_specification %}
-            <div class="spec-row">
-              <div class="spec-label">その他</div>
-              <div class="spec-content">{{ product.metafields.custom.others_specification | metafield_tag }}</div>
-            </div>
-          {% endif %}
-
-          {% if product.metafields.custom.guarantee_specification %}
-            <div class="spec-row">
-              <div class="spec-label">保証</div>
-              <div class="spec-content">{{ product.metafields.custom.guarantee_specification | metafield_tag }}</div>
-            </div>
-          {% endif %}
-        </div>
+        {% if product.metafields.custom.size_specification %}
+          {% assign has_specification = true %}
+        {% endif %}
+        {% if product.metafields.custom.material_specification %}
+          {% assign has_specification = true %}
+        {% endif %}
+        {% if product.metafields.custom.others_specification %}
+          {% assign has_specification = true %}
+        {% endif %}
+        {% if product.metafields.custom.guarantee_specification %}
+          {% assign has_specification = true %}
+        {% endif %}
+        
+        {% if has_specification %}
+           <div class="spec-title">詳細　＞　SPEC</div>
+          <div class="specifications-table">
+           
+        
+            {% if product.metafields.custom.size_specification %}
+              <div class="spec-row">
+                <div class="spec-label">サイズ</div>
+                <div class="spec-content rte">{{ product.metafields.custom.size_specification | metafield_tag }}</div>
+              </div>
+            {% endif %}
+        
+            {% if product.metafields.custom.material_specification %}
+              <div class="spec-row">
+                <div class="spec-label">素材</div>
+                <div class="spec-content rte">{{ product.metafields.custom.material_specification | metafield_tag }}</div>
+              </div>
+            {% endif %}
+        
+            {% if product.metafields.custom.others_specification %}
+              <div class="spec-row">
+                <div class="spec-label">その他</div>
+                <div class="spec-content rte">{{ product.metafields.custom.others_specification | metafield_tag }}</div>
+              </div>
+            {% endif %}
+        
+            {% if product.metafields.custom.guarantee_specification %}
+              <div class="spec-row">
+                <div class="spec-label">保証</div>
+                <div class="spec-content rte">{{ product.metafields.custom.guarantee_specification | metafield_tag }}</div>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
       </div>
 
       <div class="product__info-wrapper grid__item{% if settings.page_width > 1400 and section.settings.media_size == "small" %} product__info-wrapper--extra-padding{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
