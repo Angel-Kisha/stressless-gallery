@@ -107,7 +107,7 @@ body:has(.section-header .drawer-menu) .announcement-bar-section .page-width {
   padding-right: 3rem;
 }
 
-.product-price{
+.product-price {
   display: flex;
   gap: 10px;
 }
@@ -2074,6 +2074,10 @@ input[type="checkbox"] {
 .bg-blue {
   background-color: #0c468b;
   color: #ffffff;
+}
+
+.bg-blue:hover {
+  opacity: 85%;
 }
 
 .bg-blue:after {
