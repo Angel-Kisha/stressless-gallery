@@ -46,20 +46,6 @@
           "type": "quantity_selector",
           "settings": {}
         },
-        "popup_6WwkmA": {
-          "type": "popup",
-          "settings": {
-            "text": "ポップアップリンクのテキスト",
-            "page": ""
-          }
-        },
-        "buy_buttons": {
-          "type": "buy_buttons",
-          "settings": {
-            "show_dynamic_checkout": false,
-            "show_gift_card_recipient": false
-          }
-        },
         "description_7wWhyW": {
           "type": "description",
           "settings": {
@@ -77,8 +63,6 @@
         "price_RaQ3JL",
         "variant-picker",
         "quantity-selector",
-        "popup_6WwkmA",
-        "buy_buttons",
         "description_7wWhyW"
       ],
       "settings": {
