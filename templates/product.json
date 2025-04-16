@@ -30,6 +30,10 @@
             "text_style": "subtitle"
           }
         },
+        "price_RaQ3JL": {
+          "type": "price",
+          "settings": {}
+        },
         "variant-picker": {
           "type": "variant_picker",
           "settings": {
@@ -40,6 +44,13 @@
         "quantity-selector": {
           "type": "quantity_selector",
           "settings": {}
+        },
+        "popup_6WwkmA": {
+          "type": "popup",
+          "settings": {
+            "text": "ポップアップリンクのテキスト",
+            "page": ""
+          }
         },
         "buy_buttons": {
           "type": "buy_buttons",
@@ -62,8 +73,10 @@
         "vendor",
         "title",
         "sku_VYTTKh",
+        "price_RaQ3JL",
         "variant-picker",
         "quantity-selector",
+        "popup_6WwkmA",
         "buy_buttons",
         "description_7wWhyW"
       ],
