@@ -27,12 +27,8 @@
         "sku_VYTTKh": {
           "type": "sku",
           "settings": {
-            "text_style": "body"
+            "text_style": "subtitle"
           }
-        },
-        "quantity-selector": {
-          "type": "quantity_selector",
-          "settings": {}
         },
         "variant-picker": {
           "type": "variant_picker",
@@ -40,6 +36,10 @@
             "picker_type": "dropdown",
             "swatch_shape": "none"
           }
+        },
+        "quantity-selector": {
+          "type": "quantity_selector",
+          "settings": {}
         },
         "buy_buttons": {
           "type": "buy_buttons",
@@ -62,8 +62,8 @@
         "vendor",
         "title",
         "sku_VYTTKh",
-        "quantity-selector",
         "variant-picker",
+        "quantity-selector",
         "buy_buttons",
         "description_7wWhyW"
       ],
