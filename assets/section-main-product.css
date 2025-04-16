@@ -27,7 +27,7 @@ product-info {
 }
 
 .spec-title {
-  font-size: 14px;
+  font-size: 16px;
   margin-top: 30px;
   margin-left: 20%;
   font-weight: bold;
@@ -55,6 +55,15 @@ product-info {
   margin: 0px;
 }
 
+.spec-content a{
+  text-decoration: none;
+  font-weight: bold;
+  display: inline;
+  float: right;
+}
+.spec-content a:hover{
+  opacity: 70%;
+}
 .spec-content br {
   display: block;
   content: "";
@@ -326,7 +335,7 @@ a.product__text {
 
 .product-code {
   font-family: "Hiragino" !important;
-  font-size: 16px !important;
+  font-size: 12px !important;
 }
 
 .product__title {
@@ -363,7 +372,7 @@ a.product__text {
 }
 
 .product .price__container {
-  margin-bottom: 0.5rem;
+  /* margin-bottom: 0.5rem; */
 }
 
 .product .price dl {
@@ -407,7 +416,8 @@ a.product__text {
 }
 
 .product__tax {
-  margin-top: -1.4rem;
+  align-self: flex-end;
+  margin-bottom: 5px;
 }
 
 .product--no-media .share-button {
