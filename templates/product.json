@@ -46,6 +46,13 @@
           "type": "quantity_selector",
           "settings": {}
         },
+        "buy_buttons_EjRFWg": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": true
+          }
+        },
         "description_7wWhyW": {
           "type": "description",
           "settings": {
@@ -63,6 +70,7 @@
         "price_RaQ3JL",
         "variant-picker",
         "quantity-selector",
+        "buy_buttons_EjRFWg",
         "description_7wWhyW"
       ],
       "settings": {
