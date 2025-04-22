@@ -129,7 +129,7 @@
         "show_description": false,
         "description_style": "subtitle",
         "columns_desktop": 4,
-        "enable_desktop_slider": false,
+        "enable_desktop_slider": true,
         "full_width": false,
         "show_view_all": false,
         "view_all_style": "solid",
