@@ -99,14 +99,9 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      setupVariantSelectors();
-    });
-
-    // Wait until window loads to ensure all Shopify elements are available
-    window.addEventListener('load', function() {
-      // Ensure the setup runs after Shopify has initialized everything
+      // Initialize after a short delay to ensure all Shopify elements are loaded
       setTimeout(function() {
-        refreshVariantSelectsState();
+        setupVariantSelectors();
       }, 100);
     });
 
@@ -118,6 +113,12 @@
       const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select');
       selects.forEach(function(select) {
         select.addEventListener('change', function() {
+          const isDefaultOption = this.selectedIndex === 0;
+          
+          // Disable dropdown when an actual option is selected (not "Please select")
+          this.disabled = !isDefaultOption;
+          
+          // Update deselect button state (enable when non-default option selected)
           updateDeselectButtonState(this);
         });
       });
@@ -157,6 +158,7 @@
         
         // Set to "Please select" as default
         select.selectedIndex = 0;
+        select.disabled = false; // Ensure select is enabled when showing "Please select"
         
         // Initialize deselect button state
         updateDeselectButtonState(select);
@@ -175,8 +177,8 @@
       if (!deselectButton) return;
       
       // Update deselect button state based on whether "Please select" is chosen
-      const isFirstOptionSelected = select.selectedIndex === 0;
-      deselectButton.disabled = isFirstOptionSelected;
+      const isDefaultOptionSelected = select.selectedIndex === 0;
+      deselectButton.disabled = isDefaultOptionSelected;
     }
 
     function handleDeselectButtonClick(button) {
@@ -186,6 +188,9 @@
       
       const select = parentContainer.querySelector('select');
       if (!select) return;
+      
+      // Re-enable the select first (it might be disabled)
+      select.disabled = false;
       
       // Set selection back to "Please select"
       select.selectedIndex = 0;
@@ -199,13 +204,6 @@
       
       // Update price range
       updatePriceRange();
-    }
-
-    function refreshVariantSelectsState() {
-      const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select');
-      selects.forEach(function(select) {
-        updateDeselectButtonState(select);
-      });
     }
 
     function updatePriceRange() {
@@ -232,7 +230,13 @@
       if (!variantSelects) return;
       
       const observer = new MutationObserver(function(mutations) {
-        refreshVariantSelectsState();
+        // Process all selects to update their states
+        const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select');
+        selects.forEach(function(select) {
+          const isDefaultOption = select.selectedIndex === 0;
+          select.disabled = !isDefaultOption;
+          updateDeselectButtonState(select);
+        });
       });
       
       observer.observe(variantSelects, { 
@@ -241,5 +245,19 @@
         subtree: true 
       });
     }
+
+    // Run initialization after window loads as well
+    window.addEventListener('load', function() {
+      // Force rerun setup to make sure everything is properly initialized
+      setTimeout(function() {
+        // Process all selects to update their states
+        const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select');
+        selects.forEach(function(select) {
+          const isDefaultOption = select.selectedIndex === 0;
+          select.disabled = !isDefaultOption;
+          updateDeselectButtonState(select);
+        });
+      }, 200);
+    });
   </script>
 {%- endunless -%}
