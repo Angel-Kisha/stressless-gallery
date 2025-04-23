@@ -72,6 +72,7 @@
               name="options[{{ option.name | escape }}]"
               form="{{ product_form_id }}"
               data-option-index="{{ forloop.index0 }}"
+              onchange="updateDeselectButtonState(this)"
             >
               {% render 'product-variant-options',
                 product: product,
@@ -86,7 +87,7 @@
           </div>
           <div class="divider"></div>
           <div class="w-15">
-            <button type="button" class="deselect-button">選択解除</button>
+            <button type="button" class="deselect-button" disabled>選択解除</button>
           </div>
         </div>
       {%- endif -%}
@@ -110,6 +111,9 @@
           setTimeout(setupPleaseSelectOption, 50);
         });
       }
+      
+      // Initialize deselect button states
+      initializeDeselectButtonStates();
     });
     
     function setupPleaseSelectOption() {
@@ -138,6 +142,9 @@
         
         // Update price display
         updatePriceRange();
+        
+        // Update deselect button state
+        updateDeselectButtonState(select);
       });
     }
     
@@ -159,6 +166,31 @@
       }
     }
     
+    // Function to initialize all deselect button states on page load
+    function initializeDeselectButtonStates() {
+      const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select');
+      selects.forEach(function(select) {
+        updateDeselectButtonState(select);
+      });
+    }
+    
+    // Function to update deselect button state based on select value
+    function updateDeselectButtonState(select) {
+      const deselectButton = select.closest('.product-form__input--dropdown').querySelector('.deselect-button');
+      if (deselectButton) {
+        // Enable button only if a real option (not "Please select") is selected
+        const isRealOptionSelected = select.selectedIndex > 0;
+        deselectButton.disabled = !isRealOptionSelected;
+        
+        // Optional: Add visual indication that button is disabled
+        if (!isRealOptionSelected) {
+          deselectButton.classList.add('disabled');
+        } else {
+          deselectButton.classList.remove('disabled');
+        }
+      }
+    }
+    
     // Set up a simpler solution that doesn't interfere with page loading
     document.addEventListener('DOMContentLoaded', function() {
       // Add event listeners to deselect buttons
@@ -168,10 +200,21 @@
           const select = this.closest('.product-form__input--dropdown').querySelector('select');
           if (select) {
             // Force it to select the "Please select" option
-            setTimeout(function() {
-              setupPleaseSelectOption();
-            }, 10);
+            select.selectedIndex = 0;
+            
+            // Update the button state
+            updateDeselectButtonState(select);
+            
+            // Update price display
+            updatePriceRange();
           }
+        });
+      });
+      
+      // Add change event listeners to all select elements
+      document.querySelectorAll('#variant-selects-{{ section.id }} select').forEach(select => {
+        select.addEventListener('change', function() {
+          updateDeselectButtonState(this);
         });
       });
     });
