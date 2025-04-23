@@ -43,8 +43,8 @@
           %}
         </fieldset>
       {%- elsif picker_type == 'button' -%}
-        <fieldset class="js product-forminput product-forminput--pill">
-          <legend class="formlabel">{{ option.name }}</legend>
+        <fieldset class="js product-form__input product-form__input--pill">
+          <legend class="form__label">{{ option.name }}</legend>
           {% render 'product-variant-options',
             product: product,
             option: option,
@@ -53,8 +53,8 @@
           %}
         </fieldset>
       {%- else -%}
-        <div class="product-forminput product-forminput--dropdown product-label-dropdown">
-          <label class="w-30 formlabel product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+        <div class="product-form__input product-form__input--dropdown product-label-dropdown">
+          <label class="w-30 form__label product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
             {{ option.name }}
           </label>
           <div class="select w-55">
@@ -68,7 +68,7 @@
             {%- endif -%}
             <select
               id="Option-{{ section.id }}-{{ forloop.index0 }}"
-              class="selectselect"
+              class="select__select"
               name="options[{{ option.name | escape }}]"
               form="{{ product_form_id }}"
               data-option-index="{{ forloop.index0 }}"
