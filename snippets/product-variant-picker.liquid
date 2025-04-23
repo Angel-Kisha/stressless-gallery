@@ -73,6 +73,7 @@
               form="{{ product_form_id }}"
               data-option-index="{{ forloop.index0 }}"
             >
+            <option value="" disabled>Please select</option>
               {% render 'product-variant-options',
                 product: product,
                 option: option,
