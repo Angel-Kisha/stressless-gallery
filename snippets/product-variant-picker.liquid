@@ -1,5 +1,5 @@
 {% comment %}
-  Renders product variant-picker with "Please select" default option
+  Renders product variant-picker
 
   Accepts:
   - product: {Object} product object.
@@ -73,7 +73,6 @@
               form="{{ product_form_id }}"
               data-option-index="{{ forloop.index0 }}"
             >
-              <!-- Standard variant options rendered by the product-variant-options snippet -->
               {% render 'product-variant-options',
                 product: product,
                 option: option,
