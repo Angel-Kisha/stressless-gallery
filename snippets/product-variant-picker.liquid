@@ -28,8 +28,8 @@
         endif
       -%}
       {%- if picker_type == 'swatch' -%}
-        <fieldset class="js product-form__input product-form__input--swatch">
-          <legend class="form__label">
+        <fieldset class="js product-forminput product-forminput--swatch">
+          <legend class="formlabel">
             {{ option.name }}:
             <span data-selected-value>
               {{- option.selected_value -}}
@@ -43,8 +43,8 @@
           %}
         </fieldset>
       {%- elsif picker_type == 'button' -%}
-        <fieldset class="js product-form__input product-form__input--pill">
-          <legend class="form__label">{{ option.name }}</legend>
+        <fieldset class="js product-forminput product-forminput--pill">
+          <legend class="formlabel">{{ option.name }}</legend>
           {% render 'product-variant-options',
             product: product,
             option: option,
@@ -53,29 +53,24 @@
           %}
         </fieldset>
       {%- else -%}
-        <div class="product-form__input product-form__input--dropdown product-label-dropdown">
-          <label class="w-30 form__label product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+        <div class="product-forminput product-forminput--dropdown product-label-dropdown">
+          <label class="w-30 formlabel product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
             {{ option.name }}
           </label>
           <div class="select w-55">
             {%- if picker_type == 'swatch_dropdown' -%}
-              <span
-                data-selected-value
-                class="dropdown-swatch"
-              >
+              <span data-selected-value class="dropdown-swatch">
                 {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
               </span>
             {%- endif -%}
             <select
               id="Option-{{ section.id }}-{{ forloop.index0 }}"
-              class="select__select"
+              class="selectselect please-select-enabled"
               name="options[{{ option.name | escape }}]"
               form="{{ product_form_id }}"
               data-option-index="{{ forloop.index0 }}"
             >
-              <!-- Add the "Please select" default option -->
-              <option value="" disabled selected>Please select</option>
-              
+              <!-- Standard variant options rendered by the product-variant-options snippet -->
               {% render 'product-variant-options',
                 product: product,
                 option: option,
@@ -100,48 +95,84 @@
     </script>
   </variant-selects>
 
+  {% comment %} Add JavaScript to modify the variant selectors and price display {% endcomment %}
   <script>
+    // This script injects "Please select" option and handles price range display
     document.addEventListener('DOMContentLoaded', function() {
-      // Handle price range display when "Please select" is active
-      function updatePriceDisplay() {
-        const selects = document.querySelectorAll('variant-selects select');
-        const hasEmptySelection = Array.from(selects).some(select => select.value === '');
-        const priceContainer = document.querySelector('#price-{{ section.id }}');
+      // Wait a moment to ensure all Shopify scripts have initialized
+      setTimeout(function() {
+        // Add "Please select" option to all variant dropdowns
+        const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select.please-select-enabled');
         
-        if (hasEmptySelection && priceContainer) {
-          // Calculate min and max prices from all variants
-          {% assign min_price = product.price_min | money %}
-          {% assign max_price = product.price_max | money %}
+        selects.forEach(select => {
+          // Create the "Please select" option
+          const pleaseSelectOption = document.createElement('option');
+          pleaseSelectOption.value = '';
+          pleaseSelectOption.textContent = 'Please select';
           
-          // Only show range if there's actually a range
-          if ({{ product.price_min }} < {{ product.price_max }}) {
-            priceContainer.querySelector('.price').innerHTML = 
+          // Insert at the beginning
+          select.insertBefore(pleaseSelectOption, select.firstChild);
+          
+          // Set it as selected
+          select.selectedIndex = 0;
+          
+          // Make the previous selection not selected
+          if (select.options[1] && select.options[1].hasAttribute('selected')) {
+            select.options[1].removeAttribute('selected');
+          }
+          
+          // Force a change event to update the UI
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        
+        // Now update the price to show as a range
+        updatePriceToRange();
+        
+        // Add event listeners to handle changes to the selects
+        selects.forEach(select => {
+          select.addEventListener('change', function() {
+            const hasEmptySelection = Array.from(selects).some(s => s.value === '');
+            if (hasEmptySelection) {
+              updatePriceToRange();
+            }
+          });
+        });
+        
+        // Set up deselect button functionality
+        document.querySelectorAll('.deselect-button').forEach(button => {
+          button.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Find the closest select element
+            const closestSelect = this.closest('.product-forminput--dropdown').querySelector('select');
+            if (closestSelect) {
+              // Set to "Please select"
+              closestSelect.selectedIndex = 0;
+              closestSelect.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+          });
+        });
+      }, 100); // Short delay to ensure DOM is fully loaded
+    });
+    
+    // Function to display price range
+    function updatePriceToRange() {
+      const priceContainer = document.querySelector('#price-{{ section.id }}');
+      if (priceContainer) {
+        // Get min and max prices from all product variants
+        {% assign min_price = product.price_min | money %}
+        {% assign max_price = product.price_max | money %}
+        
+        // Only show as range if there's a difference
+        if ({{ product.price_min }} < {{ product.price_max }}) {
+          const priceElement = priceContainer.querySelector('.price');
+          if (priceElement) {
+            priceElement.innerHTML = 
               '<span class="price-item price-item--regular">' + 
               '{{ min_price }} - {{ max_price }}' + 
               '</span>';
           }
         }
       }
-      
-      // Initialize price display
-      updatePriceDisplay();
-      
-      // Add event listeners to all variant selects
-      document.querySelectorAll('variant-selects select').forEach(select => {
-        select.addEventListener('change', updatePriceDisplay);
-      });
-      
-      // Make deselect buttons work with "Please select" option
-      document.querySelectorAll('.deselect-button').forEach((button, index) => {
-        button.addEventListener('click', function(e) {
-          e.preventDefault();
-          const select = document.querySelector(`select[data-option-index="${index}"]`);
-          if (select) {
-            select.value = "";
-            select.dispatchEvent(new Event('change'));
-          }
-        });
-      });
-    });
+    }
   </script>
 {%- endunless -%}
