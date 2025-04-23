@@ -97,12 +97,50 @@
     </script>
   </variant-selects>
 
+  <style>
+    .deselect-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deselect-button:not(.disabled) {
+  cursor: pointer;
+}
+  </style>
+
   <script>
- // Wait until the page is fully loaded before modifying the variant selector
+   // Wait until the page is fully loaded before modifying the variant selector
 window.addEventListener('load', function() {
   setupPleaseSelectOption();
-  initializeDeselectButtons();
-  updateAllDeselectButtons();
+  
+  // Set up a mutation observer to watch for changes in the variant selector
+  const variantSelects = document.querySelector('variant-selects');
+  if (variantSelects) {
+    // Initialize deselect buttons
+    updateAllDeselectButtons();
+    
+    // Set up mutation observer to detect changes
+    const observer = new MutationObserver(function() {
+      updateAllDeselectButtons();
+    });
+    
+    // Start observing changes to the variant selects and its descendants
+    observer.observe(variantSelects, { 
+      attributes: true, 
+      childList: true, 
+      subtree: true 
+    });
+    
+    // Also add direct event listeners
+    variantSelects.addEventListener('change', function() {
+      updateAllDeselectButtons();
+    });
+    
+    // Handle clicks on the container
+    variantSelects.addEventListener('click', function() {
+      setTimeout(updateAllDeselectButtons, 50);
+    });
+  }
 });
 
 function setupPleaseSelectOption() {
@@ -152,43 +190,98 @@ function updatePriceRange() {
   }
 }
 
+// Function to update all deselect buttons to match the current state of their select boxes
 function updateAllDeselectButtons() {
   const selectElements = document.querySelectorAll('#variant-selects-{{ section.id }} select');
   selectElements.forEach(function(select) {
-    const deselectButton = select.closest('.product-form__input--dropdown')?.querySelector('.deselect-button');
-    if (deselectButton) {
-      deselectButton.disabled = select.selectedIndex === 0;
-    }
+    updateDeselectButton(select);
   });
 }
 
-function initializeDeselectButtons() {
-  // Add change listener to all selects
-  document.querySelectorAll('#variant-selects-{{ section.id }} select').forEach(select => {
+// Function to update a single deselect button based on its select element
+function updateDeselectButton(select) {
+  const parentContainer = select.closest('.product-form__input--dropdown');
+  if (!parentContainer) return;
+  
+  const deselectButton = parentContainer.querySelector('.deselect-button');
+  if (!deselectButton) return;
+  
+  // Check if first option is selected (Please select)
+  const isFirstOptionSelected = select.selectedIndex === 0;
+  
+  // Disable button if "Please select" is chosen, enable it otherwise
+  deselectButton.disabled = isFirstOptionSelected;
+  
+  // Add visible indicator of disabled state through CSS
+  if (isFirstOptionSelected) {
+    deselectButton.classList.add('disabled');
+  } else {
+    deselectButton.classList.remove('disabled');
+  }
+}
+
+// Set up deselect button click handlers
+document.addEventListener('DOMContentLoaded', function() {
+  // Set up deselect button handlers
+  setupDeselectButtons();
+  
+  // Also set up change handlers on selects
+  const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select');
+  selects.forEach(select => {
     select.addEventListener('change', function() {
-      const deselectButton = this.closest('.product-form__input--dropdown')?.querySelector('.deselect-button');
-      if (deselectButton) {
-        deselectButton.disabled = this.selectedIndex === 0;
-      }
+      updateDeselectButton(this);
     });
   });
   
-  // Add click listener to all deselect buttons
-  document.querySelectorAll('.deselect-button').forEach(button => {
-    button.addEventListener('click', function() {
-      const select = this.closest('.product-form__input--dropdown')?.querySelector('select');
-      if (select) {
-        select.selectedIndex = 0; // Reset to "Please select"
-        this.disabled = true;
-        
-        // Trigger change event
-        select.dispatchEvent(new Event('change', { bubbles: true }));
-        
-        // Update price range
-        updatePriceRange();
-      }
-    });
+  // Initial button state update
+  updateAllDeselectButtons();
+});
+
+// Function to set up deselect button event handlers
+function setupDeselectButtons() {
+  const buttons = document.querySelectorAll('.deselect-button');
+  
+  buttons.forEach(button => {
+    // Remove any existing event listeners first to avoid duplicates
+    button.removeEventListener('click', handleDeselectClick);
+    
+    // Add the click event listener
+    button.addEventListener('click', handleDeselectClick);
   });
 }
+
+// Handler function for deselect button clicks
+function handleDeselectClick(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  const parentContainer = this.closest('.product-form__input--dropdown');
+  if (!parentContainer) return;
+  
+  const select = parentContainer.querySelector('select');
+  if (!select) return;
+  
+  // Set selection back to the first option
+  select.selectedIndex = 0;
+  
+  // Disable this button
+  this.disabled = true;
+  this.classList.add('disabled');
+  
+  // Update price display
+  updatePriceRange();
+  
+  // Trigger the change event to notify Shopify's code
+  const changeEvent = new Event('change', { bubbles: true });
+  select.dispatchEvent(changeEvent);
+  
+  // If using original price restoration feature
+  if (window.restoreOriginalPrice) {
+    window.restoreOriginalPrice();
+  }
+  
+  console.log('Deselect button clicked, option reset');
+}
   </script>
+  
 {%- endunless -%}
