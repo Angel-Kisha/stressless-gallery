@@ -250,7 +250,6 @@
                 const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
                 if (savedValue === '' && select.selectedIndex !== 0) {
                   select.selectedIndex = 0;
-                  console.log('Forcing back to "Please select" for option', optionIndex);
                 }
               }, 10);
             };
@@ -296,7 +295,6 @@
                   const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
                   
                   if (savedValue === '') {
-                    // If we saved "Please select", enforce it
                     select.selectedIndex = 0;
                     const changeEvent = new Event('change', { bubbles: true });
                     select.dispatchEvent(changeEvent);
