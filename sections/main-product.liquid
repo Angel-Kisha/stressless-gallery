@@ -221,6 +221,24 @@
                       {{ form | payment_terms }}
                     {%- endform -%}
                   </div>
+                  
+                  <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                      // Save the original price HTML for restoration when a variant is selected
+                      const priceContainer = document.querySelector('#price-{{ section.id }}');
+                      if (priceContainer) {
+                        // Store the original price HTML
+                        priceContainer.dataset.originalPrice = priceContainer.innerHTML;
+                        
+                        // Function to restore original price when needed
+                        window.restoreOriginalPrice = function() {
+                          if (priceContainer.dataset.originalPrice) {
+                            priceContainer.innerHTML = priceContainer.dataset.originalPrice;
+                          }
+                        };
+                      }
+                    });
+                  </script>
 
               {%- when 'inventory' -%}
                 <p
