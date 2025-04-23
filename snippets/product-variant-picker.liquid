@@ -105,23 +105,28 @@
   <style>
     /* Styles for deselect button */
     .deselect-button {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background-color: #f8f8f8;
+      font-size: 0.9em;
       cursor: pointer;
+      transition: opacity 0.2s ease, background-color 0.2s ease;
     }
     
     .deselect-button:not(:disabled):hover {
-      font-weight: normal;
-      cursor: not-allowed;
+      background-color: #e8e8e8;
     }
     
     .deselect-button:disabled {
       opacity: 0.5;
-      font-weight: normal;
       cursor: not-allowed;
     }
     
     /* Make sure the select option stays visible */
     .select__select option[selected] {
-      
+      font-weight: bold;
     }
     
     /* Force the select to maintain its selection */
