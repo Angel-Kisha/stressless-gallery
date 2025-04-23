@@ -832,66 +832,6 @@
     <script type="application/ld+json">
       {{ product | structured_data }}
     </script>
-
-    <script>
-      // Add this script to your theme.js or in a script tag at the bottom of the product template
-document.addEventListener('DOMContentLoaded', function() {
-  // Function to handle variant selection and price display
-  function handleVariantSelectionAndPrice() {
-    const variantSelects = document.querySelectorAll('variant-selects select');
-    const defaultPriceContainer = document.querySelector('[data-default-price-container]');
-    const variantPriceContainer = document.querySelector('[data-variant-price-container]');
-    
-    if (!variantSelects.length || !defaultPriceContainer || !variantPriceContainer) return;
-    
-    // Function to check if all variants are selected
-    function areAllVariantsSelected() {
-      return Array.from(variantSelects).every(select => select.value !== "" && select.value !== "Please select");
-    }
-    
-    // Initial setup
-    if (areAllVariantsSelected()) {
-      defaultPriceContainer.style.display = 'none';
-      variantPriceContainer.style.display = 'block';
-    } else {
-      defaultPriceContainer.style.display = 'block';
-      variantPriceContainer.style.display = 'none';
-    }
-    
-    // Add event listeners to all variant selectors
-    variantSelects.forEach(select => {
-      select.addEventListener('change', function() {
-        if (areAllVariantsSelected()) {
-          defaultPriceContainer.style.display = 'none';
-          variantPriceContainer.style.display = 'block';
-        } else {
-          defaultPriceContainer.style.display = 'block';
-          variantPriceContainer.style.display = 'none';
-        }
-      });
-    });
-    
-    // Handle deselect buttons
-    const deselectButtons = document.querySelectorAll('.deselect-button');
-    deselectButtons.forEach(button => {
-      button.addEventListener('click', function(e) {
-        e.preventDefault();
-        const selectElement = this.closest('.product-form__input--dropdown').querySelector('select');
-        if (selectElement) {
-          selectElement.selectedIndex = 0; // Reset to first option (Please select)
-          selectElement.dispatchEvent(new Event('change'));
-        }
-      });
-    });
-  }
-  
-  // Run the function
-  handleVariantSelectionAndPrice();
-  
-  // Re-run if section is reloaded via AJAX
-  document.addEventListener('shopify:section:load', handleVariantSelectionAndPrice);
-});
-    </script>
   </div>
 </product-info>
 
