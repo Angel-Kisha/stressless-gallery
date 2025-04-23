@@ -99,90 +99,128 @@
   </variant-selects>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Enable price range display and "Please select" options
-      const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select.please-select-enabled');
-      if (!selects.length) return;
+  document.addEventListener('DOMContentLoaded', function() {
+    // Enable price range display and "Please select" options
+    const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select.please-select-enabled');
+    if (!selects.length) return;
+    
+    // Store all variants data for later use with the price range
+    const variantData = JSON.parse(
+      document.querySelector('#variant-selects-{{ section.id }} [data-selected-variant]').textContent
+    );
+    
+    // STEP 1: Add "Please select" option to each dropdown
+    selects.forEach(function(select) {
+      const pleaseSelectOption = document.createElement('option');
+      pleaseSelectOption.value = '';
+      pleaseSelectOption.textContent = 'Please select';
+      pleaseSelectOption.dataset.pleaseSelect = 'true';
       
-      // STEP 1: Add "Please select" option to each dropdown
-      selects.forEach(function(select) {
-        const pleaseSelectOption = document.createElement('option');
-        pleaseSelectOption.value = '';
-        pleaseSelectOption.textContent = 'Please select';
-        pleaseSelectOption.dataset.pleaseSelect = 'true';
-        
-        // Insert at the beginning
-        if (select.firstChild) {
-          select.insertBefore(pleaseSelectOption, select.firstChild);
-        } else {
-          select.appendChild(pleaseSelectOption);
-        }
-        
-        // Set as selected and trigger change event
-        select.selectedIndex = 0;
-        
-        // Store original variant selection for restore if needed
-        select.dataset.originalSelectedIndex = '1'; // First real option
-      });
-      
-      // STEP 2: Handle price range display
-      function updatePriceDisplay() {
-        const priceContainer = document.querySelector('#price-{{ section.id }}');
-        if (!priceContainer) return;
-        
-        const hasEmptyOption = Array.from(selects).some(select => 
-          select.selectedIndex === 0 || select.value === '');
-          
-        if (hasEmptyOption) {
-          // Show price range
-          {% assign min_price = product.price_min | money %}
-          {% assign max_price = product.price_max | money %}
-          
-          if ({{ product.price_min }} < {{ product.price_max }}) {
-            const priceElement = priceContainer.querySelector('.price');
-            if (priceElement) {
-              priceElement.innerHTML = 
-                '<span class="price-item price-item--regular">' + 
-                '{{ min_price }} - {{ max_price }}' + 
-                '</span>';
-            }
-          }
-        }
+      // Insert at the beginning
+      if (select.firstChild) {
+        select.insertBefore(pleaseSelectOption, select.firstChild);
+      } else {
+        select.appendChild(pleaseSelectOption);
       }
       
-      // Initialize price display
-      updatePriceDisplay();
+      // Set as selected
+      select.selectedIndex = 0;
       
-      // STEP 3: Set up event listeners for changes
-      selects.forEach(select => {
-        select.addEventListener('change', function() {
-          // Check if any dropdown has "Please select" option selected
-          updatePriceDisplay();
-        });
-      });
+      // Store original variant selection for restore if needed
+      select.dataset.originalSelectedIndex = '1'; // First real option
+    });
+    
+    // STEP 2: Handle price range display
+    function updatePriceDisplay() {
+      const priceContainer = document.querySelector('#price-{{ section.id }}');
+      if (!priceContainer) return;
       
-      // STEP 4: Update deselect buttons to work with "Please select"
-      document.querySelectorAll('.deselect-button').forEach(button => {
-        button.addEventListener('click', function(e) {
-          e.preventDefault();
-          const select = this.closest('.product-forminput--dropdown').querySelector('select');
-          if (select) {
-            // Set to "Please select" option
-            select.selectedIndex = 0;
-            select.dispatchEvent(new Event('change', {bubbles: true}));
+      const hasEmptyOption = Array.from(selects).some(select => 
+        select.selectedIndex === 0 || select.value === '');
+        
+      if (hasEmptyOption) {
+        // Show price range
+        {% assign min_price = product.price_min | money %}
+        {% assign max_price = product.price_max | money %}
+        
+        if ({{ product.price_min }} < {{ product.price_max }}) {
+          const priceElement = priceContainer.querySelector('.price');
+          if (priceElement) {
+            priceElement.innerHTML = 
+              '<span class="price-item price-item--regular">' + 
+              '{{ min_price }} - {{ max_price }}' + 
+              '</span>';
           }
-        });
+        }
+      } else if (window.restoreOriginalPrice) {
+        // If all options are selected, restore variant-specific price
+        window.restoreOriginalPrice();
+      }
+    }
+    
+    // Initialize price display
+    updatePriceDisplay();
+    
+    // STEP 3: Set up event listeners for changes
+    selects.forEach(select => {
+      select.addEventListener('change', function() {
+        updatePriceDisplay();
       });
-      
-      // STEP 5: Fix any Shopify variant selector initialization issues
-      setTimeout(function() {
-        // Force "Please select" as selected for all dropdowns
-        selects.forEach(select => {
+    });
+    
+    // STEP 4: Update deselect buttons to work with "Please select"
+    document.querySelectorAll('.deselect-button').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const select = this.closest('.product-form__input--dropdown').querySelector('select');
+        if (select) {
+          // Set to "Please select" option
           select.selectedIndex = 0;
           select.dispatchEvent(new Event('change', {bubbles: true}));
-        });
-        updatePriceDisplay();
-      }, 100);
+        }
+      });
     });
-  </script>
+    
+    // STEP 5: Override Shopify's variant selector initialization
+    const variantSelects = document.querySelector('variant-selects');
+    if (variantSelects) {
+      // Create a MutationObserver to watch for Shopify's changes
+      const observer = new MutationObserver(function(mutations) {
+        let needsReset = false;
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes' || 
+              (mutation.type === 'childList' && mutation.target.tagName === 'SELECT')) {
+            needsReset = true;
+          }
+        });
+        
+        if (needsReset) {
+          // Reset to "Please select" after Shopify's changes
+          setTimeout(function() {
+            selects.forEach(select => {
+              if (select.selectedIndex !== 0) {
+                select.selectedIndex = 0;
+                select.dispatchEvent(new Event('change', {bubbles: true}));
+              }
+            });
+            updatePriceDisplay();
+          }, 0);
+        }
+      });
+      
+      // Start observing all selects
+      const config = { attributes: true, childList: true, subtree: true };
+      selects.forEach(select => observer.observe(select, config));
+    }
+    
+    // Need to force this after variant-selects custom element is initialized
+    setTimeout(function() {
+      selects.forEach(select => {
+        select.selectedIndex = 0;
+        select.dispatchEvent(new Event('change', {bubbles: true}));
+      });
+      updatePriceDisplay();
+    }, 500);
+  });
+</script>
 {%- endunless -%}
