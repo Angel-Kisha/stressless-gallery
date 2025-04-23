@@ -102,15 +102,17 @@
     window.addEventListener('load', function() {
       setupPleaseSelectOption();
       
-      // Also set up a click handler on the variant selector container
+      // Also set up event handlers for variant selection changes
       const variantSelects = document.querySelector('variant-selects');
       if (variantSelects) {
-        variantSelects.addEventListener('click', function() {
-          // Add a slight delay to let Shopify's code run first
-          setTimeout(function() {
-            setupPleaseSelectOption();
-            updateAllDeselectButtons();
-          }, 50);
+        // Listen for both click and change events to catch all possible selection changes
+        ['click', 'change'].forEach(eventType => {
+          variantSelects.addEventListener(eventType, function() {
+            // Add a slight delay to let Shopify's code run first
+            setTimeout(function() {
+              updateAllDeselectButtons();
+            }, 50);
+          });
         });
       }
       
@@ -221,6 +223,10 @@
           updateDeselectButton(this);
         });
       });
+      
+      // Initial setup of all deselect buttons
+      updateAllDeselectButtons();
     });
   </script>
+  
 {%- endunless -%}
