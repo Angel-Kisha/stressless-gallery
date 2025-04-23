@@ -1,5 +1,5 @@
 {% comment %}
-  Renders product variant-picker
+  Renders product variant-picker with "Please select" default option
 
   Accepts:
   - product: {Object} product object.
@@ -28,8 +28,8 @@
         endif
       -%}
       {%- if picker_type == 'swatch' -%}
-        <fieldset class="js product-form__input product-form__input--swatch">
-          <legend class="form__label">
+        <fieldset class="js product-forminput product-forminput--swatch">
+          <legend class="formlabel">
             {{ option.name }}:
             <span data-selected-value>
               {{- option.selected_value -}}
@@ -43,8 +43,8 @@
           %}
         </fieldset>
       {%- elsif picker_type == 'button' -%}
-        <fieldset class="js product-form__input product-form__input--pill">
-          <legend class="form__label">{{ option.name }}</legend>
+        <fieldset class="js product-forminput product-forminput--pill">
+          <legend class="formlabel">{{ option.name }}</legend>
           {% render 'product-variant-options',
             product: product,
             option: option,
@@ -53,8 +53,8 @@
           %}
         </fieldset>
       {%- else -%}
-        <div class="product-form__input product-form__input--dropdown product-label-dropdown">
-          <label class="w-30 form__label product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
+        <div class="product-forminput product-forminput--dropdown product-label-dropdown">
+          <label class="w-30 formlabel product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
             {{ option.name }}
           </label>
           <div class="select w-55">
@@ -68,12 +68,14 @@
             {%- endif -%}
             <select
               id="Option-{{ section.id }}-{{ forloop.index0 }}"
-              class="select__select"
+              class="selectselect"
               name="options[{{ option.name | escape }}]"
               form="{{ product_form_id }}"
-              data-option-position="{{ forloop.index }}"
+              data-option-index="{{ forloop.index0 }}"
             >
-              <option value="" selected disabled>Please select</option>
+              <!-- Add the "Please select" default option -->
+              <option value="" selected>Please select</option>
+              
               {% render 'product-variant-options',
                 product: product,
                 option: option,
@@ -97,4 +99,49 @@
       {{ product.selected_or_first_available_variant | json }}
     </script>
   </variant-selects>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Handle price range display when "Please select" is active
+      function updatePriceDisplay() {
+        const selects = document.querySelectorAll('variant-selects select');
+        const hasEmptySelection = Array.from(selects).some(select => select.value === '');
+        const priceContainer = document.querySelector('#price-{{ section.id }}');
+        
+        if (hasEmptySelection && priceContainer) {
+          // Calculate min and max prices from all variants
+          {% assign min_price = product.price_min | money %}
+          {% assign max_price = product.price_max | money %}
+          
+          // Only show range if there's actually a range
+          if ({{ product.price_min }} < {{ product.price_max }}) {
+            priceContainer.querySelector('.price').innerHTML = 
+              '<span class="price-item price-item--regular">' + 
+              '{{ min_price }} - {{ max_price }}' + 
+              '</span>';
+          }
+        }
+      }
+      
+      // Initialize price display
+      updatePriceDisplay();
+      
+      // Add event listeners to all variant selects
+      document.querySelectorAll('variant-selects select').forEach(select => {
+        select.addEventListener('change', updatePriceDisplay);
+      });
+      
+      // Make deselect buttons work with "Please select" option
+      document.querySelectorAll('.deselect-button').forEach((button, index) => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          const select = document.querySelector(`select[data-option-index="${index}"]`);
+          if (select) {
+            select.value = "";
+            select.dispatchEvent(new Event('change'));
+          }
+        });
+      });
+    });
+  </script>
 {%- endunless -%}
