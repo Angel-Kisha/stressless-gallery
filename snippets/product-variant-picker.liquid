@@ -105,63 +105,74 @@
     .deselect-button:not(:disabled):hover {
       opacity: 0.5;
     }
-
+    
     .deselect-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
-
+    
     /* Force the select to maintain its selection */
     .select__select.user-selected {
       border-color: #4a90e2;
     }
+    
+    /* Hide the default select option from dropdown */
+    .select__select option[value=""][disabled] {
+      display: none;
+    }
   </style>
 
   <script>
-    (function () {
+    (function() {
       // Maintain state of which options have been manually selected
       const selectedOptions = new Map();
-
-      // Custom event for when "Please select" is chosen
+      
+      // Custom event for when empty option is chosen
       const pleaseSelectEvent = new CustomEvent('please-select-chosen', { bubbles: true });
-
+      
       function initializeVariantSelectors() {
         const variantSelects = document.querySelectorAll('.select__select');
-
+        
         variantSelects.forEach((select, index) => {
           // Skip if already initialized
           if (select.hasAttribute('data-initialized')) return;
           select.setAttribute('data-initialized', 'true');
-
+          
           // Find the deselect button for this select
           const container = select.closest('.product-form__input--dropdown');
           if (!container) return;
-
+          
           const deselectButton = container.querySelector('.deselect-button');
           if (!deselectButton) return;
-
+          
           // Get the section and option index for this select
           const sectionId = select.id.split('-')[1];
           const optionIndex = select.dataset.optionIndex;
-
-          // Make sure we have a "Please select" option
-          let hasPleaseholder = false;
+          
+          // Create a hidden default option (won't be shown in dropdown)
+          let defaultOption = null;
           for (let i = 0; i < select.options.length; i++) {
-            if (select.options[i].value === '' || select.options[i].text === '選択してください') {
-              hasPleaseholder = true;
+            if (select.options[i].value === '') {
+              defaultOption = select.options[i];
               break;
             }
           }
 
-          if (!hasPleaseholder) {
-            const pleaseOption = new Option('選択してください', '', true, true);
-            select.insertBefore(pleaseOption, select.firstChild);
+          if (!defaultOption) {
+            defaultOption = new Option('', '', true, false);
+            defaultOption.disabled = true;
+            defaultOption.hidden = true;
+            select.insertBefore(defaultOption, select.firstChild);
+          } else {
+            defaultOption.disabled = true;
+            defaultOption.hidden = true;
+            defaultOption.text = '';
           }
-
+          
           // Set correct initial select and button state
           const selectedOption = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
           if (selectedOption === null || selectedOption === '') {
-            // No saved selection or "Please select" was saved
+            // No saved selection or empty was saved
             select.selectedIndex = 0;
             deselectButton.disabled = true;
             select.classList.remove('user-selected');
@@ -176,59 +187,59 @@
               }
             }
           }
-
+          
           // Event handlers
-
+          
           // Handle changes to the select
           const originalChangeHandler = select.onchange;
           select.onchange = null;
-
-          select.addEventListener('change', function (e) {
+          
+          select.addEventListener('change', function(e) {
             // Store the selection in both Map and localStorage
             const value = this.value;
-            const isDefaultOption = value === '' || this.selectedIndex === 0;
-
+            const isDefaultOption = (value === '' || this.selectedIndex === 0);
+            
             // Update button state
             deselectButton.disabled = isDefaultOption;
-
+            
             // Update class for styling
             if (isDefaultOption) {
               this.classList.remove('user-selected');
             } else {
               this.classList.add('user-selected');
             }
-
+            
             // Save selection
             selectedOptions.set(`${sectionId}-${optionIndex}`, value);
             localStorage.setItem(`variant-${sectionId}-${optionIndex}`, value);
-
-            // Dispatch custom event if "Please select" is chosen
+            
+            // Dispatch custom event if empty option is chosen
             if (isDefaultOption) {
               this.dispatchEvent(pleaseSelectEvent);
             }
-
+            
             console.log(`Select ${optionIndex} changed to:`, value, 'Default?', isDefaultOption);
           });
-
+          
           // Handle deselect button click
-          deselectButton.addEventListener('click', function (e) {
+          deselectButton.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-
-            // Reset to "Please select"
+            
+            // Reset to default option
             select.selectedIndex = 0;
             this.disabled = true;
             select.classList.remove('user-selected');
-
+            
             // Update stored values
             selectedOptions.delete(`${sectionId}-${optionIndex}`);
             localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
-
+            
             // Dispatch events
             const changeEvent = new Event('change', { bubbles: true });
             select.dispatchEvent(changeEvent);
             select.dispatchEvent(pleaseSelectEvent);
-
+            
             // Prevent default behavior of variants.js
             setTimeout(() => {
               if (select.selectedIndex !== 0) {
@@ -236,27 +247,27 @@
                 select.dispatchEvent(changeEvent);
               }
             }, 10);
-
+            
             console.log('Deselect button clicked for option', optionIndex);
           });
-
-          // Key function: Override Shopify's variant selection to respect our "Please select"
+          
+          // Key function: Override Shopify's variant selection to respect our default option
           const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
           if (variantSelectsElement) {
             // Make sure we're always checking selections
             const variantChangedHandler = () => {
               setTimeout(() => {
-                // Only override if we want this to stay at "Please select"
+                // Only override if we want this to stay at default
                 const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
                 if (savedValue === '' && select.selectedIndex !== 0) {
                   select.selectedIndex = 0;
                 }
               }, 10);
             };
-
+            
             // Listen for Shopify's variant:changed event
             variantSelectsElement.addEventListener('variant:changed', variantChangedHandler);
-
+            
             // Also check periodically
             setInterval(() => {
               const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
@@ -267,25 +278,25 @@
           }
         });
       }
-
+      
       // Override Shopify's variant selection code
       function overrideVariantSelection() {
         // Look for variant-selects elements
         const variantSelects = document.querySelectorAll('variant-selects');
-
-        variantSelects.forEach((variantSelect) => {
+        
+        variantSelects.forEach(variantSelect => {
           // Skip if already processed
           if (variantSelect.hasAttribute('data-override')) return;
           variantSelect.setAttribute('data-override', 'true');
-
+          
           // Get the original updateOptions function
           const originalUpdateOptions = variantSelect.updateOptions;
           if (typeof originalUpdateOptions === 'function') {
             // Override the updateOptions function
-            variantSelect.updateOptions = function () {
+            variantSelect.updateOptions = function() {
               // Call the original function
               originalUpdateOptions.apply(this, arguments);
-
+              
               // Then apply our custom logic
               setTimeout(() => {
                 const selects = this.querySelectorAll('select');
@@ -293,7 +304,7 @@
                   const sectionId = this.dataset.section;
                   const optionIndex = select.dataset.optionIndex;
                   const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
-
+                  
                   if (savedValue === '') {
                     select.selectedIndex = 0;
                     const changeEvent = new Event('change', { bubbles: true });
@@ -305,34 +316,34 @@
           }
         });
       }
-
+      
       // Initialize everything when the DOM is ready
-      document.addEventListener('DOMContentLoaded', function () {
+      document.addEventListener('DOMContentLoaded', function() {
         initializeVariantSelectors();
         overrideVariantSelection();
-
+        
         // Re-run after a short delay to catch any late loading elements
         setTimeout(() => {
           initializeVariantSelectors();
           overrideVariantSelection();
         }, 500);
-
+        
         // Also watch for DOM changes
-        const observer = new MutationObserver(function () {
+        const observer = new MutationObserver(function() {
           initializeVariantSelectors();
           overrideVariantSelection();
         });
-
+        
         observer.observe(document.body, {
           childList: true,
           subtree: true,
           attributes: true,
-          attributeFilter: ['selected', 'data-variant'],
+          attributeFilter: ['selected', 'data-variant']
         });
       });
-
+      
       // Re-run when variants change
-      document.addEventListener('variant:changed', function () {
+      document.addEventListener('variant:changed', function() {
         setTimeout(() => {
           initializeVariantSelectors();
         }, 50);
