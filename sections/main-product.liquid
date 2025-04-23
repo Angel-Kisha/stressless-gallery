@@ -183,61 +183,62 @@
                   class="decorative-horizontal-line"
                   style="margin-top: {{ block.settings.line_top_margin }}px; margin-bottom: {{ block.settings.line_bottom_margin }}px;"
                 >
-                {%- when 'price' -%}
-                  <div class="product-price ">
-                    <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
-                      {%- render 'price',
-                        product: product,
-                        use_variant: true,
-                        show_badges: true,
-                        price_class: 'price--large'
-                      -%}
-                    </div>
-                    {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank -%}
-                      <div class="product__tax caption rte">
-                        {%- if cart.duties_included and cart.taxes_included -%}
-                          {{ 'products.product.duties_and_taxes_included' | t }}
-                        {%- elsif cart.taxes_included -%}
-                          {{ 'products.product.taxes_included' | t }}
-                        {%- elsif cart.duties_included -%}
-                          {{ 'products.product.duties_included' | t }}
-                        {%- endif -%}
-                        {%- if shop.shipping_policy.body != blank -%}
-                          {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
-                        {%- endif -%}
-                      </div>
-                    {%- endif -%}
+              {%- when 'price' -%}
+                <div class="product-price ">
+                  <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
+                    {%- render 'price',
+                      product: product,
+                      use_variant: true,
+                      show_badges: true,
+                      price_class: 'price--large'
+                    -%}
                   </div>
-                  {%- if product.quantity_price_breaks_configured? -%}
-                    <div class="volume-pricing-note" id="Volume-Note-{{ section.id }}">
-                      <span>{{ 'products.product.volume_pricing.note' | t }}</span>
+                  {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank -%}
+                    <div class="product__tax caption rte">
+                      {%- if cart.duties_included and cart.taxes_included -%}
+                        {{ 'products.product.duties_and_taxes_included' | t }}
+                      {%- elsif cart.taxes_included -%}
+                        {{ 'products.product.taxes_included' | t }}
+                      {%- elsif cart.duties_included -%}
+                        {{ 'products.product.duties_included' | t }}
+                      {%- endif -%}
+                      {%- if shop.shipping_policy.body != blank -%}
+                        {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
+                      {%- endif -%}
                     </div>
                   {%- endif -%}
-                  <div {{ block.shopify_attributes }}>
-                    {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
-                    {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
-                      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                      {{ form | payment_terms }}
-                    {%- endform -%}
+                </div>
+                {%- if product.quantity_price_breaks_configured? -%}
+                  <div class="volume-pricing-note" id="Volume-Note-{{ section.id }}">
+                    <span>{{ 'products.product.volume_pricing.note' | t }}</span>
                   </div>
-                  
-                  <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                      // Save the original price HTML for restoration when a variant is selected
-                      const priceContainer = document.querySelector('#price-{{ section.id }}');
-                      if (priceContainer) {
-                        // Store the original price HTML
-                        priceContainer.dataset.originalPrice = priceContainer.innerHTML;
-                        
-                        // Function to restore original price when needed
-                        window.restoreOriginalPrice = function() {
-                          if (priceContainer.dataset.originalPrice) {
-                            priceContainer.innerHTML = priceContainer.dataset.originalPrice;
-                          }
-                        };
-                      }
-                    });
-                  </script>
+                {%- endif -%}
+
+                <div {{ block.shopify_attributes }}>
+                  {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
+                  {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
+                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                    {{ form | payment_terms }}
+                  {%- endform -%}
+                </div>
+
+                <script>
+                  document.addEventListener('DOMContentLoaded', function () {
+                    // Save the original price HTML for restoration when a variant is selected
+                    const priceContainer = document.querySelector('#price-{{ section.id }}');
+                    if (priceContainer) {
+                      // Store the original price HTML
+                      priceContainer.dataset.originalPrice = priceContainer.innerHTML;
+
+                      // Function to restore original price when needed
+                      window.restoreOriginalPrice = function () {
+                        if (priceContainer.dataset.originalPrice) {
+                          priceContainer.innerHTML = priceContainer.dataset.originalPrice;
+                        }
+                      };
+                    }
+                  });
+                </script>
 
               {%- when 'inventory' -%}
                 <p
@@ -355,18 +356,20 @@
                     | item_count_for_variant: product.selected_or_first_available_variant.id
                   -%}
                   {% # theme-check-enable %}
-                  
-                    <label class="quantity__label form__label" for="Quantity-{{ section.id }}">
-                      {% comment %} {{ 'products.product.quantity.label' | t }} {% endcomment %}
-                      <span class="quantity__rules-cart{% if cart_qty == 0 %} hidden{% endif %}">
-                        {%- render 'loading-spinner' -%}
-                        {% comment %} <span
+
+                  <label class="quantity__label form__label" for="Quantity-{{ section.id }}">
+                    {% comment %} {{ 'products.product.quantity.label' | t }} {% endcomment %}
+                    <span class="quantity__rules-cart{% if cart_qty == 0 %} hidden{% endif %}">
+                      {%- render 'loading-spinner' -%}
+                      {% comment %}
+                        <span
                           >(
                           {{- 'products.product.quantity.in_cart_html' | t: quantity: cart_qty -}}
                           )</span
-                        > {% endcomment %}
-                      </span>
-                    </label>
+                        >
+                      {% endcomment %}
+                    </span>
+                  </label>
 
                   <div class="q-button">
                     <quantity-input class="quantity" data-url="{{ product.url }}" data-section="{{ section.id }}">
