@@ -222,24 +222,6 @@
                   {%- endform -%}
                 </div>
 
-                <script>
-                  document.addEventListener('DOMContentLoaded', function () {
-                    // Save the original price HTML for restoration when a variant is selected
-                    const priceContainer = document.querySelector('#price-{{ section.id }}');
-                    if (priceContainer) {
-                      // Store the original price HTML
-                      priceContainer.dataset.originalPrice = priceContainer.innerHTML;
-
-                      // Function to restore original price when needed
-                      window.restoreOriginalPrice = function () {
-                        if (priceContainer.dataset.originalPrice) {
-                          priceContainer.innerHTML = priceContainer.dataset.originalPrice;
-                        }
-                      };
-                    }
-                  });
-                </script>
-
               {%- when 'inventory' -%}
                 <p
                   class="product__inventory{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.inventory_management != 'shopify' %} visibility-hidden{% endif %}"
@@ -356,20 +338,18 @@
                     | item_count_for_variant: product.selected_or_first_available_variant.id
                   -%}
                   {% # theme-check-enable %}
-
-                  <label class="quantity__label form__label" for="Quantity-{{ section.id }}">
-                    {% comment %} {{ 'products.product.quantity.label' | t }} {% endcomment %}
-                    <span class="quantity__rules-cart{% if cart_qty == 0 %} hidden{% endif %}">
-                      {%- render 'loading-spinner' -%}
-                      {% comment %}
-                        <span
+                  
+                    <label class="quantity__label form__label" for="Quantity-{{ section.id }}">
+                      {% comment %} {{ 'products.product.quantity.label' | t }} {% endcomment %}
+                      <span class="quantity__rules-cart{% if cart_qty == 0 %} hidden{% endif %}">
+                        {%- render 'loading-spinner' -%}
+                        {% comment %} <span
                           >(
                           {{- 'products.product.quantity.in_cart_html' | t: quantity: cart_qty -}}
                           )</span
-                        >
-                      {% endcomment %}
-                    </span>
-                  </label>
+                        > {% endcomment %}
+                      </span>
+                    </label>
 
                   <div class="q-button">
                     <quantity-input class="quantity" data-url="{{ product.url }}" data-section="{{ section.id }}">
