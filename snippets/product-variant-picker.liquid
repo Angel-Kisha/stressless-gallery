@@ -102,16 +102,25 @@
     window.addEventListener('load', function() {
       setupPleaseSelectOption();
       
-      // Also set up event handlers for variant selection changes
+      // Set up mutation observer to watch for changes to the variant selects
+      // This is more reliable than just listening for click/change events
       const variantSelects = document.querySelector('variant-selects');
       if (variantSelects) {
-        // Listen for both click and change events to catch all possible selection changes
-        ['click', 'change'].forEach(eventType => {
-          variantSelects.addEventListener(eventType, function() {
-            // Add a slight delay to let Shopify's code run first
-            setTimeout(function() {
-              updateAllDeselectButtons();
-            }, 50);
+        const observer = new MutationObserver(function(mutations) {
+          updateAllDeselectButtons();
+        });
+        
+        observer.observe(variantSelects, { 
+          childList: true, 
+          subtree: true, 
+          attributes: true,
+          attributeFilter: ['selected', 'data-selected-value']
+        });
+        
+        // Also listen for direct changes to select elements
+        variantSelects.querySelectorAll('select').forEach(select => {
+          select.addEventListener('change', function() {
+            updateDeselectButton(this);
           });
         });
       }
@@ -138,11 +147,15 @@
           const pleaseSelectOption = document.createElement('option');
           pleaseSelectOption.value = '';
           pleaseSelectOption.text = 'Please select';
+          pleaseSelectOption.disabled = false;
+          pleaseSelectOption.selected = true;
           select.insertBefore(pleaseSelectOption, select.firstChild);
         }
         
-        // Force it to be selected
-        select.selectedIndex = 0;
+        // Ensure "Please select" is selected initially
+        if (select.selectedIndex !== 0) {
+          select.selectedIndex = 0;
+        }
         
         // Update price display
         updatePriceRange();
@@ -177,7 +190,7 @@
     
     // Function to update a single deselect button based on its select element
     function updateDeselectButton(select) {
-      const deselectButton = select.closest('.product-form__input--dropdown').querySelector('.deselect-button');
+      const deselectButton = select.closest('.product-form__input--dropdown')?.querySelector('.deselect-button');
       if (deselectButton) {
         // Check if first option is selected (Please select)
         const isFirstOptionSelected = select.selectedIndex === 0;
@@ -210,7 +223,7 @@
             select.dispatchEvent(event);
             
             // If using original price restoration feature from main-product.liquid
-            if (window.restoreOriginalPrice) {
+            if (typeof window.restoreOriginalPrice === 'function') {
               window.restoreOriginalPrice();
             }
           }
