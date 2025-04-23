@@ -101,6 +101,80 @@
   </variant-selects>
 
   <script>
+  // Wait for document to be fully loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // Function that will be called repeatedly to ensure deselect buttons work
+    function setupDeselectButtons() {
+      // Find all selects and their corresponding deselect buttons
+      const productForms = document.querySelectorAll('.product-form__input--dropdown');
+      
+      productForms.forEach(function(form) {
+        const select = form.querySelector('select');
+        const deselectButton = form.querySelector('.deselect-button');
+        
+        if (!select || !deselectButton) return;
+        
+        // Remove any existing event listeners to prevent duplicates
+        const newDeselectButton = deselectButton.cloneNode(true);
+        deselectButton.parentNode.replaceChild(newDeselectButton, deselectButton);
+        
+        // Set initial state based on current selection
+        newDeselectButton.disabled = (select.selectedIndex === 0);
+        
+        // Add click event listener to the deselect button
+        newDeselectButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Set select back to first option
+          select.selectedIndex = 0;
+          
+          // Disable button
+          this.disabled = true;
+          
+          // Trigger change event on select
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+          
+          // Log for debugging
+          console.log('Deselect button clicked - select reset to index 0');
+        });
+        
+        // Remove existing listeners and add a new one to the select
+        const newSelect = select.cloneNode(true);
+        select.parentNode.replaceChild(newSelect, select);
+        
+        newSelect.addEventListener('change', function() {
+          // Enable/disable button based on selection
+          newDeselectButton.disabled = (this.selectedIndex === 0);
+          
+          // Log for debugging
+          console.log('Select changed to index: ' + this.selectedIndex + ', Button disabled: ' + newDeselectButton.disabled);
+        });
+      });
+    }
+    
+    // Set up buttons initially
+    setupDeselectButtons();
+    
+    // Also set them up after a delay to ensure DOM is fully loaded and processed
+    setTimeout(setupDeselectButtons, 500);
+    
+    // Set up additional check every second for 5 seconds to catch any delayed DOM changes
+    let checkCount = 0;
+    const interval = setInterval(function() {
+      setupDeselectButtons();
+      checkCount++;
+      if (checkCount >= 5) clearInterval(interval);
+    }, 1000);
+    
+    // Add event listener for variant changes if using Shopify's variant-radios or variant-selects
+    document.addEventListener('variant:changed', function() {
+      setTimeout(setupDeselectButtons, 100);
+    });
+  });
+</script>
+
+  <script>
     // Add this script to your theme.liquid file or as a separate JS file
     document.addEventListener('DOMContentLoaded', function() {
       // Function to add "Please select" option and set up deselect functionality
