@@ -100,114 +100,92 @@
     </script>
   </variant-selects>
 
-<!-- Add this at the end of your product-template.liquid file -->
-<style>
-  /* Add a visual indicator when button is disabled vs enabled */
-  .deselect-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  .deselect-button:not(:disabled) {
-    opacity: 1;
-    cursor: pointer;
-  }
-</style>
-
-<script>
-  // Force deselect buttons to work correctly
-  document.addEventListener('DOMContentLoaded', function() {
-    // Create a completely self-contained fix
-    (function() {
-      // Function to find all deselect buttons and their corresponding selects
-      function findAndFixDeselectButtons() {
-        // Find all deselect buttons
-        const deselectButtons = document.querySelectorAll('.deselect-button');
+  <script>
+    // Add this script to your theme.liquid file or as a separate JS file
+    document.addEventListener('DOMContentLoaded', function() {
+      // Function to add "Please select" option and set up deselect functionality
+      function enhanceVariantSelectors() {
+        // Find all variant dropdown selects
+        const variantSelects = document.querySelectorAll('.product-form__input--dropdown select');
         
-        deselectButtons.forEach(function(button) {
-          // Find the corresponding select element
-          const container = button.closest('.product-form__input--dropdown');
+        variantSelects.forEach(function(select) {
+          // Add "Please select" option if not present
+          let hasPlaceholder = Array.from(select.options).some(option => 
+            option.value === '' || option.text === 'Please select'
+          );
+          
+          if (!hasPlaceholder) {
+            const pleaseSelectOption = document.createElement('option');
+            pleaseSelectOption.value = '';
+            pleaseSelectOption.text = 'Please select';
+            select.insertBefore(pleaseSelectOption, select.firstChild);
+          }
+          
+          // Find the parent container and deselect button
+          const container = select.closest('.product-form__input--dropdown');
           if (!container) return;
           
-          const select = container.querySelector('select');
-          if (!select) return;
+          const deselectBtn = container.querySelector('.deselect-button');
+          if (!deselectBtn) return;
           
-          // Set initial button state
-          button.disabled = (select.selectedIndex === 0);
+          // Set initial state
+          deselectBtn.disabled = (select.selectedIndex === 0);
           
-          // Remove existing event listeners and add new ones
-          button.removeEventListener('click', handleDeselectClick);
-          button.addEventListener('click', handleDeselectClick);
+          // Check if we've already set up this button
+          if (!deselectBtn.hasAttribute('data-setup')) {
+            // Mark as set up to avoid duplicate handlers
+            deselectBtn.setAttribute('data-setup', 'true');
+            
+            // Add click handler to deselect button
+            deselectBtn.addEventListener('click', function() {
+              // Reset select to first option
+              select.selectedIndex = 0;
+              
+              // Disable button
+              this.disabled = true;
+              
+              // Trigger change event
+              select.dispatchEvent(new Event('change', { bubbles: true }));
+              console.log('Deselect button clicked - reset to first option');
+            });
+          }
           
-          // Remove existing change listeners from select
-          select.removeEventListener('change', handleSelectChange);
-          select.addEventListener('change', handleSelectChange);
-          
-          // Store reference to select in button data
-          button.dataset.selectId = select.id || 'select-' + Math.random().toString(36).substring(2, 9);
-          if (!select.id) select.id = button.dataset.selectId;
-          
-          // Log initial state
-          console.log('Set up deselect button for select:', select.id, 'Initial disabled state:', button.disabled);
+          // Check if we've already set up this select
+          if (!select.hasAttribute('data-setup')) {
+            // Mark as set up to avoid duplicate handlers
+            select.setAttribute('data-setup', 'true');
+            
+            // Add change handler to select
+            select.addEventListener('change', function() {
+              if (deselectBtn) {
+                deselectBtn.disabled = (this.selectedIndex === 0);
+                console.log('Select changed, button disabled:', deselectBtn.disabled);
+              }
+            });
+          }
         });
       }
       
-      // Handler for deselect button clicks
-      function handleDeselectClick(event) {
-        console.log('Deselect button clicked');
-        const button = event.currentTarget;
-        
-        // Find the corresponding select
-        const selectId = button.dataset.selectId;
-        const select = selectId ? document.getElementById(selectId) : null;
-        
-        if (select) {
-          // Reset to first option
-          select.selectedIndex = 0;
-          
-          // Disable button
-          button.disabled = true;
-          
-          // Trigger change event
-          select.dispatchEvent(new Event('change', { bubbles: true }));
-          
-          console.log('Reset select to first option');
-        }
-      }
+      // Run our setup function initially
+      enhanceVariantSelectors();
       
-      // Handler for select changes
-      function handleSelectChange(event) {
-        const select = event.currentTarget;
-        
-        // Find all buttons in the same container
-        const container = select.closest('.product-form__input--dropdown');
-        if (!container) return;
-        
-        const button = container.querySelector('.deselect-button');
-        if (button) {
-          // Update button state
-          button.disabled = (select.selectedIndex === 0);
-          console.log('Select changed, button disabled:', button.disabled);
-        }
-      }
+      // Run again after a short delay to catch any delayed DOM updates
+      setTimeout(enhanceVariantSelectors, 500);
       
-      // Run our fix initially
-      findAndFixDeselectButtons();
-      
-      // Run again after delays to catch any late-loading elements
-      setTimeout(findAndFixDeselectButtons, 500);
-      setTimeout(findAndFixDeselectButtons, 1000);
-      setTimeout(findAndFixDeselectButtons, 2000);
-      
-      // Also check whenever user interacts with the page
-      document.addEventListener('click', function() {
-        setTimeout(findAndFixDeselectButtons, 100);
+      // Watch for any changes to the DOM that might affect our variant selectors
+      const observer = new MutationObserver(function(mutations) {
+        enhanceVariantSelectors();
       });
       
-      // Watch for variant changes
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+      
+      // Also listen for Shopify's variant selection events
       document.addEventListener('variant:changed', function() {
-        setTimeout(findAndFixDeselectButtons, 100);
+        setTimeout(enhanceVariantSelectors, 100);
       });
-    })();
-  });
-</script>
+    });
+  </script>
 {%- endunless -%}
