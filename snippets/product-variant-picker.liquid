@@ -96,84 +96,170 @@
       {{ product.selected_or_first_available_variant | json }}
     </script>
   </variant-selects>
-
   <script>
     // Wait until the page is fully loaded before modifying the variant selector
     window.addEventListener('load', function() {
-      setupPleaseSelectOption();
+      setupPleaseSelectOptions();
       
-      // Also set up a click handler on the variant selector container
-      const variantSelects = document.querySelector('variant-selects');
-      if (variantSelects) {
-        variantSelects.addEventListener('click', function() {
-          // Add a slight delay to let Shopify's code run first
-          setTimeout(setupPleaseSelectOption, 50);
+      // Add event listeners to the select dropdowns
+      const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select');
+      selects.forEach(function(select) {
+        select.addEventListener('change', function() {
+          updateDeselectButtonState(this);
+          updatePriceDisplay();
         });
-      }
+        
+        // Initialize deselect button state
+        updateDeselectButtonState(select);
+      });
     });
     
-    function setupPleaseSelectOption() {
+    function setupPleaseSelectOptions() {
       const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select');
       
       selects.forEach(function(select) {
-        // Check if we need to add the "Please select" option
+        // Check if we already have a "Please select" option
         let hasPlaceholder = false;
         for (let i = 0; i < select.options.length; i++) {
-          if (select.options[i].value === '' || select.options[i].text === 'Please select') {
+          if (select.options[i].value === '' && select.options[i].text === 'Please select') {
             hasPlaceholder = true;
             break;
           }
         }
         
-        // Add the "Please select" option if needed
+        // Add the "Please select" option if it doesn't exist
         if (!hasPlaceholder) {
           const pleaseSelectOption = document.createElement('option');
           pleaseSelectOption.value = '';
           pleaseSelectOption.text = 'Please select';
+          
+          // Insert at the beginning
           select.insertBefore(pleaseSelectOption, select.firstChild);
         }
         
-        // Force it to be selected
+        // Make sure it's selected by default
         select.selectedIndex = 0;
         
-        // Update price display
-        updatePriceRange();
+        // Update the deselect button state
+        updateDeselectButtonState(select);
       });
+      
+      // Update price display
+      updatePriceDisplay();
     }
     
-    function updatePriceRange() {
-      const priceContainer = document.querySelector('#price-{{ section.id }}');
-      if (!priceContainer) return;
+    function updateDeselectButtonState(select) {
+      // Find the parent container and then the deselect button
+      const container = select.closest('.product-form__input--dropdown');
+      if (!container) return;
       
-      {% assign min_price = product.price_min | money %}
-      {% assign max_price = product.price_max | money %}
+      const deselectButton = container.querySelector('.deselect-button');
+      if (!deselectButton) return;
       
-      if ({{ product.price_min }} < {{ product.price_max }}) {
-        const priceElement = priceContainer.querySelector('.price');
-        if (priceElement) {
-          priceElement.innerHTML = 
-            '<span class="price-item price-item--regular">' + 
-            '{{ min_price }} - {{ max_price }}' + 
-            '</span>';
-        }
+      // Disable the button if "Please select" is selected (index 0), enable otherwise
+      if (select.selectedIndex === 0) {
+        deselectButton.setAttribute('disabled', 'disabled');
+        deselectButton.classList.add('disabled');
+      } else {
+        deselectButton.removeAttribute('disabled');
+        deselectButton.classList.remove('disabled');
       }
     }
     
-    // Set up a simpler solution that doesn't interfere with page loading
+    function updatePriceDisplay() {
+      const priceContainer = document.querySelector('#price-{{ section.id }}');
+      if (!priceContainer) return;
+      
+      const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select');
+      const hasEmptyOption = Array.from(selects).some(select => select.selectedIndex === 0);
+      
+      if (hasEmptyOption) {
+        // Show price range when any dropdown has "Please select"
+        {% assign min_price = product.price_min | money %}
+        {% assign max_price = product.price_max | money %}
+        
+        if ({{ product.price_min }} < {{ product.price_max }}) {
+          const priceElement = priceContainer.querySelector('.price');
+          if (priceElement) {
+            priceElement.innerHTML = 
+              '<span class="price-item price-item--regular">' + 
+              '{{ min_price }} - {{ max_price }}' + 
+              '</span>';
+          }
+        }
+      } else if (window.restoreOriginalPrice) {
+        // If all dropdowns have a selection, restore the variant-specific price
+        window.restoreOriginalPrice();
+      }
+    }
+    
+    // Set up event listeners for deselect buttons
     document.addEventListener('DOMContentLoaded', function() {
-      // Add event listeners to deselect buttons
       document.querySelectorAll('.deselect-button').forEach(button => {
         button.addEventListener('click', function(e) {
           e.preventDefault();
-          const select = this.closest('.product-form__input--dropdown').querySelector('select');
-          if (select) {
-            // Force it to select the "Please select" option
-            setTimeout(function() {
-              setupPleaseSelectOption();
-            }, 10);
-          }
+          
+          // Find the associated select element
+          const container = this.closest('.product-form__input--dropdown');
+          if (!container) return;
+          
+          const select = container.querySelector('select');
+          if (!select) return;
+          
+          // Set back to "Please select" option
+          select.selectedIndex = 0;
+          
+          // Trigger the change event manually
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+          
+          // Update button state
+          updateDeselectButtonState(select);
+          
+          // Update price display
+          updatePriceDisplay();
         });
       });
+      
+      // Add a mutation observer to ensure our setup persists
+      const variantSelects = document.querySelector('variant-selects');
+      if (variantSelects) {
+        const observer = new MutationObserver(function() {
+          setupPleaseSelectOptions();
+        });
+        
+        observer.observe(variantSelects, { 
+          childList: true, 
+          subtree: true 
+        });
+      }
     });
+    
+    // Ensure our changes persist by periodically checking
+    setInterval(function() {
+      const selects = document.querySelectorAll('#variant-selects-{{ section.id }} select');
+      let needsUpdate = false;
+      
+      selects.forEach(function(select) {
+        // Check if the first option is "Please select"
+        if (select.options.length > 0 && 
+            (select.options[0].value !== '' || select.options[0].text !== 'Please select')) {
+          needsUpdate = true;
+        }
+      });
+      
+      if (needsUpdate) {
+        setupPleaseSelectOptions();
+      }
+    }, 1000);
+    
+    // Add some styling for the disabled deselect button
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .deselect-button.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 {%- endunless -%}
