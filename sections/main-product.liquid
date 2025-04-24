@@ -183,62 +183,157 @@
                   class="decorative-horizontal-line"
                   style="margin-top: {{ block.settings.line_top_margin }}px; margin-bottom: {{ block.settings.line_bottom_margin }}px;"
                 >
-              {%- when 'price' -%}
-                <div class="product-price ">
-                  <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
-                    {%- render 'price',
-                      product: product,
-                      use_variant: true,
-                      show_badges: true,
-                      price_class: 'price--large'
-                    -%}
+                {%- when 'price' -%}
+                  <div class="product-price">
+                    <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
+                      {%- render 'price',
+                        product: product,
+                        use_variant: true,
+                        show_badges: true,
+                        price_class: 'price--large'
+                      -%}
+                    </div>
+                    {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank -%}
+                      <div class="product__tax caption rte">
+                        {%- if cart.duties_included and cart.taxes_included -%}
+                          {{ 'products.product.duties_and_taxes_included' | t }}
+                        {%- elsif cart.taxes_included -%}
+                          {{ 'products.product.taxes_included' | t }}
+                        {%- elsif cart.duties_included -%}
+                          {{ 'products.product.duties_included' | t }}
+                        {%- endif -%}
+                        {%- if shop.shipping_policy.body != blank -%}
+                          {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
+                        {%- endif -%}
+                      </div>
+                    {%- endif -%}
                   </div>
-                  {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank -%}
-                    <div class="product__tax caption rte">
-                      {%- if cart.duties_included and cart.taxes_included -%}
-                        {{ 'products.product.duties_and_taxes_included' | t }}
-                      {%- elsif cart.taxes_included -%}
-                        {{ 'products.product.taxes_included' | t }}
-                      {%- elsif cart.duties_included -%}
-                        {{ 'products.product.duties_included' | t }}
-                      {%- endif -%}
-                      {%- if shop.shipping_policy.body != blank -%}
-                        {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
-                      {%- endif -%}
+                  {%- if product.quantity_price_breaks_configured? -%}
+                    <div class="volume-pricing-note" id="Volume-Note-{{ section.id }}">
+                      <span>{{ 'products.product.volume_pricing.note' | t }}</span>
                     </div>
                   {%- endif -%}
-                </div>
-                {%- if product.quantity_price_breaks_configured? -%}
-                  <div class="volume-pricing-note" id="Volume-Note-{{ section.id }}">
-                    <span>{{ 'products.product.volume_pricing.note' | t }}</span>
+                  
+                  <div {{ block.shopify_attributes }}>
+                    {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
+                    {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
+                      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                      {{ form | payment_terms }}
+                    {%- endform -%}
                   </div>
-                {%- endif -%}
-
-                <div {{ block.shopify_attributes }}>
-                  {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
-                  {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
-                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                    {{ form | payment_terms }}
-                  {%- endform -%}
-                </div>
-
-                <script>
-                  document.addEventListener('DOMContentLoaded', function () {
-                    // Save the original price HTML for restoration when a variant is selected
-                    const priceContainer = document.querySelector('#price-{{ section.id }}');
-                    if (priceContainer) {
-                      // Store the original price HTML
-                      priceContainer.dataset.originalPrice = priceContainer.innerHTML;
-
-                      // Function to restore original price when needed
-                      window.restoreOriginalPrice = function () {
-                        if (priceContainer.dataset.originalPrice) {
-                          priceContainer.innerHTML = priceContainer.dataset.originalPrice;
-                        }
-                      };
-                    }
-                  });
-                </script>
+                  
+                  <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                      // Save the original price HTML for restoration when needed
+                      const priceContainer = document.querySelector('#price-{{ section.id }}');
+                      if (priceContainer) {
+                        // Store the original price HTML showing the default price or price range
+                        const originalPriceHTML = priceContainer.innerHTML;
+                        priceContainer.dataset.originalPrice = originalPriceHTML;
+                        
+                        // Generate price range HTML manually
+                        let priceRangeHTML = '';
+                        
+                        {%- if product.price_varies -%}
+                          // Create price range display
+                          const formattedMinPrice = {{ product.price_min | money }}.replace('.00', '');
+                          const formattedMaxPrice = {{ product.price_max | money }}.replace('.00', '');
+                          priceRangeHTML = '<div class="price price--large price--show-badge"><dl><div class="price__pricing-group"><div class="price__regular"><dt><span class="visually-hidden">{{ "products.product.price.regular_price" | t }}</span></dt><dd><span class="price-item price-item--regular">' + formattedMinPrice + ' - ' + formattedMaxPrice + '</span></dd></div></div></dl></div>';
+                          priceContainer.dataset.priceRange = priceRangeHTML;
+                        {%- endif -%}
+                        
+                        // Function to show price range when default option is selected
+                        window.showPriceRange = function() {
+                          {%- if product.price_varies -%}
+                            if (priceContainer.dataset.priceRange) {
+                              priceContainer.innerHTML = priceContainer.dataset.priceRange;
+                            }
+                          {%- else -%}
+                            if (priceContainer.dataset.originalPrice) {
+                              priceContainer.innerHTML = priceContainer.dataset.originalPrice;
+                            }
+                          {%- endif -%}
+                        };
+                        
+                        // Function to restore original price when needed
+                        window.restoreOriginalPrice = function() {
+                          if (priceContainer.dataset.originalPrice) {
+                            priceContainer.innerHTML = priceContainer.dataset.originalPrice;
+                          }
+                        };
+                        
+                        // Listen for variant selection changes
+                        document.addEventListener('variant:changed', function(event) {
+                          const variant = event.detail.variant;
+                          if (variant && variant.available) {
+                            // Update price with the selected variant price
+                            const variantPriceElement = priceContainer.querySelector('.price-item--regular');
+                            if (variantPriceElement) {
+                              const formattedPrice = {{ 'money' | shopify_filter }}.replace('{{amount}}', variant.price/100).replace('.00', '');
+                              variantPriceElement.textContent = formattedPrice;
+                            }
+                          }
+                        });
+                        
+                        // Listen for please-select-chosen custom event
+                        document.addEventListener('please-select-chosen', function(event) {
+                          // When default option is selected, show price range if product has different prices
+                          window.showPriceRange();
+                        });
+                        
+                        // Initial check for default selections
+                        const checkDefaultSelections = function() {
+                          const variantSelects = document.querySelectorAll('.select__select[data-default-unselected="true"]');
+                          let allDefault = true;
+                          
+                          variantSelects.forEach(select => {
+                            if (select.selectedIndex !== 0 && select.value !== '') {
+                              allDefault = false;
+                            }
+                          });
+                          
+                          if (allDefault && variantSelects.length > 0) {
+                            window.showPriceRange();
+                          }
+                        };
+                        
+                        // Check initial state after a short delay
+                        setTimeout(checkDefaultSelections, 500);
+                      }
+                    });
+                  </script>
+                  
+                  {%- when 'variant_picker' -%}
+                  {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
+                  
+                  <!-- Add this script to connect variant picker with price display -->
+                  <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                      // Get the section id
+                      const sectionId = '{{ section.id }}';
+                      
+                      // Find all variant selects in this section
+                      const variantSelects = document.querySelectorAll(`#variant-selects-${sectionId} select`);
+                      
+                      // Add change event listeners to each select
+                      variantSelects.forEach(select => {
+                        select.addEventListener('change', function() {
+                          // Check if all required selects have a value other than the default
+                          const allSelected = Array.from(variantSelects).every(s => 
+                            !(s.selectedIndex === 0 || s.value === '')
+                          );
+                          
+                          // If all are selected, the variant:changed event will handle the price update
+                          // If not all are selected, show price range
+                          if (!allSelected) {
+                            if (typeof window.showPriceRange === 'function') {
+                              window.showPriceRange();
+                            }
+                          }
+                        });
+                      });
+                    });
+                  </script>
 
               {%- when 'inventory' -%}
                 <p
