@@ -60,13 +60,9 @@
           >
             {{ option.name }}
           </label>
-          <div class="select-wrapper w-55">
-            <!-- Plain text display for selected value -->
-            <div class="selected-value-display" style="display: none;">
-              <span class="selected-text"></span>
-            </div>
-            
-            <!-- Original select dropdown -->
+          
+          <!-- Original select dropdown -->
+          <div class="select-container w-55">
             <div class="select select-dropdown-container">
               {%- if picker_type == 'swatch_dropdown' -%}
                 <span
@@ -95,7 +91,13 @@
                 {{- 'icon-caret.svg' | inline_asset_content -}}
               </span>
             </div>
+            
+            <!-- Plain text display for selected value -->
+            <div class="selected-value-display">
+              <span class="selected-text"></span>
+            </div>
           </div>
+          
           <div class="divider"></div>
           <div class="w-15">
             <button type="button" disabled class="deselect-button" disabled>選択解除</button>
@@ -130,32 +132,34 @@
     }
     
     /* Styles for the text display mode */
-    .select-wrapper {
+    .select-container {
       position: relative;
     }
     
+    /* This is where selected text will appear */
     .selected-value-display {
       padding: 8px 10px;
-      border: 1px solid #e8e8e8;
+      border: 1px solid #333;
       border-radius: 4px;
-      background-color: #f9f9f9;
+      background-color: #1b1b1b;
       min-height: 40px;
-      display: flex;
       align-items: center;
+      display: none;
       width: 100%;
     }
     
     .selected-text {
       font-weight: 500;
+      color: #fff;
     }
     
-    /* Hidden state for dropdown when in text mode */
-    .select-wrapper.text-mode .select-dropdown-container {
+    /* Toggle visibility based on text mode */
+    .select-container.text-mode .select-dropdown-container {
       display: none;
     }
     
-    .select-wrapper.text-mode .selected-value-display {
-      display: flex !important;
+    .select-container.text-mode .selected-value-display {
+      display: flex;
     }
   </style>
 
@@ -183,9 +187,9 @@
           const deselectButton = container.querySelector('.deselect-button');
           if (!deselectButton) return;
           
-          // Find the select wrapper and text display elements
-          const selectWrapper = container.querySelector('.select-wrapper');
-          const selectedValueDisplay = selectWrapper.querySelector('.selected-value-display');
+          // Find the select container and text display elements
+          const selectContainer = container.querySelector('.select-container');
+          const selectedValueDisplay = selectContainer.querySelector('.selected-value-display');
           const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
           
           // Get the section and option index for this select
@@ -220,20 +224,19 @@
             select.selectedIndex = 0;
             deselectButton.disabled = true;
             select.classList.remove('user-selected');
-            selectWrapper.classList.remove('text-mode');
+            selectContainer.classList.remove('text-mode');
           } else {
             // Find the option with the saved value
             for (let i = 0; i < select.options.length; i++) {
               if (select.options[i].value === selectedOption) {
+                // Set selected option
                 select.selectedIndex = i;
                 deselectButton.disabled = false;
                 select.classList.add('user-selected');
                 
                 // Show as text
-                selectWrapper.classList.add('text-mode');
-                const selectedText = select.options[i].text;
-                selectedTextElement.textContent = selectedText;
-                console.log("Setting initial selected text:", selectedText);
+                selectContainer.classList.add('text-mode');
+                selectedTextElement.textContent = select.options[i].text;
                 break;
               }
             }
@@ -248,20 +251,17 @@
             const isDefaultOption = (value === '' || this.selectedIndex === 0);
             const selectedText = this.options[this.selectedIndex].text;
             
-            console.log("Select changed to:", selectedText, "Is default:", isDefaultOption);
-            
             // Update button state
             deselectButton.disabled = isDefaultOption;
             
             // Update class for styling
             if (isDefaultOption) {
               this.classList.remove('user-selected');
-              selectWrapper.classList.remove('text-mode');
+              selectContainer.classList.remove('text-mode');
             } else {
               this.classList.add('user-selected');
-              selectWrapper.classList.add('text-mode');
+              selectContainer.classList.add('text-mode');
               selectedTextElement.textContent = selectedText;
-              console.log("Setting selected text to:", selectedText);
             }
             
             // Save selection
@@ -272,17 +272,6 @@
             if (isDefaultOption) {
               this.dispatchEvent(pleaseSelectEvent);
             }
-            
-            // Force update the display
-            setTimeout(() => {
-              if (!isDefaultOption) {
-                selectedValueDisplay.style.display = 'flex';
-                selectedTextElement.textContent = selectedText;
-                console.log("Forced update of selected text:", selectedText);
-              } else {
-                selectedValueDisplay.style.display = 'none';
-              }
-            }, 0);
           });
           
           // Handle deselect button click
@@ -296,8 +285,7 @@
             select.classList.remove('user-selected');
             
             // Switch back to dropdown mode
-            selectWrapper.classList.remove('text-mode');
-            selectedValueDisplay.style.display = 'none';
+            selectContainer.classList.remove('text-mode');
             
             // Update stored values
             selectedOptions.delete(`${sectionId}-${optionIndex}`);
@@ -307,8 +295,6 @@
             const changeEvent = new Event('change', { bubbles: true });
             select.dispatchEvent(changeEvent);
             select.dispatchEvent(pleaseSelectEvent);
-            
-            console.log('Deselect button clicked for option', optionIndex);
           });
           
           // Override Shopify's variant selection to respect our placeholder settings
@@ -327,14 +313,10 @@
                 // Update text mode
                 const isDefaultOption = (select.value === '' || select.selectedIndex === 0);
                 if (!isDefaultOption) {
-                  selectWrapper.classList.add('text-mode');
-                  const selectedText = select.options[select.selectedIndex].text;
-                  selectedTextElement.textContent = selectedText;
-                  selectedValueDisplay.style.display = 'flex';
-                  console.log("Variant changed handler setting text:", selectedText);
+                  selectContainer.classList.add('text-mode');
+                  selectedTextElement.textContent = select.options[select.selectedIndex].text;
                 } else {
-                  selectWrapper.classList.remove('text-mode');
-                  selectedValueDisplay.style.display = 'none';
+                  selectContainer.classList.remove('text-mode');
                 }
               }, 10);
             };
@@ -347,17 +329,13 @@
               const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
               if (savedValue === '' && select.selectedIndex !== 0) {
                 select.selectedIndex = 0;
-                selectWrapper.classList.remove('text-mode');
-                selectedValueDisplay.style.display = 'none';
+                selectContainer.classList.remove('text-mode');
               } else if (savedValue && savedValue !== '' && select.selectedIndex > 0) {
                 // Make sure text is showing
+                selectContainer.classList.add('text-mode');
                 const selectedText = select.options[select.selectedIndex].text;
                 if (selectedTextElement.textContent !== selectedText) {
                   selectedTextElement.textContent = selectedText;
-                  console.log("Interval check updating text:", selectedText);
-                }
-                if (selectedValueDisplay.style.display !== 'flex') {
-                  selectedValueDisplay.style.display = 'flex';
                 }
               }
             }, 500);
@@ -398,21 +376,17 @@
                   }
                   
                   // Update text mode state
-                  const selectWrapper = select.closest('.select-wrapper');
-                  if (selectWrapper) {
-                    const selectedValueDisplay = selectWrapper.querySelector('.selected-value-display');
+                  const selectContainer = select.closest('.select-container');
+                  if (selectContainer) {
+                    const selectedValueDisplay = selectContainer.querySelector('.selected-value-display');
                     const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
                     
                     const isDefaultOption = (select.value === '' || select.selectedIndex === 0);
                     if (!isDefaultOption) {
-                      selectWrapper.classList.add('text-mode');
-                      const selectedText = select.options[select.selectedIndex].text;
-                      selectedTextElement.textContent = selectedText;
-                      selectedValueDisplay.style.display = 'flex';
-                      console.log("UpdateOptions setting text:", selectedText);
+                      selectContainer.classList.add('text-mode');
+                      selectedTextElement.textContent = select.options[select.selectedIndex].text;
                     } else {
-                      selectWrapper.classList.remove('text-mode');
-                      selectedValueDisplay.style.display = 'none';
+                      selectContainer.classList.remove('text-mode');
                     }
                   }
                 });
@@ -431,23 +405,6 @@
         setTimeout(() => {
           initializeVariantSelectors();
           overrideVariantSelection();
-          
-          // Force all selects to update their display
-          document.querySelectorAll('.select__select').forEach(select => {
-            if (select.selectedIndex > 0) {
-              const selectWrapper = select.closest('.select-wrapper');
-              if (selectWrapper) {
-                const selectedValueDisplay = selectWrapper.querySelector('.selected-value-display');
-                const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
-                const selectedText = select.options[select.selectedIndex].text;
-                
-                selectWrapper.classList.add('text-mode');
-                selectedTextElement.textContent = selectedText;
-                selectedValueDisplay.style.display = 'flex';
-                console.log("Initial loading force update:", selectedText);
-              }
-            }
-          });
         }, 500);
         
         // Also watch for DOM changes
@@ -468,23 +425,6 @@
       document.addEventListener('variant:changed', function() {
         setTimeout(() => {
           initializeVariantSelectors();
-          
-          // Force all selects to update their display
-          document.querySelectorAll('.select__select').forEach(select => {
-            if (select.selectedIndex > 0) {
-              const selectWrapper = select.closest('.select-wrapper');
-              if (selectWrapper) {
-                const selectedValueDisplay = selectWrapper.querySelector('.selected-value-display');
-                const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
-                const selectedText = select.options[select.selectedIndex].text;
-                
-                selectWrapper.classList.add('text-mode');
-                selectedTextElement.textContent = selectedText;
-                selectedValueDisplay.style.display = 'flex';
-                console.log("Variant changed force update:", selectedText);
-              }
-            }
-          });
         }, 50);
       });
     })();
