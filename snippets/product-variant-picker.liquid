@@ -60,7 +60,7 @@
           >
             {{ option.name }}
           </label>
-          
+
           <!-- Original select dropdown -->
           <div class="select-container w-55">
             <div class="select select-dropdown-container">
@@ -92,13 +92,13 @@
                 {{- 'icon-caret.svg' | inline_asset_content -}}
               </span>
             </div>
-            
+
             <!-- Plain text display for selected value -->
             <div class="selected-value-display">
               <span class="selected-text"></span>
             </div>
           </div>
-          
+
           <div class="divider"></div>
           <div class="w-15">
             <button type="button" disabled class="deselect-button" disabled>選択解除</button>
@@ -107,10 +107,28 @@
       {%- endif -%}
     {%- endfor -%}
 
-   <!-- Variant selection warning message -->
-<div id="variant-selection-warning-{{ section.id }}" class="variant-selection-warning" style="display: none;">
-  <p>上記項目を選択してください</p>
-</div>
+    <div id="variant-selection-warning-{{ section.id }}" class="variant-selection-warning" style="display: none;">
+      <div class="warning-content">
+        <span class="warning-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="8" cy="8" r="7"></circle>
+            <line x1="8" y1="5" x2="8" y2="9"></line>
+            <line x1="8" y1="12" x2="8.01" y2="12"></line>
+          </svg>
+        </span>
+        <p>上記項目を選択してください</p>
+      </div>
+    </div>
 
     <script type="application/json" data-selected-variant>
       {{ product.selected_or_first_available_variant | json }}
@@ -121,27 +139,27 @@
     .deselect-button:not(:disabled):hover {
       opacity: 0.5;
     }
-    
+
     .deselect-button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
-    
+
     /* Force the select to maintain its selection */
     .select__select.user-selected {
       border-color: #4a90e2;
     }
-    
+
     /* Hide the default option from dropdown list */
     .select__select option.placeholder-option {
       display: none;
     }
-    
+
     /* Styles for the text display mode */
     .select-container {
       position: relative;
     }
-    
+
     /* This is where selected text will appear */
     .selected-value-display {
       padding: 0 31px 0 20px;
@@ -150,22 +168,22 @@
       display: none;
       width: 100%;
     }
-    
+
     .selected-text {
       font-size: small;
       font-weight: 500;
       color: #ffffffbf;
     }
-    
+
     /* Toggle visibility based on text mode */
     .select-container.text-mode .select-dropdown-container {
       display: none;
     }
-    
+
     .select-container.text-mode .selected-value-display {
       display: flex;
     }
-    
+
     /* Variant selection warning styles */
     .variant-selection-warning {
       margin-top: 15px;
@@ -176,59 +194,69 @@
       color: #d00;
       text-align: center;
     }
-    
+
     .variant-selection-warning p {
       margin: 0;
       font-size: 14px;
     }
-    
+
     /* Add a shake animation for the warning */
     @keyframes warning-shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
+      0% {
+        transform: translateX(0);
+      }
+      25% {
+        transform: translateX(-5px);
+      }
+      50% {
+        transform: translateX(5px);
+      }
+      75% {
+        transform: translateX(-5px);
+      }
+      100% {
+        transform: translateX(0);
+      }
     }
-    
+
     .warning-shake {
       animation: warning-shake 0.5s ease-in-out;
     }
   </style>
 
   <script>
-    (function() {
+    (function () {
       // Maintain state of which options have been manually selected
       const selectedOptions = new Map();
       const PLACEHOLDER_TEXT = '選択してください';
-      
+
       // Custom event for when placeholder is chosen
       const pleaseSelectEvent = new CustomEvent('please-select-chosen', { bubbles: true });
-      
+
       function initializeVariantSelectors() {
         const variantSelects = document.querySelectorAll('.select__select');
-        
+
         variantSelects.forEach((select, index) => {
           // Skip if already initialized
           if (select.hasAttribute('data-initialized')) return;
           select.setAttribute('data-initialized', 'true');
-          
+
           // Find the deselect button for this select
           const container = select.closest('.product-form__input--dropdown');
           if (!container) return;
-          
+
           const deselectButton = container.querySelector('.deselect-button');
           if (!deselectButton) return;
-          
+
           // Find the select container and text display elements
           const selectContainer = container.querySelector('.select-container');
           const selectedValueDisplay = selectContainer.querySelector('.selected-value-display');
           const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
-          
+
           // Get the section and option index for this select
           const sectionId = select.id.split('-')[1];
           const optionIndex = select.dataset.optionIndex;
-          
+
           // Check if we already have a placeholder option
           let placeholderOption = null;
           for (let i = 0; i < select.options.length; i++) {
@@ -237,7 +265,7 @@
               break;
             }
           }
-          
+
           // Create or modify placeholder option
           if (!placeholderOption) {
             // Add a placeholder option that will be hidden from dropdown but visible when selected
@@ -249,7 +277,7 @@
             placeholderOption.text = PLACEHOLDER_TEXT;
             placeholderOption.classList.add('placeholder-option');
           }
-          
+
           // Set correct initial select and button state
           const selectedOption = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
           if (selectedOption === null || selectedOption === '') {
@@ -266,7 +294,7 @@
                 select.selectedIndex = i;
                 deselectButton.disabled = false;
                 select.classList.add('user-selected');
-                
+
                 // Show as text
                 selectContainer.classList.add('text-mode');
                 selectedTextElement.textContent = select.options[i].text;
@@ -274,19 +302,19 @@
               }
             }
           }
-          
+
           // Event handlers
-          
+
           // Handle changes to the select
-          select.addEventListener('change', function(e) {
+          select.addEventListener('change', function (e) {
             // Store the selection in both Map and localStorage
             const value = this.value;
-            const isDefaultOption = (value === '' || this.selectedIndex === 0);
+            const isDefaultOption = value === '' || this.selectedIndex === 0;
             const selectedText = this.options[this.selectedIndex].text;
-            
+
             // Update button state
             deselectButton.disabled = isDefaultOption;
-            
+
             // Update class for styling
             if (isDefaultOption) {
               this.classList.remove('user-selected');
@@ -296,43 +324,43 @@
               selectContainer.classList.add('text-mode');
               selectedTextElement.textContent = selectedText;
             }
-            
+
             // Save selection
             selectedOptions.set(`${sectionId}-${optionIndex}`, value);
             localStorage.setItem(`variant-${sectionId}-${optionIndex}`, value);
-            
+
             // Hide warning if shown
             hideVariantWarning(sectionId);
-            
+
             // Dispatch custom event if placeholder is chosen
             if (isDefaultOption) {
               this.dispatchEvent(pleaseSelectEvent);
             }
           });
-          
+
           // Handle deselect button click
-          deselectButton.addEventListener('click', function(e) {
+          deselectButton.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             // Reset to placeholder
             select.selectedIndex = 0;
             this.disabled = true;
             select.classList.remove('user-selected');
-            
+
             // Switch back to dropdown mode
             selectContainer.classList.remove('text-mode');
-            
+
             // Update stored values
             selectedOptions.delete(`${sectionId}-${optionIndex}`);
             localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
-            
+
             // Dispatch events
             const changeEvent = new Event('change', { bubbles: true });
             select.dispatchEvent(changeEvent);
             select.dispatchEvent(pleaseSelectEvent);
           });
-          
+
           // Override Shopify's variant selection to respect our placeholder settings
           const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
           if (variantSelectsElement) {
@@ -345,9 +373,9 @@
                   select.selectedIndex = 0;
                   select.dispatchEvent(new Event('change', { bubbles: true }));
                 }
-                
+
                 // Update text mode
-                const isDefaultOption = (select.value === '' || select.selectedIndex === 0);
+                const isDefaultOption = select.value === '' || select.selectedIndex === 0;
                 if (!isDefaultOption) {
                   selectContainer.classList.add('text-mode');
                   selectedTextElement.textContent = select.options[select.selectedIndex].text;
@@ -356,10 +384,10 @@
                 }
               }, 10);
             };
-            
+
             // Listen for Shopify's variant:changed event
             variantSelectsElement.addEventListener('variant:changed', variantChangedHandler);
-            
+
             // Also check periodically
             setInterval(() => {
               const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
@@ -378,25 +406,25 @@
           }
         });
       }
-      
+
       // Override Shopify's variant selection code
       function overrideVariantSelection() {
         // Look for variant-selects elements
         const variantSelects = document.querySelectorAll('variant-selects');
-        
-        variantSelects.forEach(variantSelect => {
+
+        variantSelects.forEach((variantSelect) => {
           // Skip if already processed
           if (variantSelect.hasAttribute('data-override')) return;
           variantSelect.setAttribute('data-override', 'true');
-          
+
           // Get the original updateOptions function
           const originalUpdateOptions = variantSelect.updateOptions;
           if (typeof originalUpdateOptions === 'function') {
             // Override the updateOptions function
-            variantSelect.updateOptions = function() {
+            variantSelect.updateOptions = function () {
               // Call the original function
               originalUpdateOptions.apply(this, arguments);
-              
+
               // Then apply our custom logic
               setTimeout(() => {
                 const selects = this.querySelectorAll('select');
@@ -404,20 +432,20 @@
                   const sectionId = this.dataset.section;
                   const optionIndex = select.dataset.optionIndex;
                   const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
-                  
+
                   if (savedValue === '') {
                     select.selectedIndex = 0;
                     const changeEvent = new Event('change', { bubbles: true });
                     select.dispatchEvent(changeEvent);
                   }
-                  
+
                   // Update text mode state
                   const selectContainer = select.closest('.select-container');
                   if (selectContainer) {
                     const selectedValueDisplay = selectContainer.querySelector('.selected-value-display');
                     const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
-                    
-                    const isDefaultOption = (select.value === '' || select.selectedIndex === 0);
+
+                    const isDefaultOption = select.value === '' || select.selectedIndex === 0;
                     if (!isDefaultOption) {
                       selectContainer.classList.add('text-mode');
                       selectedTextElement.textContent = select.options[select.selectedIndex].text;
@@ -431,24 +459,24 @@
           }
         });
       }
-      
+
       // Function to show variant warning
       function showVariantWarning(sectionId) {
         const warning = document.getElementById(`variant-selection-warning-${sectionId}`);
         if (warning) {
           warning.style.display = 'block';
           warning.classList.add('warning-shake');
-          
+
           // Remove the animation class after animation completes
           setTimeout(() => {
             warning.classList.remove('warning-shake');
           }, 500);
-          
+
           // Scroll to the warning
           warning.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       }
-      
+
       // Function to hide variant warning
       function hideVariantWarning(sectionId) {
         const warning = document.getElementById(`variant-selection-warning-${sectionId}`);
@@ -456,7 +484,7 @@
           warning.style.display = 'none';
         }
       }
-      
+
       // Check if all variants are selected
       function checkAllVariantsSelected(sectionId) {
         const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
@@ -468,57 +496,61 @@
         }
         return true;
       }
-      
+
       // Initialize everything when the DOM is ready
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function () {
         initializeVariantSelectors();
         overrideVariantSelection();
-        
+
         // Intercept the add to cart button click
-document.addEventListener('click', function(e) {
-  // Find the closest add to cart button
-  const addToCartButton = e.target.closest('.product-form__submit');
-  if (!addToCartButton) return;
-  
-  // Find the section ID
-  const productFormElement = addToCartButton.closest('product-form');
-  if (!productFormElement) return;
-  
-  const sectionId = productFormElement.dataset.section;
-  if (!sectionId) return;
-  
-  // Check if all variants are selected
-  if (!checkAllVariantsSelected(sectionId)) {
-    e.preventDefault();
-    e.stopPropagation();
-    showVariantWarning(sectionId);
-  } else {
-    hideVariantWarning(sectionId);
-  }
-}, true);
-        
+        document.addEventListener(
+          'click',
+          function (e) {
+            // Find the closest add to cart button
+            const addToCartButton = e.target.closest('.product-form__submit');
+            if (!addToCartButton) return;
+
+            // Find the section ID
+            const productFormElement = addToCartButton.closest('product-form');
+            if (!productFormElement) return;
+
+            const sectionId = productFormElement.dataset.section;
+            if (!sectionId) return;
+
+            // Check if all variants are selected
+            if (!checkAllVariantsSelected(sectionId)) {
+              e.preventDefault();
+              e.stopPropagation();
+              showVariantWarning(sectionId);
+            } else {
+              hideVariantWarning(sectionId);
+            }
+          },
+          true
+        );
+
         // Re-run after a short delay to catch any late loading elements
         setTimeout(() => {
           initializeVariantSelectors();
           overrideVariantSelection();
         }, 500);
-        
+
         // Also watch for DOM changes
-        const observer = new MutationObserver(function() {
+        const observer = new MutationObserver(function () {
           initializeVariantSelectors();
           overrideVariantSelection();
         });
-        
+
         observer.observe(document.body, {
           childList: true,
           subtree: true,
           attributes: true,
-          attributeFilter: ['selected', 'data-variant']
+          attributeFilter: ['selected', 'data-variant'],
         });
       });
-      
+
       // Re-run when variants change
-      document.addEventListener('variant:changed', function() {
+      document.addEventListener('variant:changed', function () {
         setTimeout(() => {
           initializeVariantSelectors();
         }, 50);
