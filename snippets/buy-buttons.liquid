@@ -148,4 +148,43 @@
 
     <script src="{{ 'pickup-availability.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
+
+  {% if show_variant_warning %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const addToCartButton = document.getElementById('ProductSubmitButton-{{ section_id }}');
+        if (addToCartButton) {
+          addToCartButton.addEventListener('click', function(e) {
+            const variantSelects = document.querySelectorAll(`#variant-selects-{{ section_id }} select[data-required="true"]`);
+            let allSelected = true;
+            
+            for (let i = 0; i < variantSelects.length; i++) {
+              const select = variantSelects[i];
+              if (select.selectedIndex === 0 || select.value === '') {
+                allSelected = false;
+                break;
+              }
+            }
+            
+            if (!allSelected) {
+              e.preventDefault();
+              e.stopPropagation();
+              
+              const warning = document.getElementById(`variant-selection-warning-{{ section_id }}`);
+              if (warning) {
+                warning.style.display = 'block';
+                warning.classList.add('warning-shake');
+                
+                setTimeout(() => {
+                  warning.classList.remove('warning-shake');
+                }, 500);
+                
+                warning.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }
+          });
+        }
+      });
+    </script>
+  {% endif %}
 </div>
