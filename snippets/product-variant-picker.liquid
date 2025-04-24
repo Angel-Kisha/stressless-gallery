@@ -263,6 +263,8 @@
       const selectedOptions = new Map();
       const PLACEHOLDER_TEXT = '選択してください';
       let productData = null;
+      let priceUpdateTimeout = null; // Track the timeout for price updates
+      let isUpdatingPrice = false; // Flag to prevent multiple updates
       
       // Custom event for when placeholder is chosen
       const pleaseSelectEvent = new CustomEvent('please-select-chosen', { bubbles: true });
@@ -339,12 +341,24 @@
       
       // Update price display to show specific variant price
       function updatePriceBasedOnSelections(sectionId) {
+        // Clear any existing timeout to prevent flashing
+        if (priceUpdateTimeout) {
+          clearTimeout(priceUpdateTimeout);
+          priceUpdateTimeout = null;
+        }
+        
+        // If already updating, don't start another update
+        if (isUpdatingPrice) return;
+        
+        isUpdatingPrice = true;
+        
         const options = getCurrentlySelectedOptions(sectionId);
         
         // Check if any option is not selected
         if (options.some(opt => opt === null)) {
           // Show price range if any option is not selected
           showPriceRange();
+          isUpdatingPrice = false;
           return;
         }
         
@@ -354,6 +368,7 @@
         // If no variant matches or variant not found, show price range
         if (!variant) {
           showPriceRange();
+          isUpdatingPrice = false;
           return;
         }
         
@@ -390,6 +405,8 @@
             priceClass.classList.remove('price--on-sale');
           }
         }
+        
+        isUpdatingPrice = false;
       }
 
       function initializeVariantSelectors() {
@@ -496,10 +513,8 @@
               this.dispatchEvent(pleaseSelectEvent);
             }
             
-            // Update price based on current selections
-            setTimeout(() => {
-              updatePriceBasedOnSelections(sectionId);
-            }, 100);
+            // Immediately update the price (no delay)
+            updatePriceBasedOnSelections(sectionId);
           });
 
           // Handle deselect button click
@@ -524,10 +539,8 @@
             select.dispatchEvent(changeEvent);
             select.dispatchEvent(pleaseSelectEvent);
             
-            // Update price to show range
-            setTimeout(() => {
-              updatePriceBasedOnSelections(sectionId);
-            }, 100);
+            // Immediately update the price (no delay)
+            updatePriceBasedOnSelections(sectionId);
           });
 
           // Override Shopify's variant selection to respect our placeholder settings
@@ -535,33 +548,31 @@
           if (variantSelectsElement) {
             // Make sure we're always checking selections
             const variantChangedHandler = () => {
-              setTimeout(() => {
-                // Only override if we want this to stay at placeholder
-                const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
-                if (savedValue === '' && select.selectedIndex !== 0) {
-                  select.selectedIndex = 0;
-                  select.dispatchEvent(new Event('change', { bubbles: true }));
-                }
+              // Only override if we want this to stay at placeholder
+              const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
+              if (savedValue === '' && select.selectedIndex !== 0) {
+                select.selectedIndex = 0;
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+              }
 
-                // Update text mode
-                const isDefaultOption = select.value === '' || select.selectedIndex === 0;
-                if (!isDefaultOption) {
-                  selectContainer.classList.add('text-mode');
-                  selectedTextElement.textContent = select.options[select.selectedIndex].text;
-                } else {
-                  selectContainer.classList.remove('text-mode');
-                }
-                
-                // Update price based on current selections
-                updatePriceBasedOnSelections(sectionId);
-              }, 10);
+              // Update text mode
+              const isDefaultOption = select.value === '' || select.selectedIndex === 0;
+              if (!isDefaultOption) {
+                selectContainer.classList.add('text-mode');
+                selectedTextElement.textContent = select.options[select.selectedIndex].text;
+              } else {
+                selectContainer.classList.remove('text-mode');
+              }
+              
+              // Immediately update the price
+              updatePriceBasedOnSelections(sectionId);
             };
 
             // Listen for Shopify's variant:changed event
             variantSelectsElement.addEventListener('variant:changed', variantChangedHandler);
 
             // Also check periodically
-            setInterval(() => {
+            const observer = new MutationObserver((mutations) => {
               const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
               if (savedValue === '' && select.selectedIndex !== 0) {
                 select.selectedIndex = 0;
@@ -574,7 +585,15 @@
                   selectedTextElement.textContent = selectedText;
                 }
               }
-            }, 500);
+              
+              // Immediately update the price after any change
+              updatePriceBasedOnSelections(sectionId);
+            });
+
+            observer.observe(select, {
+              attributes: true,
+              attributeFilter: ['value', 'selected'],
+            });
           }
         });
       }
@@ -594,44 +613,60 @@
           if (typeof originalUpdateOptions === 'function') {
             // Override the updateOptions function
             variantSelect.updateOptions = function () {
+              // Capture which selects were selected before update
+              const selects = this.querySelectorAll('select');
+              const previousSelections = Array.from(selects).map(select => ({
+                index: select.selectedIndex,
+                value: select.value,
+                optionIndex: select.dataset.optionIndex
+              }));
+              
               // Call the original function
               originalUpdateOptions.apply(this, arguments);
 
-              // Then apply our custom logic
-              setTimeout(() => {
-                const selects = this.querySelectorAll('select');
-                selects.forEach((select, index) => {
-                  const sectionId = this.dataset.section;
-                  const optionIndex = select.dataset.optionIndex;
-                  const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
+              // Then apply our custom logic immediately after
+              const sectionId = this.dataset.section;
+              
+              selects.forEach((select, index) => {
+                const optionIndex = select.dataset.optionIndex;
+                const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
+                const previousSelection = previousSelections[index];
 
-                  if (savedValue === '') {
-                    select.selectedIndex = 0;
-                    const changeEvent = new Event('change', { bubbles: true });
-                    select.dispatchEvent(changeEvent);
+                if (savedValue === '') {
+                  select.selectedIndex = 0;
+                  const changeEvent = new Event('change', { bubbles: true });
+                  select.dispatchEvent(changeEvent);
+                }
+
+                // Update text mode state
+                const selectContainer = select.closest('.select-container');
+                if (selectContainer) {
+                  const selectedValueDisplay = selectContainer.querySelector('.selected-value-display');
+                  const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
+
+                  const isDefaultOption = select.value === '' || select.selectedIndex === 0;
+                  if (!isDefaultOption) {
+                    selectContainer.classList.add('text-mode');
+                    selectedTextElement.textContent = select.options[select.selectedIndex].text;
+                  } else {
+                    selectContainer.classList.remove('text-mode');
                   }
-
-                  // Update text mode state
-                  const selectContainer = select.closest('.select-container');
-                  if (selectContainer) {
-                    const selectedValueDisplay = selectContainer.querySelector('.selected-value-display');
-                    const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
-
-                    const isDefaultOption = select.value === '' || select.selectedIndex === 0;
-                    if (!isDefaultOption) {
-                      selectContainer.classList.add('text-mode');
-                      selectedTextElement.textContent = select.options[select.selectedIndex].text;
-                    } else {
-                      selectContainer.classList.remove('text-mode');
-                    }
-                  }
-                });
-                
-                // Update price based on current selections
-                updatePriceBasedOnSelections(this.dataset.section);
-              }, 10);
+                }
+              });
+              
+              // Immediately update price based on current selections
+              updatePriceBasedOnSelections(sectionId);
             };
           }
+          
+          // Also watch for the standard variant:changed event
+          variantSelect.addEventListener('variant:changed', function(event) {
+            const sectionId = variantSelect.dataset.section;
+            if (sectionId) {
+              // Immediately update price
+              updatePriceBasedOnSelections(sectionId);
+            }
+          });
         });
       }
 
@@ -672,6 +707,59 @@
         return true;
       }
 
+      // Initialize price monitoring to prevent unwanted updates
+      function initializePriceMonitoring() {
+        const variantSelects = document.querySelector('variant-selects');
+        if (!variantSelects) return;
+        
+        const sectionId = variantSelects.dataset.section;
+        if (!sectionId) return;
+        
+        // Capture the price container
+        const priceContainer = document.querySelector('#price-{{ section.id }} .price__regular .price-item--regular');
+        if (!priceContainer) return;
+        
+        // Keep track of the current price and selections
+        let lastOptions = [];
+        let lastPrice = priceContainer.textContent;
+        
+        // Create a MutationObserver to watch for price changes
+        const priceObserver = new MutationObserver((mutations) => {
+          const currentOptions = getCurrentlySelectedOptions(sectionId);
+          const currentPrice = priceContainer.textContent;
+          
+          // Check if options have changed
+          let optionsChanged = false;
+          if (lastOptions.length !== currentOptions.length) {
+            optionsChanged = true;
+          } else {
+            for (let i = 0; i < currentOptions.length; i++) {
+              if (currentOptions[i] !== lastOptions[i]) {
+                optionsChanged = true;
+                break;
+              }
+            }
+          }
+          
+          // If price changed but options didn't, this might be an unwanted update
+          if (currentPrice !== lastPrice && !optionsChanged) {
+            // Immediately restore the correct price based on current selections
+            updatePriceBasedOnSelections(sectionId);
+          }
+          
+          // Update tracking variables
+          lastOptions = [...currentOptions];
+          lastPrice = priceContainer.textContent;
+        });
+        
+        // Start observing price container
+        priceObserver.observe(priceContainer, {
+          characterData: true,
+          subtree: true,
+          childList: true
+        });
+      }
+
       // Initialize everything when the DOM is ready
       document.addEventListener('DOMContentLoaded', function () {
         // Initialize product data first
@@ -681,14 +769,15 @@
         initializeVariantSelectors();
         overrideVariantSelection();
         
+        // Initialize price monitoring
+        initializePriceMonitoring();
+        
         // Show initial price based on selections
         const variantSelects = document.querySelector('variant-selects');
         if (variantSelects) {
           const sectionId = variantSelects.dataset.section;
           if (sectionId) {
-            setTimeout(() => {
-              updatePriceBasedOnSelections(sectionId);
-            }, 100);
+            updatePriceBasedOnSelections(sectionId);
           }
         }
 
@@ -732,23 +821,35 @@
               updatePriceBasedOnSelections(sectionId);
             }
           }
-        }, 500);
+        }, 100);
 
         // Also watch for DOM changes
-        const observer = new MutationObserver(function () {
+        const observer = new MutationObserver(function (mutations) {
+          let shouldUpdatePrice = false;
+          let sectionId = null;
+          
+          // Check if any relevant elements were modified
+          mutations.forEach(mutation => {
+            if (mutation.type === 'attributes' && 
+                (mutation.attributeName === 'selected' || mutation.attributeName === 'data-variant')) {
+              shouldUpdatePrice = true;
+              
+              // Try to find section ID
+              const variantSelects = document.querySelector('variant-selects');
+              if (variantSelects) {
+                sectionId = variantSelects.dataset.section;
+              }
+            }
+          });
+          
+          if (shouldUpdatePrice && sectionId) {
+            // Immediately update price (no delay)
+            updatePriceBasedOnSelections(sectionId);
+          }
+          
+          // Always reinitialize selectors for new DOM elements
           initializeVariantSelectors();
           overrideVariantSelection();
-          
-          // Update price based on selections
-          const variantSelects = document.querySelector('variant-selects');
-          if (variantSelects) {
-            const sectionId = variantSelects.dataset.section;
-            if (sectionId) {
-              setTimeout(() => {
-                updatePriceBasedOnSelections(sectionId);
-              }, 50);
-            }
-          }
         });
 
         observer.observe(document.body, {
@@ -761,25 +862,62 @@
 
       // Re-run when variants change
       document.addEventListener('variant:changed', function (event) {
-        setTimeout(() => {
-          initializeVariantSelectors();
-          
-          // Get section ID from event target
-          let sectionId = null;
-          if (event.target && event.target.dataset && event.target.dataset.section) {
-            sectionId = event.target.dataset.section;
-          } else {
-            // Fallback to find any variant-selects element
-            const variantSelects = document.querySelector('variant-selects');
-            if (variantSelects) {
-              sectionId = variantSelects.dataset.section;
+        // Immediately re-init and update price
+        initializeVariantSelectors();
+        
+        // Get section ID from event target
+        let sectionId = null;
+        if (event.target && event.target.dataset && event.target.dataset.section) {
+          sectionId = event.target.dataset.section;
+        } else {
+          // Fallback to find any variant-selects element
+          const variantSelects = document.querySelector('variant-selects');
+          if (variantSelects) {
+            sectionId = variantSelects.dataset.section;
+          }
+        }
+        
+        if (sectionId) {
+          // Immediately update price (no delay)
+          updatePriceBasedOnSelections(sectionId);
+        }
+        });
+
+      // Ensure price stays consistent by adding another event listener
+      document.addEventListener('change', function(event) {
+        // Check if this is a variant select
+        if (event.target && event.target.classList && event.target.classList.contains('select__select')) {
+          const variantSelects = document.querySelector('variant-selects');
+          if (variantSelects) {
+            const sectionId = variantSelects.dataset.section;
+            if (sectionId) {
+              // Cancel any pending updates and update immediately
+              if (priceUpdateTimeout) {
+                clearTimeout(priceUpdateTimeout);
+              }
+              // Immediately update price without delay
+              updatePriceBasedOnSelections(sectionId);
             }
           }
-          
-          if (sectionId) {
-            updatePriceBasedOnSelections(sectionId);
+        }
+      });
+
+      // Also add a "click" event listener to catch click-based variant selection
+      document.addEventListener('click', function(event) {
+        // Don't run this for the add to cart button (handled elsewhere)
+        if (event.target.closest('.product-form__submit')) return;
+        
+        // After a slight delay to allow other click handlers to run
+        setTimeout(() => {
+          const variantSelects = document.querySelector('variant-selects');
+          if (variantSelects) {
+            const sectionId = variantSelects.dataset.section;
+            if (sectionId) {
+              // Force an immediate price update
+              updatePriceBasedOnSelections(sectionId);
+            }
           }
-        }, 50);
+        }, 10);
       });
     })();
   </script>
