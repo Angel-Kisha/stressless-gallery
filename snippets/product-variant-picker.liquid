@@ -1,5 +1,5 @@
 {% comment %}
-  Renders product variant-picker with warning message for incomplete selections
+  Renders product variant-picker with warning message for incomplete selections and price updates
 
   Accepts:
   - product: {Object} product object.
@@ -348,6 +348,9 @@
             if (isDefaultOption) {
               this.dispatchEvent(pleaseSelectEvent);
             }
+            
+            // Manually trigger price update
+            checkAllVariantsAndUpdatePrice(sectionId);
           });
 
           // Handle deselect button click
@@ -371,6 +374,9 @@
             const changeEvent = new Event('change', { bubbles: true });
             select.dispatchEvent(changeEvent);
             select.dispatchEvent(pleaseSelectEvent);
+            
+            // Manually trigger price update
+            checkAllVariantsAndUpdatePrice(sectionId);
           });
 
           // Override Shopify's variant selection to respect our placeholder settings
@@ -394,6 +400,9 @@
                 } else {
                   selectContainer.classList.remove('text-mode');
                 }
+                
+                // Manually trigger price update
+                checkAllVariantsAndUpdatePrice(sectionId);
               }, 10);
             };
 
@@ -414,9 +423,36 @@
                   selectedTextElement.textContent = selectedText;
                 }
               }
+              
+              // Periodically check variants and update price
+              checkAllVariantsAndUpdatePrice(sectionId);
             }, 500);
           }
         });
+      }
+
+      // Function to check if all variants are selected and update price accordingly
+      function checkAllVariantsAndUpdatePrice(sectionId) {
+        const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
+        const allSelected = Array.from(selects).every(select => 
+          !(select.selectedIndex === 0 || select.value === '')
+        );
+        
+        // Create a custom event that our price script will listen for
+        const priceUpdateEvent = new CustomEvent('update-price-display', { 
+          bubbles: true,
+          detail: { 
+            sectionId: sectionId,
+            allSelected: allSelected 
+          }
+        });
+        
+        document.dispatchEvent(priceUpdateEvent);
+        
+        // If not all selected, also dispatch the please-select event
+        if (!allSelected) {
+          document.dispatchEvent(pleaseSelectEvent);
+        }
       }
 
       // Override Shopify's variant selection code
@@ -440,8 +476,9 @@
               // Then apply our custom logic
               setTimeout(() => {
                 const selects = this.querySelectorAll('select');
+                const sectionId = this.dataset.section;
+                
                 selects.forEach((select, index) => {
-                  const sectionId = this.dataset.section;
                   const optionIndex = select.dataset.optionIndex;
                   const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
 
@@ -466,6 +503,9 @@
                     }
                   }
                 });
+                
+                // Check variants and update price
+                checkAllVariantsAndUpdatePrice(sectionId);
               }, 10);
             };
           }
