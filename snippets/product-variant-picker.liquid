@@ -60,33 +60,41 @@
           >
             {{ option.name }}
           </label>
-          <div class="select w-55">
-            {%- if picker_type == 'swatch_dropdown' -%}
-              <span
-                data-selected-value
-                class="dropdown-swatch"
+          <div class="select-wrapper w-55">
+            <!-- Plain text display for selected value -->
+            <div class="selected-value-display" style="display: none;">
+              <span class="selected-text"></span>
+            </div>
+            
+            <!-- Original select dropdown -->
+            <div class="select select-dropdown-container">
+              {%- if picker_type == 'swatch_dropdown' -%}
+                <span
+                  data-selected-value
+                  class="dropdown-swatch"
+                >
+                  {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+                </span>
+              {%- endif -%}
+              <select
+                id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                class="select__select please-select-enabled"
+                name="options[{{ option.name | escape }}]"
+                form="{{ product_form_id }}"
+                data-option-index="{{ forloop.index0 }}"
+                data-default-unselected="true"
               >
-                {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+                {% render 'product-variant-options',
+                  product: product,
+                  option: option,
+                  block: block,
+                  picker_type: picker_type
+                %}
+              </select>
+              <span class="svg-wrapper">
+                {{- 'icon-caret.svg' | inline_asset_content -}}
               </span>
-            {%- endif -%}
-            <select
-              id="Option-{{ section.id }}-{{ forloop.index0 }}"
-              class="select__select please-select-enabled"
-              name="options[{{ option.name | escape }}]"
-              form="{{ product_form_id }}"
-              data-option-index="{{ forloop.index0 }}"
-              data-default-unselected="true"
-            >
-              {% render 'product-variant-options',
-                product: product,
-                option: option,
-                block: block,
-                picker_type: picker_type
-              %}
-            </select>
-            <span class="svg-wrapper">
-              {{- 'icon-caret.svg' | inline_asset_content -}}
-            </span>
+            </div>
           </div>
           <div class="divider"></div>
           <div class="w-15">
@@ -120,6 +128,35 @@
     .select__select option.placeholder-option {
       display: none;
     }
+    
+    /* Styles for the text display mode */
+    .select-wrapper {
+      position: relative;
+    }
+    
+    .selected-value-display {
+      padding: 8px 10px;
+      border: 1px solid #e8e8e8;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    
+    .selected-text {
+      font-weight: 500;
+    }
+    
+    /* Hidden state for dropdown when in text mode */
+    .select-wrapper.text-mode .select-dropdown-container {
+      display: none;
+    }
+    
+    .select-wrapper.text-mode .selected-value-display {
+      display: flex;
+    }
   </style>
 
   <script>
@@ -145,6 +182,11 @@
           
           const deselectButton = container.querySelector('.deselect-button');
           if (!deselectButton) return;
+          
+          // Find the select wrapper and text display elements
+          const selectWrapper = container.querySelector('.select-wrapper');
+          const selectedValueDisplay = selectWrapper.querySelector('.selected-value-display');
+          const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
           
           // Get the section and option index for this select
           const sectionId = select.id.split('-')[1];
@@ -178,6 +220,7 @@
             select.selectedIndex = 0;
             deselectButton.disabled = true;
             select.classList.remove('user-selected');
+            selectWrapper.classList.remove('text-mode');
           } else {
             // Find the option with the saved value
             for (let i = 0; i < select.options.length; i++) {
@@ -185,6 +228,10 @@
                 select.selectedIndex = i;
                 deselectButton.disabled = false;
                 select.classList.add('user-selected');
+                
+                // Show as text
+                selectWrapper.classList.add('text-mode');
+                selectedTextElement.textContent = select.options[i].text;
                 break;
               }
             }
@@ -197,6 +244,7 @@
             // Store the selection in both Map and localStorage
             const value = this.value;
             const isDefaultOption = (value === '' || this.selectedIndex === 0);
+            const selectedText = this.options[this.selectedIndex].text;
             
             // Update button state
             deselectButton.disabled = isDefaultOption;
@@ -204,8 +252,11 @@
             // Update class for styling
             if (isDefaultOption) {
               this.classList.remove('user-selected');
+              selectWrapper.classList.remove('text-mode');
             } else {
               this.classList.add('user-selected');
+              selectWrapper.classList.add('text-mode');
+              selectedTextElement.textContent = selectedText;
             }
             
             // Save selection
@@ -230,6 +281,9 @@
             this.disabled = true;
             select.classList.remove('user-selected');
             
+            // Switch back to dropdown mode
+            selectWrapper.classList.remove('text-mode');
+            
             // Update stored values
             selectedOptions.delete(`${sectionId}-${optionIndex}`);
             localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
@@ -240,6 +294,12 @@
             select.dispatchEvent(pleaseSelectEvent);
             
             console.log('Deselect button clicked for option', optionIndex);
+          });
+          
+          // Add click event on text display to toggle back to dropdown
+          selectedValueDisplay.addEventListener('click', function(e) {
+            // If we want to allow clicking the text to edit, uncomment this:
+            // selectWrapper.classList.remove('text-mode');
           });
           
           // Override Shopify's variant selection to respect our placeholder settings
@@ -254,6 +314,15 @@
                   select.selectedIndex = 0;
                   select.dispatchEvent(new Event('change', { bubbles: true }));
                 }
+                
+                // Update text mode
+                const isDefaultOption = (select.value === '' || select.selectedIndex === 0);
+                if (!isDefaultOption) {
+                  selectWrapper.classList.add('text-mode');
+                  selectedTextElement.textContent = select.options[select.selectedIndex].text;
+                } else {
+                  selectWrapper.classList.remove('text-mode');
+                }
               }, 10);
             };
             
@@ -265,6 +334,7 @@
               const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
               if (savedValue === '' && select.selectedIndex !== 0) {
                 select.selectedIndex = 0;
+                selectWrapper.classList.remove('text-mode');
               }
             }, 500);
           }
@@ -301,6 +371,21 @@
                     select.selectedIndex = 0;
                     const changeEvent = new Event('change', { bubbles: true });
                     select.dispatchEvent(changeEvent);
+                  }
+                  
+                  // Update text mode state
+                  const selectWrapper = select.closest('.select-wrapper');
+                  if (selectWrapper) {
+                    const isDefaultOption = (select.value === '' || select.selectedIndex === 0);
+                    if (!isDefaultOption) {
+                      selectWrapper.classList.add('text-mode');
+                      const selectedTextElement = selectWrapper.querySelector('.selected-text');
+                      if (selectedTextElement) {
+                        selectedTextElement.textContent = select.options[select.selectedIndex].text;
+                      }
+                    } else {
+                      selectWrapper.classList.remove('text-mode');
+                    }
                   }
                 });
               }, 10);
