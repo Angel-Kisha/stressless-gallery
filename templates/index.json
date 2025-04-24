@@ -28,9 +28,6 @@
     "page_title_dnbgXY": {
       "type": "page-title",
       "settings": {
-        "show_top_container": true,
-        "top_container_height": 50,
-        "top_container_color": "#0c468b",
         "title": "PRODUCTS",
         "description": "商品一覧",
         "show_description": true,
