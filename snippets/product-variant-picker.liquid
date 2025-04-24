@@ -107,10 +107,10 @@
       {%- endif -%}
     {%- endfor -%}
 
-    <!-- Variant selection warning message -->
-    <div id="variant-selection-warning-{{ section.id }}" class="variant-selection-warning" style="display: none;">
-      <p>Please select all options before adding to cart.</p>
-    </div>
+   <!-- Variant selection warning message -->
+<div id="variant-selection-warning-{{ section.id }}" class="variant-selection-warning" style="display: none;">
+  <p>Please select all options before adding to cart.</p>
+</div>
 
     <script type="application/json" data-selected-variant>
       {{ product.selected_or_first_available_variant | json }}
