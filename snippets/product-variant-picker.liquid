@@ -79,7 +79,6 @@
                 form="{{ product_form_id }}"
                 data-option-index="{{ forloop.index0 }}"
                 data-default-unselected="true"
-                required
               >
                 {% render 'product-variant-options',
                   product: product,
@@ -106,17 +105,6 @@
         </div>
       {%- endif -%}
     {%- endfor -%}
-    
-    <!-- Validation error message -->
-    <div class="variant-selection-error" style="display: none;">
-      <div class="error-message">
-        <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-error" viewBox="0 0 13 13">
-          <circle cx="6.5" cy="6.5" r="6.5" fill="#D82C0D"/>
-          <path d="M5.87413 3.52832L5.97439 7.57216H7.02713L7.12739 3.52832H5.87413ZM6.50076 9.66091C6.88091 9.66091 7.18169 9.37267 7.18169 9.00504C7.18169 8.63742 6.88091 8.34917 6.50076 8.34917C6.12061 8.34917 5.81982 8.63742 5.81982 9.00504C5.81982 9.37267 6.12061 9.66091 6.50076 9.66091Z" fill="white"/>
-        </svg>
-        <span>Please select the above item</span>
-      </div>
-    </div>
 
     <script type="application/json" data-selected-variant>
       {{ product.selected_or_first_available_variant | json }}
@@ -151,9 +139,6 @@
     /* This is where selected text will appear */
     .selected-value-display {
       padding: 0 31px 0 20px;
-      border: 1px solid #333;
-      border-radius: 4px;
-      background-color: #1b1b1b;
       min-height: 40px;
       align-items: center;
       display: none;
@@ -173,30 +158,6 @@
     
     .select-container.text-mode .selected-value-display {
       display: flex;
-    }
-    
-    /* Validation error styles */
-    .variant-selection-error {
-      margin-top: 10px;
-      width: 100%;
-    }
-    
-    .error-message {
-      display: flex;
-      align-items: center;
-      color: #D82C0D;
-      font-size: 14px;
-      padding: 10px;
-      border: 1px solid #D82C0D;
-      background-color: rgba(216, 44, 13, 0.07);
-      border-radius: 4px;
-    }
-    
-    .error-message svg {
-      width: 13px;
-      height: 13px;
-      margin-right: 8px;
-      flex-shrink: 0;
     }
   </style>
 
@@ -304,9 +265,6 @@
             // Save selection
             selectedOptions.set(`${sectionId}-${optionIndex}`, value);
             localStorage.setItem(`variant-${sectionId}-${optionIndex}`, value);
-            
-            // Hide error message if it was shown
-            hideValidationError();
             
             // Dispatch custom event if placeholder is chosen
             if (isDefaultOption) {
@@ -436,95 +394,21 @@
         });
       }
       
-      // Initialize validation for Add to Cart button
-      function initializeAddToCartValidation() {
-        // Find all product forms and add validation
-        document.querySelectorAll('form[action*="/cart/add"]').forEach(form => {
-          // Skip if already initialized for validation
-          if (form.hasAttribute('data-validation-initialized')) return;
-          form.setAttribute('data-validation-initialized', 'true');
-          
-          // Find the add to cart button
-          const addToCartButton = form.querySelector('button[type="submit"], input[type="submit"]');
-          if (!addToCartButton) return;
-          
-          // Find the variant-selects element for this form
-          const sectionId = form.id.replace('product-form-', '');
-          const variantSelects = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
-          if (!variantSelects) return;
-          
-          // Store the original onclick handler
-          const originalSubmitHandler = form.onsubmit;
-          
-          // Override the submit handler
-          form.onsubmit = function(e) {
-            // Check if all variant selects have values
-            const selects = variantSelects.querySelectorAll('select');
-            let allSelected = true;
-            
-            selects.forEach(select => {
-              if (select.selectedIndex === 0 || select.value === '') {
-                allSelected = false;
-              }
-            });
-            
-            if (!allSelected) {
-              e.preventDefault();
-              e.stopPropagation();
-              showValidationError(variantSelects);
-              return false;
-            } else {
-              hideValidationError();
-              // Call the original handler if it exists
-              if (typeof originalSubmitHandler === 'function') {
-                return originalSubmitHandler.call(this, e);
-              }
-              return true;
-            }
-          };
-        });
-      }
-      
-      // Show validation error message
-      function showValidationError(variantSelects) {
-        // Find the error message element
-        const errorElement = variantSelects.querySelector('.variant-selection-error');
-        if (errorElement) {
-          errorElement.style.display = 'block';
-          
-          // Scroll to the error message
-          setTimeout(() => {
-            errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }, 100);
-        }
-      }
-      
-      // Hide validation error message
-      function hideValidationError() {
-        // Hide all error messages
-        document.querySelectorAll('.variant-selection-error').forEach(element => {
-          element.style.display = 'none';
-        });
-      }
-      
       // Initialize everything when the DOM is ready
       document.addEventListener('DOMContentLoaded', function() {
         initializeVariantSelectors();
         overrideVariantSelection();
-        initializeAddToCartValidation();
         
         // Re-run after a short delay to catch any late loading elements
         setTimeout(() => {
           initializeVariantSelectors();
           overrideVariantSelection();
-          initializeAddToCartValidation();
         }, 500);
         
         // Also watch for DOM changes
         const observer = new MutationObserver(function() {
           initializeVariantSelectors();
           overrideVariantSelection();
-          initializeAddToCartValidation();
         });
         
         observer.observe(document.body, {
@@ -539,7 +423,6 @@
       document.addEventListener('variant:changed', function() {
         setTimeout(() => {
           initializeVariantSelectors();
-          initializeAddToCartValidation();
         }, 50);
       });
     })();
