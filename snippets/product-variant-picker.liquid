@@ -475,27 +475,27 @@
         overrideVariantSelection();
         
         // Intercept the add to cart button click
-        document.addEventListener('click', function(e) {
-          // Find the closest add to cart button
-          const addToCartButton = e.target.closest('.product-form__submit');
-          if (!addToCartButton) return;
-          
-          // Find the section ID
-          const productFormElement = addToCartButton.closest('product-form');
-          if (!productFormElement) return;
-          
-          const sectionId = productFormElement.dataset.section;
-          if (!sectionId) return;
-          
-          // Check if all variants are selected
-          if (!checkAllVariantsSelected(sectionId)) {
-            e.preventDefault();
-            e.stopPropagation();
-            showVariantWarning(sectionId);
-          } else {
-            hideVariantWarning(sectionId);
-          }
-        }, true);
+document.addEventListener('click', function(e) {
+  // Find the closest add to cart button
+  const addToCartButton = e.target.closest('.product-form__submit');
+  if (!addToCartButton) return;
+  
+  // Find the section ID
+  const productFormElement = addToCartButton.closest('product-form');
+  if (!productFormElement) return;
+  
+  const sectionId = productFormElement.dataset.section;
+  if (!sectionId) return;
+  
+  // Check if all variants are selected
+  if (!checkAllVariantsSelected(sectionId)) {
+    e.preventDefault();
+    e.stopPropagation();
+    showVariantWarning(sectionId);
+  } else {
+    hideVariantWarning(sectionId);
+  }
+}, true);
         
         // Re-run after a short delay to catch any late loading elements
         setTimeout(() => {
