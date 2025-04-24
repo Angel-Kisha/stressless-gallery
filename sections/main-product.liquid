@@ -269,7 +269,7 @@
                             // Update price with the selected variant price
                             const variantPriceElement = priceContainer.querySelector('.price-item--regular');
                             if (variantPriceElement) {
-                              const formattedPrice = {{ 'money' | shopify_filter }}.replace('{{amount}}', variant.price/100).replace('.00', '');
+                              const formattedPrice = {{ 'money' }}.replace('{{amount}}', variant.price/100).replace('.00', '');
                               variantPriceElement.textContent = formattedPrice;
                             }
                           }
