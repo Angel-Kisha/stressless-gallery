@@ -133,6 +133,30 @@
     <script type="application/json" data-selected-variant>
       {{ product.selected_or_first_available_variant | json }}
     </script>
+    
+    <!-- Add price range data for JavaScript -->
+    <script type="application/json" data-product-price-ranges>
+      {
+        "min_price": {{ product.price_min | money_without_currency | json }},
+        "max_price": {{ product.price_max | money_without_currency | json }},
+        "currency": {{ shop.currency | json }}
+      }
+    </script>
+
+    <!-- Add variant prices data for JavaScript -->
+    <script type="application/json" data-variant-prices>
+      {
+        "variants": [
+          {% for variant in product.variants %}
+            {
+              "id": {{ variant.id | json }},
+              "price": {{ variant.price | money_without_currency | json }},
+              "compare_at_price": {{ variant.compare_at_price | money_without_currency | json }}
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        ]
+      }
+    </script>
   </variant-selects>
 
   <style>
@@ -241,9 +265,137 @@
       // Maintain state of which options have been manually selected
       const selectedOptions = new Map();
       const PLACEHOLDER_TEXT = '選択してください';
+      
+      // Price-related variables
+      let priceRangeData = null;
+      let variantPricesData = null;
 
       // Custom event for when placeholder is chosen
       const pleaseSelectEvent = new CustomEvent('please-select-chosen', { bubbles: true });
+
+      // Parse price range and variant prices data
+      function initializePriceData() {
+        const priceRangeElement = document.querySelector('[data-product-price-ranges]');
+        const variantPricesElement = document.querySelector('[data-variant-prices]');
+        
+        if (priceRangeElement) {
+          try {
+            priceRangeData = JSON.parse(priceRangeElement.textContent);
+          } catch (e) {
+            console.error('Error parsing price range data:', e);
+          }
+        }
+        
+        if (variantPricesElement) {
+          try {
+            variantPricesData = JSON.parse(variantPricesElement.textContent);
+          } catch (e) {
+            console.error('Error parsing variant prices data:', e);
+          }
+        }
+      }
+      
+      // Format price with currency symbol
+      function formatPrice(price) {
+        if (!priceRangeData) return price;
+        
+        // Add thousand separators
+        price = String(price).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        
+        // Use the shop's currency format
+        return price + ' ' + priceRangeData.currency;
+      }
+      
+      // Update price display to show range with tilde
+      function showPriceRange() {
+        if (!priceRangeData) return;
+        
+        const priceContainer = document.querySelector('#price-{{ section.id }} .price__regular .price-item--regular');
+        if (!priceContainer) return;
+        
+        // Only update if prices are different
+        if (priceRangeData.min_price !== priceRangeData.max_price) {
+          const formattedMinPrice = formatPrice(priceRangeData.min_price);
+          const formattedMaxPrice = formatPrice(priceRangeData.max_price);
+          priceContainer.textContent = `${formattedMinPrice} ~ ${formattedMaxPrice}`;
+        }
+      }
+      
+      // Update price display to show specific variant price
+      function showVariantPrice(variantId) {
+        if (!variantPricesData || !variantId) return;
+        
+        const variant = variantPricesData.variants.find(v => v.id == variantId);
+        if (!variant) return;
+        
+        const priceContainer = document.querySelector('#price-{{ section.id }} .price__regular .price-item--regular');
+        if (!priceContainer) return;
+        
+        const formattedPrice = formatPrice(variant.price);
+        priceContainer.textContent = formattedPrice;
+        
+        // Handle compare at price if exists
+        const compareAtPriceContainer = document.querySelector('#price-{{ section.id }} .price__sale .price-item--regular');
+        if (compareAtPriceContainer && variant.compare_at_price && parseFloat(variant.compare_at_price) > parseFloat(variant.price)) {
+          const formattedCompareAtPrice = formatPrice(variant.compare_at_price);
+          compareAtPriceContainer.textContent = formattedCompareAtPrice;
+        }
+      }
+
+      // Function to handle variant selects and update prices
+      function updatePriceDisplay() {
+        const variantSelects = document.querySelectorAll('.select__select');
+        const sectionId = variantSelects[0]?.closest('[data-section]')?.dataset.section;
+        if (!sectionId) return;
+        
+        // Check if all required selects have values
+        const allSelected = checkAllVariantsSelected(sectionId);
+        
+        if (!allSelected) {
+          // If any variant is not selected, show price range
+          showPriceRange();
+        } else {
+          // All variants selected, get the selected variant id
+          const variantId = getSelectedVariantId(sectionId);
+          if (variantId) {
+            showVariantPrice(variantId);
+          } else {
+            showPriceRange();
+          }
+        }
+      }
+      
+      // Get the ID of the currently selected variant
+      function getSelectedVariantId(sectionId) {
+        const variantSelects = document.querySelectorAll(`#variant-selects-${sectionId} select`);
+        const selectedOptions = [];
+        
+        // Collect selected values from all dropdowns
+        variantSelects.forEach(select => {
+          if (select.selectedIndex > 0) {
+            selectedOptions.push(select.value);
+          }
+        });
+        
+        // Check if we have a selected variant
+        if (selectedOptions.length === variantSelects.length) {
+          // Find the matching variant
+          const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
+          if (variantSelectsElement) {
+            const variantJson = variantSelectsElement.querySelector('[data-selected-variant]');
+            if (variantJson) {
+              try {
+                const variantData = JSON.parse(variantJson.textContent);
+                return variantData.id;
+              } catch (e) {
+                console.error('Error parsing variant data:', e);
+              }
+            }
+          }
+        }
+        
+        return null;
+      }
 
       function initializeVariantSelectors() {
         const variantSelects = document.querySelectorAll('.select__select');
@@ -348,6 +500,9 @@
             if (isDefaultOption) {
               this.dispatchEvent(pleaseSelectEvent);
             }
+            
+            // Update price display based on selection state
+            setTimeout(updatePriceDisplay, 100);
           });
 
           // Handle deselect button click
@@ -371,6 +526,9 @@
             const changeEvent = new Event('change', { bubbles: true });
             select.dispatchEvent(changeEvent);
             select.dispatchEvent(pleaseSelectEvent);
+            
+            // Update price display to show range
+            setTimeout(updatePriceDisplay, 100);
           });
 
           // Override Shopify's variant selection to respect our placeholder settings
@@ -394,6 +552,9 @@
                 } else {
                   selectContainer.classList.remove('text-mode');
                 }
+                
+                // Update price display
+                updatePriceDisplay();
               }, 10);
             };
 
@@ -414,6 +575,9 @@
                   selectedTextElement.textContent = selectedText;
                 }
               }
+              
+              // Update price display
+              updatePriceDisplay();
             }, 500);
           }
         });
@@ -466,6 +630,9 @@
                     }
                   }
                 });
+                
+                // Update price display
+                updatePriceDisplay();
               }, 10);
             };
           }
@@ -511,8 +678,15 @@
 
       // Initialize everything when the DOM is ready
       document.addEventListener('DOMContentLoaded', function () {
+        // Initialize price data first
+        initializePriceData();
+        
+        // Then initialize variant selectors
         initializeVariantSelectors();
         overrideVariantSelection();
+        
+        // Show initial price range on page load
+        setTimeout(updatePriceDisplay, 100);
 
         // Intercept the add to cart button click
         document.addEventListener(
@@ -545,12 +719,14 @@
         setTimeout(() => {
           initializeVariantSelectors();
           overrideVariantSelection();
+          updatePriceDisplay();
         }, 500);
 
         // Also watch for DOM changes
         const observer = new MutationObserver(function () {
           initializeVariantSelectors();
           overrideVariantSelection();
+          setTimeout(updatePriceDisplay, 100);
         });
 
         observer.observe(document.body, {
@@ -565,6 +741,7 @@
       document.addEventListener('variant:changed', function () {
         setTimeout(() => {
           initializeVariantSelectors();
+          updatePriceDisplay();
         }, 50);
       });
     })();
