@@ -106,13 +106,6 @@
       {%- endif -%}
     {%- endfor -%}
 
-    <!-- Warning message for unselected options -->
-    <div class="variant-selection-warning" style="display: none;">
-      <div class="warning-message">
-        <span class="warning-icon">⚠️</span> Please select the above item
-      </div>
-    </div>
-
     <script type="application/json" data-selected-variant>
       {{ product.selected_or_first_available_variant | json }}
     </script>
@@ -169,27 +162,6 @@
     .select-container.text-mode .selected-value-display {
       display: flex;
     }
-
-    /* Warning message styles */
-    .variant-selection-warning {
-      width: 100%;
-      margin-top: 15px;
-      text-align: center;
-    }
-
-    .warning-message {
-      border: 1px solid #e74c3c;
-      border-radius: 4px;
-      padding: 8px 12px;
-      color: #e74c3c;
-      background-color: rgba(231, 76, 60, 0.1);
-      font-size: 14px;
-      display: inline-block;
-    }
-
-    .warning-icon {
-      margin-right: 5px;
-    }
   </style>
 
   <script>
@@ -200,38 +172,6 @@
       
       // Custom event for when placeholder is chosen
       const pleaseSelectEvent = new CustomEvent('please-select-chosen', { bubbles: true });
-      
-      // Function to check if all required options are selected
-      function checkAllOptionsSelected(sectionId) {
-        const selects = document.querySelectorAll(`variant-selects#variant-selects-${sectionId} .select__select`);
-        let allSelected = true;
-        
-        selects.forEach((select, index) => {
-          const optionIndex = select.dataset.optionIndex;
-          const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
-          
-          // If any option is unselected or set to placeholder, mark as not all selected
-          if (savedValue === null || savedValue === '') {
-            allSelected = false;
-          }
-        });
-        
-        return allSelected;
-      }
-      
-      // Function to update warning message visibility
-      function updateWarningMessage(sectionId) {
-        const allSelected = checkAllOptionsSelected(sectionId);
-        const warningElement = document.querySelector(`variant-selects#variant-selects-${sectionId} .variant-selection-warning`);
-        
-        if (warningElement) {
-          if (allSelected) {
-            warningElement.style.display = 'none';
-          } else {
-            warningElement.style.display = 'block';
-          }
-        }
-      }
       
       function initializeVariantSelectors() {
         const variantSelects = document.querySelectorAll('.select__select');
@@ -303,9 +243,6 @@
             }
           }
           
-          // Initial check for warning message
-          updateWarningMessage(sectionId);
-          
           // Event handlers
           
           // Handle changes to the select
@@ -332,9 +269,6 @@
             selectedOptions.set(`${sectionId}-${optionIndex}`, value);
             localStorage.setItem(`variant-${sectionId}-${optionIndex}`, value);
             
-            // Update warning message
-            updateWarningMessage(sectionId);
-            
             // Dispatch custom event if placeholder is chosen
             if (isDefaultOption) {
               this.dispatchEvent(pleaseSelectEvent);
@@ -357,9 +291,6 @@
             // Update stored values
             selectedOptions.delete(`${sectionId}-${optionIndex}`);
             localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
-            
-            // Update warning message
-            updateWarningMessage(sectionId);
             
             // Dispatch events
             const changeEvent = new Event('change', { bubbles: true });
@@ -388,9 +319,6 @@
                 } else {
                   selectContainer.classList.remove('text-mode');
                 }
-                
-                // Update warning message
-                updateWarningMessage(sectionId);
               }, 10);
             };
             
@@ -411,9 +339,6 @@
                   selectedTextElement.textContent = selectedText;
                 }
               }
-              
-              // Keep warning message updated
-              updateWarningMessage(sectionId);
             }, 500);
           }
         });
@@ -440,9 +365,8 @@
               // Then apply our custom logic
               setTimeout(() => {
                 const selects = this.querySelectorAll('select');
-                const sectionId = this.dataset.section;
-                
                 selects.forEach((select, index) => {
+                  const sectionId = this.dataset.section;
                   const optionIndex = select.dataset.optionIndex;
                   const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
                   
@@ -467,9 +391,6 @@
                     }
                   }
                 });
-                
-                // Update warning message
-                updateWarningMessage(sectionId);
               }, 10);
             };
           }
