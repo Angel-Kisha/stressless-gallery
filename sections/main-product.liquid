@@ -223,115 +223,169 @@
                   </div>
                   
                   <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                      // Save the original price HTML for restoration when needed
-                      const priceContainer = document.querySelector('#price-{{ section.id }}');
-                      if (priceContainer) {
-                        // Store the original price HTML showing the default price or price range
-                        const originalPriceHTML = priceContainer.innerHTML;
-                        priceContainer.dataset.originalPrice = originalPriceHTML;
+                    document.addEventListener('DOMContentLoaded', function() {
+                      const sectionId = '{{ section.id }}';
+                      const priceContainer = document.getElementById(`price-${sectionId}`);
+                      
+                      if (!priceContainer) return;
+                      
+                      // Store all product variant prices and create price range
+                      const productVariants = {{ product.variants | json }};
+                      const productPriceMin = {{ product.price_min }};
+                      const productPriceMax = {{ product.price_max }};
+                      const priceVaries = {% if product.price_varies %}true{% else %}false{% endif %};
+                      
+                      // Store original price HTML (for non-variant products)
+                      const originalPriceHTML = priceContainer.innerHTML;
+                      
+                      // Create price range HTML for when variants are not selected
+                      function createPriceRangeHTML() {
+                        if (!priceVaries) return originalPriceHTML;
                         
-                        // Generate price range HTML manually
-                        let priceRangeHTML = '';
+                        const minPrice = new Intl.NumberFormat('{{ shop.locale }}', {
+                          style: 'currency',
+                          currency: '{{ shop.currency }}',
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0
+                        }).format(productPriceMin / 100);
                         
-                        {%- if product.price_varies -%}
-                          // Create price range display
-                          const formattedMinPrice = {{ product.price_min | money }}.replace('.00', '');
-                          const formattedMaxPrice = {{ product.price_max | money }}.replace('.00', '');
-                          priceRangeHTML = '<div class="price price--large price--show-badge"><dl><div class="price__pricing-group"><div class="price__regular"><dt><span class="visually-hidden">{{ "products.product.price.regular_price" | t }}</span></dt><dd><span class="price-item price-item--regular">' + formattedMinPrice + ' - ' + formattedMaxPrice + '</span></dd></div></div></dl></div>';
-                          priceContainer.dataset.priceRange = priceRangeHTML;
-                        {%- endif -%}
+                        const maxPrice = new Intl.NumberFormat('{{ shop.locale }}', {
+                          style: 'currency',
+                          currency: '{{ shop.currency }}',
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0
+                        }).format(productPriceMax / 100);
                         
-                        // Function to show price range when default option is selected
-                        window.showPriceRange = function() {
-                          {%- if product.price_varies -%}
-                            if (priceContainer.dataset.priceRange) {
-                              priceContainer.innerHTML = priceContainer.dataset.priceRange;
-                            }
-                          {%- else -%}
-                            if (priceContainer.dataset.originalPrice) {
-                              priceContainer.innerHTML = priceContainer.dataset.originalPrice;
-                            }
-                          {%- endif -%}
-                        };
-                        
-                        // Function to restore original price when needed
-                        window.restoreOriginalPrice = function() {
-                          if (priceContainer.dataset.originalPrice) {
-                            priceContainer.innerHTML = priceContainer.dataset.originalPrice;
-                          }
-                        };
-                        
-                        // Listen for variant selection changes
-                        document.addEventListener('variant:changed', function(event) {
-                          const variant = event.detail.variant;
-                          if (variant && variant.available) {
-                            // Update price with the selected variant price
-                            const variantPriceElement = priceContainer.querySelector('.price-item--regular');
-                            if (variantPriceElement) {
-                              const formattedPrice = {{ 'money' }}.replace('{{amount}}', variant.price/100).replace('.00', '');
-                              variantPriceElement.textContent = formattedPrice;
-                            }
-                          }
-                        });
-                        
-                        // Listen for please-select-chosen custom event
-                        document.addEventListener('please-select-chosen', function(event) {
-                          // When default option is selected, show price range if product has different prices
-                          window.showPriceRange();
-                        });
-                        
-                        // Initial check for default selections
-                        const checkDefaultSelections = function() {
-                          const variantSelects = document.querySelectorAll('.select__select[data-default-unselected="true"]');
-                          let allDefault = true;
-                          
-                          variantSelects.forEach(select => {
-                            if (select.selectedIndex !== 0 && select.value !== '') {
-                              allDefault = false;
-                            }
-                          });
-                          
-                          if (allDefault && variantSelects.length > 0) {
-                            window.showPriceRange();
-                          }
-                        };
-                        
-                        // Check initial state after a short delay
-                        setTimeout(checkDefaultSelections, 500);
+                        return `
+                          <div class="price price--large price--show-badge">
+                            <dl>
+                              <div class="price__pricing-group">
+                                <div class="price__regular">
+                                  <dt>
+                                    <span class="visually-hidden">{{ "products.product.price.regular_price" | t }}</span>
+                                  </dt>
+                                  <dd>
+                                    <span class="price-item price-item--regular">${minPrice} - ${maxPrice}</span>
+                                  </dd>
+                                </div>
+                              </div>
+                            </dl>
+                          </div>
+                        `;
                       }
+                      
+                      // Update price display based on variant selection
+                      function updatePriceDisplay() {
+                        const variantSelects = document.querySelectorAll(`#variant-selects-${sectionId} select`);
+                        
+                        // Check if we have any variant selects
+                        if (variantSelects.length === 0) return;
+                        
+                        // Check if all variants are selected
+                        const allSelected = Array.from(variantSelects).every(select => 
+                          !(select.selectedIndex === 0 || select.value === '')
+                        );
+                        
+                        // If all options are selected, show the variant price
+                        // Otherwise show the price range
+                        if (allSelected) {
+                          // Let Shopify's own variant change handler update the price
+                          // No need to manually modify the price here
+                        } else if (priceVaries) {
+                          // Show price range
+                          priceContainer.innerHTML = createPriceRangeHTML();
+                        }
+                      }
+                      
+                      // Setup initial price display
+                      function initializePriceDisplay() {
+                        // Show price range if product has variants with different prices
+                        if (priceVaries) {
+                          const variantSelects = document.querySelectorAll(`#variant-selects-${sectionId} select`);
+                          
+                          // Check if all variants have default option selected
+                          const allDefaultSelected = Array.from(variantSelects).every(select => 
+                            select.selectedIndex === 0 || select.value === ''
+                          );
+                          
+                          // Show price range if all defaults selected
+                          if (allDefaultSelected && variantSelects.length > 0) {
+                            priceContainer.innerHTML = createPriceRangeHTML();
+                          }
+                        }
+                      }
+                      
+                      // Listen for variant change events
+                      document.addEventListener('please-select-chosen', updatePriceDisplay);
+                      
+                      // Listen for deselect button clicks (custom event would be better but this works)
+                      document.addEventListener('click', function(e) {
+                        const deselectButton = e.target.closest('.deselect-button');
+                        if (deselectButton) {
+                          setTimeout(updatePriceDisplay, 10);
+                        }
+                      });
+                      
+                      // Initialize price display
+                      initializePriceDisplay();
+                      
+                      // Add additional event listener for select changes
+                      const variantSelects = document.querySelectorAll(`#variant-selects-${sectionId} select`);
+                      variantSelects.forEach(select => {
+                        select.addEventListener('change', function() {
+                          setTimeout(updatePriceDisplay, 10);
+                        });
+                      });
                     });
                   </script>
                   
                   {%- when 'variant_picker' -%}
                   {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
                   
-                  <!-- Add this script to connect variant picker with price display -->
                   <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                      // Get the section id
                       const sectionId = '{{ section.id }}';
                       
-                      // Find all variant selects in this section
-                      const variantSelects = document.querySelectorAll(`#variant-selects-${sectionId} select`);
-                      
-                      // Add change event listeners to each select
-                      variantSelects.forEach(select => {
-                        select.addEventListener('change', function() {
-                          // Check if all required selects have a value other than the default
-                          const allSelected = Array.from(variantSelects).every(s => 
-                            !(s.selectedIndex === 0 || s.value === '')
-                          );
+                      // Enhanced variant picker functionality
+                      function enhanceVariantPicker() {
+                        const variantSelects = document.querySelectorAll(`#variant-selects-${sectionId} select`);
+                        const priceContainer = document.getElementById(`price-${sectionId}`);
+                        
+                        if (!priceContainer || variantSelects.length === 0) return;
+                        
+                        // Update variant-selects element to better handle our custom behavior
+                        const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
+                        if (variantSelectsElement) {
+                          // Store original onVariantChange method
+                          const originalOnVariantChange = variantSelectsElement.onVariantChange;
                           
-                          // If all are selected, the variant:changed event will handle the price update
-                          // If not all are selected, show price range
-                          if (!allSelected) {
-                            if (typeof window.showPriceRange === 'function') {
-                              window.showPriceRange();
+                          // Override onVariantChange method
+                          variantSelectsElement.onVariantChange = function(event) {
+                            // Call original method
+                            if (originalOnVariantChange) {
+                              originalOnVariantChange.call(this, event);
                             }
-                          }
-                        });
-                      });
+                            
+                            // Check if all variants are selected
+                            const allSelected = Array.from(variantSelects).every(select => 
+                              !(select.selectedIndex === 0 || select.value === '')
+                            );
+                            
+                            // If not all are selected, update the price here because Shopify's code
+                            // will only update price if a valid variant is selected
+                            if (!allSelected) {
+                              // Custom event to trigger price range display
+                              document.dispatchEvent(new CustomEvent('please-select-chosen'));
+                            }
+                          };
+                        }
+                      }
+                      
+                      // Initialize enhanced functionality
+                      enhanceVariantPicker();
+                      
+                      // Re-initialize after a delay to catch late loading elements
+                      setTimeout(enhanceVariantPicker, 1000);
                     });
                   </script>
 
