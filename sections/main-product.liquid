@@ -184,61 +184,49 @@
                   style="margin-top: {{ block.settings.line_top_margin }}px; margin-bottom: {{ block.settings.line_bottom_margin }}px;"
                 >
               {%- when 'price' -%}
-                <div class="product-price ">
-                  <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
+                {% if product.has_only_default_variant %}
+                  {%- render 'price',
+                    product: product,
+                    use_variant: true,
+                    show_badges: true,
+                    price_class: 'price--large'
+                  -%}
+                {% else %}
+                  {% if product.price_varies %}
+                    <span class="price-item price-item--sale price--large">
+                      {{ product.price_min | money }} - {{ product.price_max | money }}
+                    </span>
+                  {% else %}
                     {%- render 'price',
                       product: product,
                       use_variant: true,
                       show_badges: true,
                       price_class: 'price--large'
                     -%}
-                  </div>
-                  {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank -%}
-                    <div class="product__tax caption rte">
-                      {%- if cart.duties_included and cart.taxes_included -%}
-                        {{ 'products.product.duties_and_taxes_included' | t }}
-                      {%- elsif cart.taxes_included -%}
-                        {{ 'products.product.taxes_included' | t }}
-                      {%- elsif cart.duties_included -%}
-                        {{ 'products.product.duties_included' | t }}
-                      {%- endif -%}
-                      {%- if shop.shipping_policy.body != blank -%}
-                        {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
-                      {%- endif -%}
-                    </div>
+                  {% endif %}
+                {% endif %}
+
+                {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank -%}
+                  {%- if cart.duties_included and cart.taxes_included -%}
+                    {{ 'products.product.duties_and_taxes_included' | t }}
+                  {%- elsif cart.taxes_included -%}
+                    {{ 'products.product.taxes_included' | t }}
+                  {%- elsif cart.duties_included -%}
+                    {{ 'products.product.duties_included' | t }}
                   {%- endif -%}
-                </div>
-                {%- if product.quantity_price_breaks_configured? -%}
-                  <div class="volume-pricing-note" id="Volume-Note-{{ section.id }}">
-                    <span>{{ 'products.product.volume_pricing.note' | t }}</span>
-                  </div>
+                  {%- if shop.shipping_policy.body != blank -%}
+                    {{ 'products.product.shipping_policy_html' | t: link: shop.shipping_policy.url }}
+                  {%- endif -%}
                 {%- endif -%}
 
-                <div {{ block.shopify_attributes }}>
-                  {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
-                  {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
-                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                    {{ form | payment_terms }}
-                  {%- endform -%}
-                </div>
+                {%- if product.quantity_price_breaks_configured? -%}
+                  {{ 'products.product.volume_pricing.note' | t }}
+                {%- endif -%}
 
-                <script>
-                  document.addEventListener('DOMContentLoaded', function () {
-                    // Save the original price HTML for restoration when a variant is selected
-                    const priceContainer = document.querySelector('#price-{{ section.id }}');
-                    if (priceContainer) {
-                      // Store the original price HTML
-                      priceContainer.dataset.originalPrice = priceContainer.innerHTML;
-
-                      // Function to restore original price when needed
-                      window.restoreOriginalPrice = function () {
-                        if (priceContainer.dataset.originalPrice) {
-                          priceContainer.innerHTML = priceContainer.dataset.originalPrice;
-                        }
-                      };
-                    }
-                  });
-                </script>
+                {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
+                {%- form 'product', product, id: product_form_installment_id, class: 'installment caption-large' -%}
+                  {{ form | payment_terms }}
+                {%- endform -%}
 
               {%- when 'inventory' -%}
                 <p
@@ -344,7 +332,7 @@
                     </div>
                   </details>
                 </div>
-                  {% comment %} description is gone {% endcomment %}
+                {% comment %} description is gone {% endcomment %}
               {%- when 'quantity_selector' -%}
                 <div
                   id="Quantity-Form-{{ section.id }}"
@@ -418,7 +406,7 @@
                       -%}
                     </div>
                   </div>
-           </div>
+                </div>
                 {%- liquid
                   assign volume_pricing_array = product.selected_or_first_available_variant.quantity_price_breaks | sort: 'quantity' | reverse
                   assign current_qty_for_volume_pricing = cart_qty | plus: product.selected_or_first_available_variant.quantity_rule.min
@@ -570,7 +558,7 @@
                     {%- endif -%}
                   </volume-pricing>
                 {%- endif -%}
-          
+
               {%- when 'popup' -%}
                 <modal-opener
                   class="product-popup-modal__opener quick-add-hidden"
