@@ -155,7 +155,7 @@
     }
     
     .select-wrapper.text-mode .selected-value-display {
-      display: flex;
+      display: flex !important;
     }
   </style>
 
@@ -231,7 +231,9 @@
                 
                 // Show as text
                 selectWrapper.classList.add('text-mode');
-                selectedTextElement.textContent = select.options[i].text;
+                const selectedText = select.options[i].text;
+                selectedTextElement.textContent = selectedText;
+                console.log("Setting initial selected text:", selectedText);
                 break;
               }
             }
@@ -246,6 +248,8 @@
             const isDefaultOption = (value === '' || this.selectedIndex === 0);
             const selectedText = this.options[this.selectedIndex].text;
             
+            console.log("Select changed to:", selectedText, "Is default:", isDefaultOption);
+            
             // Update button state
             deselectButton.disabled = isDefaultOption;
             
@@ -257,6 +261,7 @@
               this.classList.add('user-selected');
               selectWrapper.classList.add('text-mode');
               selectedTextElement.textContent = selectedText;
+              console.log("Setting selected text to:", selectedText);
             }
             
             // Save selection
@@ -268,7 +273,16 @@
               this.dispatchEvent(pleaseSelectEvent);
             }
             
-            console.log(`Select ${optionIndex} changed to:`, value, 'Default?', isDefaultOption);
+            // Force update the display
+            setTimeout(() => {
+              if (!isDefaultOption) {
+                selectedValueDisplay.style.display = 'flex';
+                selectedTextElement.textContent = selectedText;
+                console.log("Forced update of selected text:", selectedText);
+              } else {
+                selectedValueDisplay.style.display = 'none';
+              }
+            }, 0);
           });
           
           // Handle deselect button click
@@ -283,6 +297,7 @@
             
             // Switch back to dropdown mode
             selectWrapper.classList.remove('text-mode');
+            selectedValueDisplay.style.display = 'none';
             
             // Update stored values
             selectedOptions.delete(`${sectionId}-${optionIndex}`);
@@ -294,12 +309,6 @@
             select.dispatchEvent(pleaseSelectEvent);
             
             console.log('Deselect button clicked for option', optionIndex);
-          });
-          
-          // Add click event on text display to toggle back to dropdown
-          selectedValueDisplay.addEventListener('click', function(e) {
-            // If we want to allow clicking the text to edit, uncomment this:
-            // selectWrapper.classList.remove('text-mode');
           });
           
           // Override Shopify's variant selection to respect our placeholder settings
@@ -319,9 +328,13 @@
                 const isDefaultOption = (select.value === '' || select.selectedIndex === 0);
                 if (!isDefaultOption) {
                   selectWrapper.classList.add('text-mode');
-                  selectedTextElement.textContent = select.options[select.selectedIndex].text;
+                  const selectedText = select.options[select.selectedIndex].text;
+                  selectedTextElement.textContent = selectedText;
+                  selectedValueDisplay.style.display = 'flex';
+                  console.log("Variant changed handler setting text:", selectedText);
                 } else {
                   selectWrapper.classList.remove('text-mode');
+                  selectedValueDisplay.style.display = 'none';
                 }
               }, 10);
             };
@@ -335,6 +348,17 @@
               if (savedValue === '' && select.selectedIndex !== 0) {
                 select.selectedIndex = 0;
                 selectWrapper.classList.remove('text-mode');
+                selectedValueDisplay.style.display = 'none';
+              } else if (savedValue && savedValue !== '' && select.selectedIndex > 0) {
+                // Make sure text is showing
+                const selectedText = select.options[select.selectedIndex].text;
+                if (selectedTextElement.textContent !== selectedText) {
+                  selectedTextElement.textContent = selectedText;
+                  console.log("Interval check updating text:", selectedText);
+                }
+                if (selectedValueDisplay.style.display !== 'flex') {
+                  selectedValueDisplay.style.display = 'flex';
+                }
               }
             }, 500);
           }
@@ -376,15 +400,19 @@
                   // Update text mode state
                   const selectWrapper = select.closest('.select-wrapper');
                   if (selectWrapper) {
+                    const selectedValueDisplay = selectWrapper.querySelector('.selected-value-display');
+                    const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
+                    
                     const isDefaultOption = (select.value === '' || select.selectedIndex === 0);
                     if (!isDefaultOption) {
                       selectWrapper.classList.add('text-mode');
-                      const selectedTextElement = selectWrapper.querySelector('.selected-text');
-                      if (selectedTextElement) {
-                        selectedTextElement.textContent = select.options[select.selectedIndex].text;
-                      }
+                      const selectedText = select.options[select.selectedIndex].text;
+                      selectedTextElement.textContent = selectedText;
+                      selectedValueDisplay.style.display = 'flex';
+                      console.log("UpdateOptions setting text:", selectedText);
                     } else {
                       selectWrapper.classList.remove('text-mode');
+                      selectedValueDisplay.style.display = 'none';
                     }
                   }
                 });
@@ -403,6 +431,23 @@
         setTimeout(() => {
           initializeVariantSelectors();
           overrideVariantSelection();
+          
+          // Force all selects to update their display
+          document.querySelectorAll('.select__select').forEach(select => {
+            if (select.selectedIndex > 0) {
+              const selectWrapper = select.closest('.select-wrapper');
+              if (selectWrapper) {
+                const selectedValueDisplay = selectWrapper.querySelector('.selected-value-display');
+                const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
+                const selectedText = select.options[select.selectedIndex].text;
+                
+                selectWrapper.classList.add('text-mode');
+                selectedTextElement.textContent = selectedText;
+                selectedValueDisplay.style.display = 'flex';
+                console.log("Initial loading force update:", selectedText);
+              }
+            }
+          });
         }, 500);
         
         // Also watch for DOM changes
@@ -423,6 +468,23 @@
       document.addEventListener('variant:changed', function() {
         setTimeout(() => {
           initializeVariantSelectors();
+          
+          // Force all selects to update their display
+          document.querySelectorAll('.select__select').forEach(select => {
+            if (select.selectedIndex > 0) {
+              const selectWrapper = select.closest('.select-wrapper');
+              if (selectWrapper) {
+                const selectedValueDisplay = selectWrapper.querySelector('.selected-value-display');
+                const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
+                const selectedText = select.options[select.selectedIndex].text;
+                
+                selectWrapper.classList.add('text-mode');
+                selectedTextElement.textContent = selectedText;
+                selectedValueDisplay.style.display = 'flex';
+                console.log("Variant changed force update:", selectedText);
+              }
+            }
+          });
         }, 50);
       });
     })();
