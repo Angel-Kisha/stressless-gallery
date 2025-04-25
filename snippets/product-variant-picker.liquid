@@ -53,67 +53,57 @@
           %}
         </fieldset>
       {%- else -%}
-      <div class="product-rows-container">
-        <!-- Row 1: Color -->
-        <div class="product-label-row">
-          <div class="product-label-text">カラー</div>
-          <div class="select-container">
-            <div class="select-dropdown-container">
-              <select class="select__select please-select-enabled" id="Option-color">
-                <option value="">選択してください</option>
+        <div class="product-form__input product-form__input--dropdown product-label-dropdown">
+          <label
+            class="w-30 form__label product-label-dropdown-text"
+            for="Option-{{ section.id }}-{{ forloop.index0 }}"
+          >
+            {{ option.name }}
+          </label>
+
+          <!-- Original select dropdown -->
+          <div class="select-container w-55">
+            <div class="select select-dropdown-container">
+              {%- if picker_type == 'swatch_dropdown' -%}
+                <span
+                  data-selected-value
+                  class="dropdown-swatch"
+                >
+                  {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+                </span>
+              {%- endif -%}
+              <select
+                id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                class="select__select please-select-enabled"
+                name="options[{{ option.name | escape }}]"
+                form="{{ product_form_id }}"
+                data-option-index="{{ forloop.index0 }}"
+                data-default-unselected="true"
+                data-required="true"
+              >
+                {% render 'product-variant-options',
+                  product: product,
+                  option: option,
+                  block: block,
+                  picker_type: picker_type
+                %}
               </select>
               <span class="svg-wrapper">
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L5 5L9 1" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                {{- 'icon-caret.svg' | inline_asset_content -}}
               </span>
             </div>
-          </div>
-          <div class="action-button">
-            <button type="button" disabled class="deselect-button">選択解除</button>
-          </div>
-        </div>
-        
-        <!-- Row 2: Size -->
-        <div class="product-label-row">
-          <div class="product-label-text">サイズ</div>
-          <div class="select-container">
-            <div class="select-dropdown-container">
-              <select class="select__select please-select-enabled" id="Option-size">
-                <option value="">選択してください</option>
-              </select>
-              <span class="svg-wrapper">
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L5 5L9 1" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
+
+            <!-- Plain text display for selected value -->
+            <div class="selected-value-display">
+              <span class="selected-text"></span>
             </div>
           </div>
-          <div class="action-button">
-            <button type="button" disabled class="deselect-button">選択解除</button>
+
+          <div class="divider"></div>
+          <div class="w-15">
+            <button type="button" disabled class="deselect-button" disabled>選択解除</button>
           </div>
         </div>
-        
-        <!-- Row 3: Additional option (if needed) -->
-        <div class="product-label-row">
-          <div class="product-label-text">オプション</div>
-          <div class="select-container">
-            <div class="select-dropdown-container">
-              <select class="select__select please-select-enabled" id="Option-option">
-                <option value="">選択してください</option>
-              </select>
-              <span class="svg-wrapper">
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L5 5L9 1" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-            </div>
-          </div>
-          <div class="action-button">
-            <button type="button" disabled class="deselect-button">選択解除</button>
-          </div>
-        </div>
-      </div>
       {%- endif -%}
     {%- endfor -%}
 
