@@ -386,8 +386,8 @@
             selectedOptions.delete(`${sectionId}-${optionIndex}`);
             localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
 
-            // Update price display
-            updatePriceDisplay(sectionId);
+            // Update price display - force show price range
+            updatePriceDisplay(sectionId, true);
 
             // Dispatch events
             const changeEvent = new Event('change', { bubbles: true });
@@ -424,40 +424,22 @@
 
             // Listen for Shopify's variant:changed event
             variantSelectsElement.addEventListener('variant:changed', variantChangedHandler);
-
-            // Also check periodically
-            setInterval(() => {
-              const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
-              if (savedValue === '' && select.selectedIndex !== 0) {
-                select.selectedIndex = 0;
-                selectContainer.classList.remove('text-mode');
-              } else if (savedValue && savedValue !== '' && select.selectedIndex > 0) {
-                // Make sure text is showing
-                selectContainer.classList.add('text-mode');
-                const selectedText = select.options[select.selectedIndex].text;
-                if (selectedTextElement.textContent !== selectedText) {
-                  selectedTextElement.textContent = selectedText;
-                }
-              }
-
-              // Update price display
-              updatePriceDisplay(sectionId);
-            }, 500);
           }
         });
       }
 
       // Manage price display based on variant selection
-      function updatePriceDisplay(sectionId) {
+      function updatePriceDisplay(sectionId, forceShowRange) {
         const priceContainer = document.getElementById(`price-${sectionId}`);
         const priceRangeContainer = document.getElementById(`price-range-container-${sectionId}`);
+        
         if (!priceContainer || !priceRangeContainer) return;
 
         // Check if all variants are selected
-        if (!checkAllVariantsSelected(sectionId)) {
+        if (forceShowRange || !checkAllVariantsSelected(sectionId)) {
           // Show price range
           priceContainer.innerHTML = priceRangeContainer.innerHTML;
-        } 
+        }
         // If all variants are selected, let Shopify handle the price display
       }
 
@@ -574,12 +556,17 @@
         initializeVariantSelectors();
         overrideVariantSelection();
 
-        // Ensure price range is shown initially
+        // Ensure price range is shown initially for all sections
         const variantSelects = document.querySelectorAll('variant-selects');
         variantSelects.forEach(variantSelect => {
           const sectionId = variantSelect.dataset.section;
           if (sectionId) {
-            updatePriceDisplay(sectionId);
+            setTimeout(() => {
+              // Check if any variant is not selected, show price range
+              if (!checkAllVariantsSelected(sectionId)) {
+                updatePriceDisplay(sectionId, true);
+              }
+            }, 100);
           }
         });
 
@@ -620,15 +607,36 @@
           variantSelects.forEach(variantSelect => {
             const sectionId = variantSelect.dataset.section;
             if (sectionId) {
-              updatePriceDisplay(sectionId);
+              // If any variant is not selected, show price range
+              if (!checkAllVariantsSelected(sectionId)) {
+                updatePriceDisplay(sectionId, true);
+              }
             }
           });
-        }, 500);
+        }, 300);
 
-        // Also watch for DOM changes
-        const observer = new MutationObserver(function () {
-          initializeVariantSelectors();
-          overrideVariantSelection();
+        // Watch for DOM changes
+        const observer = new MutationObserver(function (mutations) {
+          let shouldCheckPrices = false;
+          mutations.forEach(mutation => {
+            if (mutation.type === 'attributes' || mutation.type === 'childList') {
+              shouldCheckPrices = true;
+            }
+          });
+
+          if (shouldCheckPrices) {
+            initializeVariantSelectors();
+            overrideVariantSelection();
+            
+            // Check all sections for price updates
+            const variantSelects = document.querySelectorAll('variant-selects');
+            variantSelects.forEach(variantSelect => {
+              const sectionId = variantSelect.dataset.section;
+              if (sectionId) {
+                updatePriceDisplay(sectionId);
+              }
+            });
+          }
         });
 
         observer.observe(document.body, {
@@ -640,18 +648,29 @@
       });
 
       // Re-run when variants change
-      document.addEventListener('variant:changed', function () {
+      document.addEventListener('variant:changed', function (e) {
         setTimeout(() => {
           initializeVariantSelectors();
           
-          // Update price display for variant change events
-          const variantSelects = document.querySelectorAll('variant-selects');
-          variantSelects.forEach(variantSelect => {
-            const sectionId = variantSelect.dataset.section;
-            if (sectionId) {
-              updatePriceDisplay(sectionId);
-            }
-          });
+          // Get the section ID from the event if possible
+          let sectionId = null;
+          if (e.target && e.target.dataset && e.target.dataset.section) {
+            sectionId = e.target.dataset.section;
+          }
+          
+          // If we have a section ID, update just that section
+          if (sectionId) {
+            updatePriceDisplay(sectionId);
+          } else {
+            // Otherwise update all sections
+            const variantSelects = document.querySelectorAll('variant-selects');
+            variantSelects.forEach(variantSelect => {
+              const sectId = variantSelect.dataset.section;
+              if (sectId) {
+                updatePriceDisplay(sectId);
+              }
+            });
+          }
         }, 50);
       });
     })();
