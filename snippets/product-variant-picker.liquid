@@ -136,7 +136,7 @@
         assign min_price = product.price_min | money
         assign max_price = product.price_max | money
         if product.price_varies
-          assign price_range = min_price | append: ' - ' | append: max_price
+          assign price_range = min_price | append: ' ~ ' | append: max_price
         else
           assign price_range = min_price
         endif
