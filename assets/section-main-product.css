@@ -255,7 +255,6 @@ product-info {
   gap: 2rem;
   align-items: center;
   border-top: 1px solid #dfe5ea;
-  border-bottom: 1px solid #dfe5ea;
   padding-top: 16px;
 }
 
@@ -276,7 +275,7 @@ product-info {
 }
 
 .product-label-dropdown:last-of-type {
-  border-bottom: 1px solid #dfe5ea ;
+  border-bottom: 1px solid #dfe5ea !important;
   padding-bottom: 16px;
 }
 
