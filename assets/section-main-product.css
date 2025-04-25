@@ -276,6 +276,7 @@ product-info {
 
 .product-label-dropdown:last-of-type {
   border-bottom: 1px solid #dfe5ea;
+  background-color: yellow;
   padding-bottom: 16px;
 }
 
