@@ -228,6 +228,22 @@
       font-size: 14px;
     }
 
+    /* Add smooth transition for price updates */
+.price-updating {
+  transition: opacity 0.15s ease-in-out;
+  opacity: 0.5;
+}
+
+/* Add fade-in animation for price container */
+@keyframes price-fade-in {
+  from { opacity: 0.5; }
+  to { opacity: 1; }
+}
+
+.price {
+  animation: price-fade-in 0.2s ease-out;
+}
+
     /* Add a shake animation for the warning */
     @keyframes warning-shake {
       0% {
