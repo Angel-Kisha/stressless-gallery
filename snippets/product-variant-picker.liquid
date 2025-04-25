@@ -130,6 +130,23 @@
       </div>
     </div>
 
+    <!-- Add hidden price range container -->
+    <div id="price-range-container-{{ section.id }}" class="price-range-container" style="display: none;">
+      {%- liquid
+        assign min_price = product.price_min | money
+        assign max_price = product.price_max | money
+        if product.price_varies
+          assign price_range = min_price | append: ' - ' | append: max_price
+        else
+          assign price_range = min_price
+        endif
+      -%}
+      <div class="price price--large">
+        <span class="price-item price-item--regular">{{ price_range }}</span>
+        <span class="price-tax">(税込)</span>
+      </div>
+    </div>
+
     <script type="application/json" data-selected-variant>
       {{ product.selected_or_first_available_variant | json }}
     </script>
@@ -341,6 +358,9 @@
             selectedOptions.set(`${sectionId}-${optionIndex}`, value);
             localStorage.setItem(`variant-${sectionId}-${optionIndex}`, value);
 
+            // Update price display
+            updatePriceDisplay(sectionId);
+
             // Hide warning if shown
             hideVariantWarning(sectionId);
 
@@ -366,6 +386,9 @@
             // Update stored values
             selectedOptions.delete(`${sectionId}-${optionIndex}`);
             localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
+
+            // Update price display
+            updatePriceDisplay(sectionId);
 
             // Dispatch events
             const changeEvent = new Event('change', { bubbles: true });
@@ -394,6 +417,9 @@
                 } else {
                   selectContainer.classList.remove('text-mode');
                 }
+
+                // Update price display
+                updatePriceDisplay(sectionId);
               }, 10);
             };
 
@@ -414,9 +440,26 @@
                   selectedTextElement.textContent = selectedText;
                 }
               }
+
+              // Update price display
+              updatePriceDisplay(sectionId);
             }, 500);
           }
         });
+      }
+
+      // Manage price display based on variant selection
+      function updatePriceDisplay(sectionId) {
+        const priceContainer = document.getElementById(`price-${sectionId}`);
+        const priceRangeContainer = document.getElementById(`price-range-container-${sectionId}`);
+        if (!priceContainer || !priceRangeContainer) return;
+
+        // Check if all variants are selected
+        if (!checkAllVariantsSelected(sectionId)) {
+          // Show price range
+          priceContainer.innerHTML = priceRangeContainer.innerHTML;
+        } 
+        // If all variants are selected, let Shopify handle the price display
       }
 
       // Override Shopify's variant selection code
@@ -440,8 +483,9 @@
               // Then apply our custom logic
               setTimeout(() => {
                 const selects = this.querySelectorAll('select');
+                const sectionId = this.dataset.section;
+                
                 selects.forEach((select, index) => {
-                  const sectionId = this.dataset.section;
                   const optionIndex = select.dataset.optionIndex;
                   const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
 
@@ -466,7 +510,24 @@
                     }
                   }
                 });
+
+                // Update price display
+                updatePriceDisplay(sectionId);
               }, 10);
+            };
+          }
+
+          // Override getVariantData to respect price range
+          const originalGetVariantData = variantSelect.getVariantData;
+          if (typeof originalGetVariantData === 'function') {
+            variantSelect.getVariantData = function() {
+              const result = originalGetVariantData.apply(this, arguments);
+              
+              // Check if we need to update the price display after getting variant data
+              const sectionId = this.dataset.section;
+              setTimeout(() => updatePriceDisplay(sectionId), 10);
+              
+              return result;
             };
           }
         });
@@ -514,6 +575,15 @@
         initializeVariantSelectors();
         overrideVariantSelection();
 
+        // Ensure price range is shown initially
+        const variantSelects = document.querySelectorAll('variant-selects');
+        variantSelects.forEach(variantSelect => {
+          const sectionId = variantSelect.dataset.section;
+          if (sectionId) {
+            updatePriceDisplay(sectionId);
+          }
+        });
+
         // Intercept the add to cart button click
         document.addEventListener(
           'click',
@@ -545,6 +615,15 @@
         setTimeout(() => {
           initializeVariantSelectors();
           overrideVariantSelection();
+          
+          // Update price display for all sections
+          const variantSelects = document.querySelectorAll('variant-selects');
+          variantSelects.forEach(variantSelect => {
+            const sectionId = variantSelect.dataset.section;
+            if (sectionId) {
+              updatePriceDisplay(sectionId);
+            }
+          });
         }, 500);
 
         // Also watch for DOM changes
@@ -565,339 +644,17 @@
       document.addEventListener('variant:changed', function () {
         setTimeout(() => {
           initializeVariantSelectors();
+          
+          // Update price display for variant change events
+          const variantSelects = document.querySelectorAll('variant-selects');
+          variantSelects.forEach(variantSelect => {
+            const sectionId = variantSelect.dataset.section;
+            if (sectionId) {
+              updatePriceDisplay(sectionId);
+            }
+          });
         }, 50);
       });
-
-     // Add this code to the existing script section in product-variant-picker.liquid
-// Place it inside the existing IIFE (the function that's already there)
-
-// Function to handle price display changes
-function setupPriceRangeDisplay() {
-  // Find all product sections with variant selects
-  const variantSelectContainers = document.querySelectorAll('variant-selects');
-  
-  variantSelectContainers.forEach(container => {
-    const sectionId = container.dataset.section;
-    if (!sectionId) return;
-    
-    // Get the price container for this section
-    const priceContainer = document.getElementById(`price-${sectionId}`);
-    if (!priceContainer) return;
-    
-    // Variables to store price information
-    let originalPriceHTML = null;
-    let variantPriceHTML = null;
-    let priceRangeHTML = null;
-    
-    // Get product JSON if available
-    let productJSON = null;
-    try {
-      // Many Shopify themes include product JSON in a script tag
-      const productJSONElement = document.getElementById(`ProductJson-${sectionId}`);
-      if (productJSONElement) {
-        productJSON = JSON.parse(productJSONElement.textContent);
-      }
-    } catch (e) {
-      console.error('Error parsing product JSON:', e);
-    }
-    
-    // Function to get price range HTML
-    function getPriceRangeHTML() {
-      // Try to find price range in the DOM first
-      const productWrapper = priceContainer.closest('.product');
-      if (productWrapper) {
-        const hiddenPriceRange = productWrapper.querySelector('.price-range-display');
-        if (hiddenPriceRange) {
-          return hiddenPriceRange.innerHTML;
-        }
-      }
-      
-      // If we have priceRangeHTML from previous capture, use it
-      if (priceRangeHTML) {
-        return priceRangeHTML;
-      }
-      
-      // Otherwise, just return current price HTML as fallback
-      return priceContainer.innerHTML;
-    }
-    
-    // Function to check if all required selections are made
-    function areAllSelectionsComplete() {
-      const selects = container.querySelectorAll('select[data-required="true"]');
-      for (const select of selects) {
-        if (select.selectedIndex === 0 || select.value === '') {
-          return false;
-        }
-      }
-      return true;
-    }
-    
-    // Function to update price display based on selection state
-    function updatePriceDisplay() {
-      if (areAllSelectionsComplete()) {
-        // Capture variant price HTML if we don't have it yet
-        if (!variantPriceHTML) {
-          variantPriceHTML = priceContainer.innerHTML;
-        }
-      } else {
-        // Show price range
-        const rangeHTML = getPriceRangeHTML();
-        if (rangeHTML) {
-          priceContainer.innerHTML = rangeHTML;
-        }
-      }
-    }
-    
-    // Force show price range on initial load
-    // We need to do this after a short delay to ensure Shopify's scripts have initialized
-    setTimeout(() => {
-      // Capture current price HTML first
-      originalPriceHTML = priceContainer.innerHTML;
-      
-      // Then modify it to capture price range if needed
-      // Create a temporary element to hold a copy of the original price
-      if (!areAllSelectionsComplete()) {
-        // Create temporary element to hold price range
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = originalPriceHTML;
-        
-        // Store this as our price range HTML
-        priceRangeHTML = originalPriceHTML;
-        
-        // Update the price container
-        priceContainer.innerHTML = priceRangeHTML;
-      }
-    }, 100);
-    
-    // Create a hidden element to store price range for this product
-    const priceRangeElement = document.createElement('div');
-    priceRangeElement.className = 'price-range-display';
-    priceRangeElement.style.display = 'none';
-    priceContainer.parentNode.appendChild(priceRangeElement);
-    
-    // Add event listeners for selection changes
-    const selects = container.querySelectorAll('select');
-    selects.forEach(select => {
-      select.addEventListener('change', () => {
-        // Small delay to ensure Shopify's price update has happened
-        setTimeout(updatePriceDisplay, 10);
-      });
-    });
-    
-    // Listen for deselect button clicks
-    const deselectButtons = container.querySelectorAll('.deselect-button');
-    deselectButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        // Small delay to ensure select change event has processed
-        setTimeout(updatePriceDisplay, 50);
-      });
-    });
-    
-    // Listen for Shopify's variant change event
-    container.addEventListener('variant:changed', function(e) {
-      if (areAllSelectionsComplete()) {
-        // If all options selected, capture the variant-specific price
-        setTimeout(() => {
-          variantPriceHTML = priceContainer.innerHTML;
-        }, 10);
-      } else {
-        // If not all options selected, show price range
-        setTimeout(updatePriceDisplay, 10);
-      }
-    });
-    
-    // Create MutationObserver to watch for price container changes
-    const observer = new MutationObserver(function(mutations) {
-      // When the price container changes and all selections are complete
-      if (areAllSelectionsComplete()) {
-        // Capture this as the variant price
-        variantPriceHTML = priceContainer.innerHTML;
-      } else {
-        // If incomplete selection but price changed, might be initial price range
-        if (!priceRangeHTML) {
-          priceRangeHTML = priceContainer.innerHTML;
-          priceRangeElement.innerHTML = priceRangeHTML;
-        }
-      }
-    });
-    
-    // Start observing the price container
-    observer.observe(priceContainer, {
-      childList: true,
-      subtree: true,
-      characterData: true
-    });
-  });
-}
-
-// Advanced solution - hijack Shopify's updateOptions method
-function patchShopifyVariantSelects() {
-  const variantSelects = document.querySelectorAll('variant-selects');
-  
-  variantSelects.forEach(variantSelect => {
-    // Skip if already patched
-    if (variantSelect.hasAttribute('data-price-range-patched')) return;
-    variantSelect.setAttribute('data-price-range-patched', 'true');
-    
-    // Store original methods
-    const originalUpdateOptions = variantSelect.updateOptions;
-    
-    // Only patch if the method exists
-    if (typeof originalUpdateOptions === 'function') {
-      // Override the updateOptions method
-      variantSelect.updateOptions = function() {
-        // Call the original updateOptions
-        originalUpdateOptions.apply(this, arguments);
-        
-        // Then apply our price range logic
-        const sectionId = this.dataset.section;
-        if (!sectionId) return;
-        
-        const priceContainer = document.getElementById(`price-${sectionId}`);
-        if (!priceContainer) return;
-        
-        // Check if all selections are complete
-        const selects = this.querySelectorAll('select[data-required="true"]');
-        let allSelected = true;
-        for (const select of selects) {
-          if (select.selectedIndex === 0 || select.value === '') {
-            allSelected = false;
-            break;
-          }
-        }
-        
-        // If not all selected, show price range
-        if (!allSelected) {
-          // Find price range element
-          const priceRangeElement = document.querySelector(`#price-${sectionId} + .price-range-display`);
-          if (priceRangeElement) {
-            // Use stored price range HTML
-            priceContainer.innerHTML = priceRangeElement.innerHTML;
-          }
-        }
-      };
-    }
-  });
-}
-
-// Execute our setup when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-  setupPriceRangeDisplay();
-  
-  // Try to patch Shopify's variant selects
-  setTimeout(patchShopifyVariantSelects, 500);
-  
-  // Handle dynamically added elements
-  const observer = new MutationObserver(function(mutations) {
-    for (const mutation of mutations) {
-      if (mutation.type === 'childList' && mutation.addedNodes.length) {
-        for (const node of mutation.addedNodes) {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            // If a variant-selects element was added
-            if (node.tagName.toLowerCase() === 'variant-selects') {
-              setupPriceRangeDisplay();
-              patchShopifyVariantSelects();
-            }
-            
-            // If it might contain variant-selects
-            if (node.querySelector) {
-              const variantSelect = node.querySelector('variant-selects');
-              if (variantSelect) {
-                setupPriceRangeDisplay();
-                patchShopifyVariantSelects();
-              }
-            }
-          }
-        }
-      }
-    }
-  });
-  
-  // Observe the entire document for new variant-selects elements
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-});
-
-// Alternative solution - inject price range element directly
-function injectPriceRangeElement() {
-  // Get product info if available
-  let productInfo = null;
-  try {
-    if (window.ShopifyAnalytics && window.ShopifyAnalytics.meta && window.ShopifyAnalytics.meta.product) {
-      productInfo = window.ShopifyAnalytics.meta.product;
-    }
-  } catch (e) {
-    console.error('Could not access product info:', e);
-  }
-  
-  // If we have product info, determine price range
-  if (productInfo && productInfo.variants && productInfo.variants.length > 0) {
-    let minPrice = Infinity;
-    let maxPrice = -Infinity;
-    
-    // Find min and max prices across all variants
-    productInfo.variants.forEach(variant => {
-      const price = parseFloat(variant.price) / 100; // Shopify stores prices in cents
-      if (price < minPrice) minPrice = price;
-      if (price > maxPrice) maxPrice = price;
-    });
-    
-    // Format prices in Japanese Yen
-    const formatPrice = (price) => {
-      return '¥' + price.toLocaleString('ja-JP');
-    };
-    
-    // Create price range HTML
-    const priceRangeHTML = minPrice === maxPrice ? 
-      `<span class="price">${formatPrice(minPrice)}</span> <span class="price-tax">(税込)</span>` : 
-      `<span class="price">${formatPrice(minPrice)} - ${formatPrice(maxPrice)}</span> <span class="price-tax">(税込)</span>`;
-    
-    // Find product forms
-    const productForms = document.querySelectorAll('product-form');
-    productForms.forEach(form => {
-      const sectionId = form.dataset.section;
-      if (!sectionId) return;
-      
-      const priceContainer = document.getElementById(`price-${sectionId}`);
-      if (!priceContainer) return;
-      
-      // Create hidden price range element
-      const priceRangeElement = document.createElement('div');
-      priceRangeElement.className = 'price-range-display';
-      priceRangeElement.style.display = 'none';
-      priceRangeElement.innerHTML = priceRangeHTML;
-      priceContainer.parentNode.appendChild(priceRangeElement);
-      
-      // If default options selected, show price range initially
-      const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
-      if (variantSelectsElement) {
-        const selects = variantSelectsElement.querySelectorAll('select[data-required="true"]');
-        let allDefault = true;
-        for (const select of selects) {
-          if (select.selectedIndex !== 0 && select.value !== '') {
-            allDefault = false;
-            break;
-          }
-        }
-        
-        if (allDefault) {
-          priceContainer.innerHTML = priceRangeHTML;
-        }
-      }
-    });
-  }
-}
-
-// Run the injection on load and after a delay
-document.addEventListener('DOMContentLoaded', function() {
-  // Try immediately
-  injectPriceRangeElement();
-  
-  // And after a delay to ensure everything is loaded
-  setTimeout(injectPriceRangeElement, 1000);
-});
     })();
   </script>
 {%- endunless -%}
