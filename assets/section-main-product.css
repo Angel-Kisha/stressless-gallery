@@ -250,77 +250,41 @@ product-info {
   opacity: 0.5;
 }
 
-/* Core styling for the dropdown rows */
 .product-label-dropdown {
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
   align-items: center;
   border-top: 1px solid #dfe5ea;
-  padding: 16px 0;
+  padding-top: 16px;
 }
 
-/* Styling for the last dropdown to include bottom border */
-.product-label-dropdown:last-of-type {
-  border-bottom: 1px solid #dfe5ea;
-}
-
-/* Style for the label text */
-.product-label-dropdown-text {
-  font-size: 12px;
-  color: #333333;
-  letter-spacing: 2px;
-  font-family: "Hiragino", sans-serif;
-  font-weight: 600;
-}
-
-/* Vertical divider between dropdown and button */
 .divider {
   width: 1px;
   height: 24px;
+  background-color: #ccc;
   margin: 0 10px;
+  border: 1px solid #dfe5ea;
+  padding-left: 10px;
 }
 
-/* Styling for the deselect button */
 .deselect-button {
   background: none;
-  color: #333333;
+  color: #ffffff;
   border: none;
   cursor: pointer;
+}
+
+.product-label-dropdown:last-of-type {
+  border-bottom: 1px solid #dfe5ea;
+  padding-bottom: 16px;
+}
+
+.product-label-dropdown-text {
   font-size: 12px;
-}
-
-.deselect-button:disabled {
-  color: #cccccc;
-  cursor: not-allowed;
-}
-
-/* Select dropdown container styles */
-.select-container {
-  position: relative;
-}
-
-.select-dropdown-container {
-  border: 1px solid #dfe5ea;
-  border-radius: 4px;
-  padding: 8px 12px;
-  background-color: #ffffff;
-}
-
-.select__select {
-  border: none;
-  background: transparent;
-  width: 100%;
-  appearance: none;
-  -webkit-appearance: none;
-  color: #333333;
-}
-
-.svg-wrapper {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
+  color: #ffffff;
+  letter-spacing: 2px;
+  font-family: "Hiragino";
+  font-weight: 600;
 }
 
 @media screen and (forced-colors: active) {
