@@ -186,21 +186,25 @@
                 {%- when 'price' -%}
                   <div class="product-price ">
                     <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
-                      {%- if product.selected_or_first_available_variant.title == '選択してください' -%}
+                      <!-- Price Range (shown when '選択してください' is selected or no variant) -->
+                      <div id="price-range-{{ section.id }}" class="price-range">
                         {%- render 'price',
                           product: product,
                           use_variant: false,
                           show_badges: true,
                           price_class: 'price--large'
                         -%}
-                      {%- else -%}
+                      </div>
+                
+                      <!-- Variant Price (shown when a valid variant is selected) -->
+                      <div id="variant-price-{{ section.id }}" class="variant-price" style="display: none;">
                         {%- render 'price',
                           product: product,
                           use_variant: true,
                           show_badges: true,
                           price_class: 'price--large'
                         -%}
-                      {%- endif -%}
+                      </div>
                     </div>
                 
                     {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank -%}
@@ -232,6 +236,31 @@
                       {{ form | payment_terms }}
                     {%- endform -%}
                   </div>
+                
+                  <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                      const variantSelect = document.querySelector('[name="id"]');
+                      const rangePrice = document.getElementById('price-range-{{ section.id }}');
+                      const variantPrice = document.getElementById('variant-price-{{ section.id }}');
+                
+                      function updatePriceDisplay() {
+                        const selectedOption = variantSelect?.selectedOptions?.[0]?.text?.trim();
+                        if (!selectedOption || selectedOption === '選択してください') {
+                          rangePrice.style.display = 'block';
+                          variantPrice.style.display = 'none';
+                        } else {
+                          rangePrice.style.display = 'none';
+                          variantPrice.style.display = 'block';
+                        }
+                      }
+                
+                      if (variantSelect) {
+                        variantSelect.addEventListener('change', updatePriceDisplay);
+                        updatePriceDisplay(); // Initial check
+                      }
+                    });
+                  </script>
+                
                 
 
               {%- when 'inventory' -%}
