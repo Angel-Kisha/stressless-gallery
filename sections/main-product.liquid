@@ -187,7 +187,7 @@
                 <div class="product-price ">
                   <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
                     {%- if product.price_varies and product.has_only_default_variant == false -%}
-                      {%- liquid
+                      {%- liquid 
                         assign min_price = product.price_min | money
                         assign max_price = product.price_max | money
                         assign price_range = min_price | append: ' - ' | append: max_price
@@ -235,39 +235,39 @@
                 </div>
 
                 <script>
-                    // Initialize price display on load
-                    document.addEventListener('DOMContentLoaded', function() {
-                      const sectionId = '{{ section.id }}';
-                      const productForm = document.querySelector(`product-form[data-section="${sectionId}"]`);
-                      if (productForm) {
-                        const variantSelects = document.querySelector(`#variant-selects-${sectionId}`);
-                        if (variantSelects) {
-                          // Check if we need to show price range initially
-                          const selects = variantSelects.querySelectorAll('select[data-required="true"]');
-                          let allSelected = true;
-                          for (let i = 0; i < selects.length; i++) {
-                            const select = selects[i];
-                            if (select.selectedIndex === 0 || select.value === '') {
-                              allSelected = false;
-                              break;
-                            }
+                  // Initialize price display on load
+                  document.addEventListener('DOMContentLoaded', function() {
+                    const sectionId = '{{ section.id }}';
+                    const productForm = document.querySelector(`product-form[data-section="${sectionId}"]`);
+                    if (productForm) {
+                      const variantSelects = document.querySelector(`#variant-selects-${sectionId}`);
+                      if (variantSelects) {
+                        // Check if we need to show price range initially
+                        const selects = variantSelects.querySelectorAll('select[data-required="true"]');
+                        let allSelected = true;
+                        for (let i = 0; i < selects.length; i++) {
+                          const select = selects[i];
+                          if (select.selectedIndex === 0 || select.value === '') {
+                            allSelected = false;
+                            break;
                           }
+                        }
+                        
+                        // If not all options are selected and product has variants
+                        if (!allSelected && {% if product.has_only_default_variant %}false{% else %}true{% endif %}) {
+                          const priceRangeContainer = document.getElementById(`price-range-container-${sectionId}`);
+                          const priceContainer = document.getElementById(`price-${sectionId}`);
                           
-                          // If not all options are selected and product has variants
-                          if (!allSelected && {% if product.has_only_default_variant %}false{% else %}true{% endif %}) {
-                            const priceRangeContainer = document.getElementById(`price-range-container-${sectionId}`);
-                            const priceContainer = document.getElementById(`price-${sectionId}`);
-                            
-                            if (priceRangeContainer && priceContainer) {
-                              // Copy price range HTML to price container
-                              if (priceRangeContainer.innerHTML.trim()) {
-                                priceContainer.innerHTML = priceRangeContainer.innerHTML;
-                              }
+                          if (priceRangeContainer && priceContainer) {
+                            // Copy price range HTML to price container
+                            if (priceRangeContainer.innerHTML.trim()) {
+                              priceContainer.innerHTML = priceRangeContainer.innerHTML;
                             }
                           }
                         }
                       }
-                    });
+                    }
+                  });
                 </script>
 
               {%- when 'inventory' -%}
