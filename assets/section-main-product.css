@@ -257,7 +257,6 @@ product-info {
   align-items: center;
   border-top: 1px solid #dfe5ea;
   padding: 16px 0;
-  background-color: #ffffff;
 }
 
 /* Styling for the last dropdown to include bottom border */
@@ -278,7 +277,6 @@ product-info {
 .divider {
   width: 1px;
   height: 24px;
-  background-color: #dfe5ea;
   margin: 0 10px;
 }
 
