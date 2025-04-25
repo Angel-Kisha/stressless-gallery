@@ -184,7 +184,7 @@
                   style="margin-top: {{ block.settings.line_top_margin }}px; margin-bottom: {{ block.settings.line_bottom_margin }}px;"
                 >
               {%- when 'price' -%}
-                <div class="">
+                <div class="product-price">
                   <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
                     {%- render 'price',
                       product: product,
