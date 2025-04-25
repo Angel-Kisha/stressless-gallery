@@ -568,8 +568,213 @@
         }, 50);
       });
 
+      // Add this code to the existing script section in product-variant-picker.liquid
+// Place it inside the existing IIFE (the function that's already there)
 
+// After the existing script, just before the closing })(); add the following code:
+
+// Function to handle price display changes
+function setupPriceRangeDisplay(sectionId) {
+  const variantSelects = document.querySelectorAll(`#variant-selects-${sectionId} select`);
+  const priceContainer = document.getElementById(`price-${sectionId}`);
+  
+  if (!variantSelects.length || !priceContainer) return;
+  
+  // Store the original price HTML (which shows the price range)
+  let originalPriceHTML = null;
+  
+  // Get product data from Shopify's objects
+  let productData = null;
+  try {
+    // Try to get product data from the variant-selects element
+    const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
+    if (variantSelectsElement) {
+      const selectedVariantJson = variantSelectsElement.querySelector('script[data-selected-variant]');
+      if (selectedVariantJson) {
+        const selectedVariant = JSON.parse(selectedVariantJson.textContent);
+        if (selectedVariant && selectedVariant.product_id) {
+          productData = { id: selectedVariant.product_id };
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Error getting product data:', e);
+  }
+  
+  // Function to check if all required selections are made
+  function areAllSelectionsComplete() {
+    for (const select of variantSelects) {
+      if (select.hasAttribute('data-required') && 
+          (select.selectedIndex === 0 || select.value === '')) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  // Function to show price range
+  function showPriceRange() {
+    if (originalPriceHTML) {
+      priceContainer.innerHTML = originalPriceHTML;
+    }
+  }
+  
+  // Function to handle price display updates
+  function updatePriceDisplay() {
+    if (!originalPriceHTML) {
+      // Store original price HTML on first run
+      originalPriceHTML = priceContainer.innerHTML;
+    }
+    
+    if (areAllSelectionsComplete()) {
+      // Let Shopify's existing mechanisms handle the price update
+      // The variant:changed event will trigger the price update
+    } else {
+      // Show price range when selections are incomplete
+      showPriceRange();
+    }
+  }
+  
+  // Listen for changes on each select
+  variantSelects.forEach(select => {
+    select.addEventListener('change', updatePriceDisplay);
+    
+    // Also listen for our custom event
+    select.addEventListener('please-select-chosen', updatePriceDisplay);
+  });
+  
+  // Listen for deselect button clicks
+  const deselectButtons = document.querySelectorAll(`#variant-selects-${sectionId} .deselect-button`);
+  deselectButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      // Small delay to ensure the select change event has processed
+      setTimeout(updatePriceDisplay, 10);
+    });
+  });
+  
+  // Also listen to Shopify's variant change event
+  const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
+  if (variantSelectsElement) {
+    // Store current variant price HTML when variant changes
+    variantSelectsElement.addEventListener('variant:changed', function(e) {
+      // If selections are incomplete, show price range instead
+      if (!areAllSelectionsComplete()) {
+        // Small delay to ensure Shopify's price update has happened
+        setTimeout(showPriceRange, 10);
+      }
+    });
+  }
+  
+  // Run initially to set correct state
+  updatePriceDisplay();
+}
+
+// Initialize price range display in DOMContentLoaded event
+document.addEventListener('DOMContentLoaded', function() {
+  // Find all product sections
+  const productForms = document.querySelectorAll('product-form');
+  productForms.forEach(form => {
+    const sectionId = form.dataset.section;
+    if (sectionId) {
+      setupPriceRangeDisplay(sectionId);
+    }
+  });
+  
+  // Also run after a short delay to catch any late loading elements
+  setTimeout(() => {
+    const productForms = document.querySelectorAll('product-form');
+    productForms.forEach(form => {
+      const sectionId = form.dataset.section;
+      if (sectionId) {
+        setupPriceRangeDisplay(sectionId);
+      }
+    });
+  }, 500);
+});
+
+// Re-run when variants change
+document.addEventListener('variant:changed', function(e) {
+  if (e.target && e.target.dataset && e.target.dataset.section) {
+    const sectionId = e.target.dataset.section;
+    
+    // Small delay to ensure Shopify's variant selection has processed
+    setTimeout(() => {
+      // Check if all selections are complete
+      const variantSelects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
+      let allSelected = true;
+      for (let i = 0; i < variantSelects.length; i++) {
+        const select = variantSelects[i];
+        if (select.selectedIndex === 0 || select.value === '') {
+          allSelected = false;
+          break;
+        }
+      }
       
+      // If not all selected, restore the price range
+      if (!allSelected) {
+        const priceContainer = document.getElementById(`price-${sectionId}`);
+        // Look for stored original price HTML in data attribute
+        const originalPriceHTML = priceContainer.getAttribute('data-original-price-html');
+        if (originalPriceHTML) {
+          priceContainer.innerHTML = originalPriceHTML;
+        }
+      }
+    }, 50);
+  }
+});
+
+// Observer function to watch for price container changes
+function observePriceContainer(sectionId) {
+  const priceContainer = document.getElementById(`price-${sectionId}`);
+  if (!priceContainer) return;
+  
+  const observer = new MutationObserver(function(mutations) {
+    // When price changes, store the HTML if it's showing variant prices
+    const variantSelects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
+    let allSelected = true;
+    for (let i = 0; i < variantSelects.length; i++) {
+      const select = variantSelects[i];
+      if (select.selectedIndex === 0 || select.value === '') {
+        allSelected = false;
+        break;
+      }
+    }
+    
+    // If showing price range, store it
+    if (!allSelected && !priceContainer.hasAttribute('data-original-price-html')) {
+      priceContainer.setAttribute('data-original-price-html', priceContainer.innerHTML);
+    }
+  });
+  
+  observer.observe(priceContainer, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+}
+
+// Initialize price container observers
+document.addEventListener('DOMContentLoaded', function() {
+  const productForms = document.querySelectorAll('product-form');
+  productForms.forEach(form => {
+    const sectionId = form.dataset.section;
+    if (sectionId) {
+      observePriceContainer(sectionId);
+    }
+  });
+  
+  // Also run after a short delay
+  setTimeout(() => {
+    const productForms = document.querySelectorAll('product-form');
+    productForms.forEach(form => {
+      const sectionId = form.dataset.section;
+      if (sectionId) {
+        observePriceContainer(sectionId);
+      }
+    });
+  }, 500);
+});
+
     })();
   </script>
 {%- endunless -%}
