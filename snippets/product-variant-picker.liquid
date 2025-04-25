@@ -133,17 +133,6 @@
     <script type="application/json" data-selected-variant>
       {{ product.selected_or_first_available_variant | json }}
     </script>
-    
-    <script type="application/json" data-product-price-data>
-      {
-        "variants": {{ product.variants | json }},
-        "price_min": {{ product.price_min }},
-        "price_max": {{ product.price_max }},
-        "price_min_formatted": {{ product.price_min | money_without_currency }},
-        "price_max_formatted": {{ product.price_max | money_without_currency }},
-        "money_format": {{ shop.money_format | json }}
-      }
-    </script>
   </variant-selects>
 
   <style>
@@ -252,141 +241,17 @@
       // Maintain state of which options have been manually selected
       const selectedOptions = new Map();
       const PLACEHOLDER_TEXT = '選択してください';
-      
-      // Store product data
-      let productData = null;
-      
+
       // Custom event for when placeholder is chosen
       const pleaseSelectEvent = new CustomEvent('please-select-chosen', { bubbles: true });
 
-      // Load product data from script tag
-      function loadProductData() {
-        const dataScript = document.querySelector('script[data-product-price-data]');
-        if (dataScript) {
-          try {
-            productData = JSON.parse(dataScript.textContent);
-          } catch (e) {
-            console.error('Error parsing product data:', e);
-          }
-        }
-        return productData;
-      }
-
-      // Function to update price display based on variant selection
-      function updatePriceDisplay(sectionId, showPriceRange = false) {
-        if (!productData) {
-          productData = loadProductData();
-          if (!productData) return;
-        }
-        
-        const priceElement = document.getElementById(`price-${sectionId}`);
-        if (!priceElement) return;
-        
-        // Get the price element
-        const priceContainer = priceElement.querySelector('.price__regular');
-        if (!priceContainer) return;
-        
-        const priceItem = priceContainer.querySelector('.price-item--regular');
-        if (!priceItem) return;
-        
-        if (showPriceRange && productData.price_min !== productData.price_max) {
-          // Format as price range (¥XXX,XXX ~ ¥XXX,XXX)
-          const minPrice = formatMoney(productData.price_min);
-          const maxPrice = formatMoney(productData.price_max);
-          priceItem.innerHTML = `${minPrice} ~ ${maxPrice} <span class="tax-note">(税込)</span>`;
-        } else if (showPriceRange) {
-          // Single price if min equals max
-          priceItem.innerHTML = `${formatMoney(productData.price_min)} <span class="tax-note">(税込)</span>`;
-        } else {
-          // Try to find matching variant based on selected options
-          const variantId = getSelectedVariantId(sectionId);
-          if (variantId) {
-            const variant = productData.variants.find(v => v.id === variantId);
-            if (variant) {
-              priceItem.innerHTML = `${formatMoney(variant.price)} <span class="tax-note">(税込)</span>`;
-            }
-          }
-        }
-      }
-
-      // Format money based on Shopify money format
-      function formatMoney(cents) {
-        if (typeof cents === 'string') {
-          cents = parseInt(cents, 10);
-        }
-        
-        // Default Japanese format if not specified
-        const format = productData?.money_format || '¥{{amount_no_decimals}}';
-        
-        // Format the number with commas
-        const formattedAmount = Math.floor(cents / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        
-        // Replace the amount placeholder with the formatted number
-        return format.replace(/\{\{\s*amount[^}]*\}\}/g, formattedAmount);
-      }
-
-      // Get selected variant ID based on current selections
-      function getSelectedVariantId(sectionId) {
-        if (!productData) return null;
-        
-        const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
-        const selectedValues = [];
-        
-        // Get all selected values
-        for (let i = 0; i < selects.length; i++) {
-          const select = selects[i];
-          if (select.selectedIndex === 0 || select.value === '') {
-            return null; // Not all options selected
-          }
-          selectedValues.push(select.value);
-        }
-        
-        // Find matching variant
-        for (const variant of productData.variants) {
-          const options = [variant.option1, variant.option2, variant.option3].filter(Boolean);
-          
-          if (options.length !== selectedValues.length) continue;
-          
-          let match = true;
-          for (let i = 0; i < selectedValues.length; i++) {
-            if (options[i] !== selectedValues[i]) {
-              match = false;
-              break;
-            }
-          }
-          
-          if (match) {
-            return variant.id;
-          }
-        }
-        
-        return null;
-      }
-
-      // Check if all required variants are selected
-      function areAllVariantsSelected(sectionId) {
-        const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
-        for (let i = 0; i < selects.length; i++) {
-          const select = selects[i];
-          if (select.selectedIndex === 0 || select.value === '') {
-            return false;
-          }
-        }
-        return true;
-      }
-
       function initializeVariantSelectors() {
-        // Load product data first
-        if (!productData) {
-          productData = loadProductData();
-        }
-        
         const variantSelects = document.querySelectorAll('.select__select');
 
         variantSelects.forEach((select, index) => {
-          // Skip if already initialized for price updates
-          if (select.hasAttribute('data-price-initialized')) return;
-          select.setAttribute('data-price-initialized', 'true');
+          // Skip if already initialized
+          if (select.hasAttribute('data-initialized')) return;
+          select.setAttribute('data-initialized', 'true');
 
           // Find the deselect button for this select
           const container = select.closest('.product-form__input--dropdown');
@@ -450,28 +315,106 @@
             }
           }
 
-          // Immediately update price display based on all selected options
-          const allSelected = areAllVariantsSelected(sectionId);
-          updatePriceDisplay(sectionId, !allSelected);
+          // Event handlers
 
-          // Add event handler for price update on change
-          select.addEventListener('change', function() {
-            const allSelected = areAllVariantsSelected(sectionId);
-            updatePriceDisplay(sectionId, !allSelected);
+          // Handle changes to the select
+          select.addEventListener('change', function (e) {
+            // Store the selection in both Map and localStorage
+            const value = this.value;
+            const isDefaultOption = value === '' || this.selectedIndex === 0;
+            const selectedText = this.options[this.selectedIndex].text;
+
+            // Update button state
+            deselectButton.disabled = isDefaultOption;
+
+            // Update class for styling
+            if (isDefaultOption) {
+              this.classList.remove('user-selected');
+              selectContainer.classList.remove('text-mode');
+            } else {
+              this.classList.add('user-selected');
+              selectContainer.classList.add('text-mode');
+              selectedTextElement.textContent = selectedText;
+            }
+
+            // Save selection
+            selectedOptions.set(`${sectionId}-${optionIndex}`, value);
+            localStorage.setItem(`variant-${sectionId}-${optionIndex}`, value);
+
+            // Hide warning if shown
+            hideVariantWarning(sectionId);
+
+            // Dispatch custom event if placeholder is chosen
+            if (isDefaultOption) {
+              this.dispatchEvent(pleaseSelectEvent);
+            }
           });
 
-          // Add event handler for price update on deselect
-          deselectButton.addEventListener('click', function() {
-            updatePriceDisplay(sectionId, true);
-          });
-        });
+          // Handle deselect button click
+          deselectButton.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-        // Initialize price display for all sections
-        document.querySelectorAll('variant-selects').forEach(variantSelect => {
-          const sectionId = variantSelect.dataset.section;
-          if (sectionId) {
-            const allSelected = areAllVariantsSelected(sectionId);
-            updatePriceDisplay(sectionId, !allSelected);
+            // Reset to placeholder
+            select.selectedIndex = 0;
+            this.disabled = true;
+            select.classList.remove('user-selected');
+
+            // Switch back to dropdown mode
+            selectContainer.classList.remove('text-mode');
+
+            // Update stored values
+            selectedOptions.delete(`${sectionId}-${optionIndex}`);
+            localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
+
+            // Dispatch events
+            const changeEvent = new Event('change', { bubbles: true });
+            select.dispatchEvent(changeEvent);
+            select.dispatchEvent(pleaseSelectEvent);
+          });
+
+          // Override Shopify's variant selection to respect our placeholder settings
+          const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
+          if (variantSelectsElement) {
+            // Make sure we're always checking selections
+            const variantChangedHandler = () => {
+              setTimeout(() => {
+                // Only override if we want this to stay at placeholder
+                const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
+                if (savedValue === '' && select.selectedIndex !== 0) {
+                  select.selectedIndex = 0;
+                  select.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+
+                // Update text mode
+                const isDefaultOption = select.value === '' || select.selectedIndex === 0;
+                if (!isDefaultOption) {
+                  selectContainer.classList.add('text-mode');
+                  selectedTextElement.textContent = select.options[select.selectedIndex].text;
+                } else {
+                  selectContainer.classList.remove('text-mode');
+                }
+              }, 10);
+            };
+
+            // Listen for Shopify's variant:changed event
+            variantSelectsElement.addEventListener('variant:changed', variantChangedHandler);
+
+            // Also check periodically
+            setInterval(() => {
+              const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
+              if (savedValue === '' && select.selectedIndex !== 0) {
+                select.selectedIndex = 0;
+                selectContainer.classList.remove('text-mode');
+              } else if (savedValue && savedValue !== '' && select.selectedIndex > 0) {
+                // Make sure text is showing
+                selectContainer.classList.add('text-mode');
+                const selectedText = select.options[select.selectedIndex].text;
+                if (selectedTextElement.textContent !== selectedText) {
+                  selectedTextElement.textContent = selectedText;
+                }
+              }
+            }, 500);
           }
         });
       }
@@ -497,16 +440,13 @@
               // Then apply our custom logic
               setTimeout(() => {
                 const selects = this.querySelectorAll('select');
-                const sectionId = this.dataset.section;
-                let anyDeselected = false;
-
                 selects.forEach((select, index) => {
+                  const sectionId = this.dataset.section;
                   const optionIndex = select.dataset.optionIndex;
                   const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
 
                   if (savedValue === '') {
                     select.selectedIndex = 0;
-                    anyDeselected = true;
                     const changeEvent = new Event('change', { bubbles: true });
                     select.dispatchEvent(changeEvent);
                   }
@@ -526,10 +466,6 @@
                     }
                   }
                 });
-
-                // Check if all variants are selected
-                const allSelected = areAllVariantsSelected(sectionId);
-                updatePriceDisplay(sectionId, !allSelected);
               }, 10);
             };
           }
@@ -575,10 +511,6 @@
 
       // Initialize everything when the DOM is ready
       document.addEventListener('DOMContentLoaded', function () {
-        // Load product data first
-        loadProductData();
-        
-        // Initialize variant selectors and price display
         initializeVariantSelectors();
         overrideVariantSelection();
 
