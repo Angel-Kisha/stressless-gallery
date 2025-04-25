@@ -53,7 +53,7 @@
           %}
         </fieldset>
       {%- else -%}
-        <div class="product-form__input product-form__input--dropdown product-label-dropdown">
+        <div class="product-forminput product-forminput--dropdown product-label-dropdown">
           <label
             class="w-30 form__label product-label-dropdown-text"
             for="Option-{{ section.id }}-{{ forloop.index0 }}"
@@ -61,14 +61,11 @@
             {{ option.name }}
           </label>
 
-          <!-- Original select dropdown -->
+          <!-- Select dropdown container -->
           <div class="select-container w-55">
             <div class="select select-dropdown-container">
               {%- if picker_type == 'swatch_dropdown' -%}
-                <span
-                  data-selected-value
-                  class="dropdown-swatch"
-                >
+                <span data-selected-value class="dropdown-swatch">
                   {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
                 </span>
               {%- endif -%}
@@ -100,8 +97,9 @@
           </div>
 
           <div class="divider"></div>
+
           <div class="w-15">
-            <button type="button" disabled class="deselect-button" disabled>選択解除</button>
+            <button type="button" class="deselect-button" disabled>選択解除</button>
           </div>
         </div>
       {%- endif -%}
