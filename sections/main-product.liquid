@@ -186,12 +186,24 @@
               {%- when 'price' -%}
                 <div class="product-price ">
                   <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
-                    {%- render 'price',
-                      product: product,
-                      use_variant: true,
-                      show_badges: true,
-                      price_class: 'price--large'
-                    -%}
+                    {%- if product.price_varies and product.has_only_default_variant == false -%}
+                      {%- liquid
+                        assign min_price = product.price_min | money
+                        assign max_price = product.price_max | money
+                        assign price_range = min_price | append: ' - ' | append: max_price
+                      -%}
+                      <div class="price price--large">
+                        <span class="price-item price-item--regular">{{ price_range }}</span>
+                        <span class="price-tax">(税込)</span>
+                      </div>
+                    {%- else -%}
+                      {%- render 'price',
+                        product: product,
+                        use_variant: true,
+                        show_badges: true,
+                        price_class: 'price--large'
+                      -%}
+                    {%- endif -%}
                   </div>
                   {%- if cart.taxes_included or cart.duties_included or shop.shipping_policy.body != blank -%}
                     <div class="product__tax caption rte">
@@ -223,21 +235,39 @@
                 </div>
 
                 <script>
-                  document.addEventListener('DOMContentLoaded', function () {
-                    // Save the original price HTML for restoration when a variant is selected
-                    const priceContainer = document.querySelector('#price-{{ section.id }}');
-                    if (priceContainer) {
-                      // Store the original price HTML
-                      priceContainer.dataset.originalPrice = priceContainer.innerHTML;
-
-                      // Function to restore original price when needed
-                      window.restoreOriginalPrice = function () {
-                        if (priceContainer.dataset.originalPrice) {
-                          priceContainer.innerHTML = priceContainer.dataset.originalPrice;
+                    // Initialize price display on load
+                    document.addEventListener('DOMContentLoaded', function() {
+                      const sectionId = '{{ section.id }}';
+                      const productForm = document.querySelector(`product-form[data-section="${sectionId}"]`);
+                      if (productForm) {
+                        const variantSelects = document.querySelector(`#variant-selects-${sectionId}`);
+                        if (variantSelects) {
+                          // Check if we need to show price range initially
+                          const selects = variantSelects.querySelectorAll('select[data-required="true"]');
+                          let allSelected = true;
+                          for (let i = 0; i < selects.length; i++) {
+                            const select = selects[i];
+                            if (select.selectedIndex === 0 || select.value === '') {
+                              allSelected = false;
+                              break;
+                            }
+                          }
+                          
+                          // If not all options are selected and product has variants
+                          if (!allSelected && {% if product.has_only_default_variant %}false{% else %}true{% endif %}) {
+                            const priceRangeContainer = document.getElementById(`price-range-container-${sectionId}`);
+                            const priceContainer = document.getElementById(`price-${sectionId}`);
+                            
+                            if (priceRangeContainer && priceContainer) {
+                              // Copy price range HTML to price container
+                              if (priceRangeContainer.innerHTML.trim()) {
+                                priceContainer.innerHTML = priceRangeContainer.innerHTML;
+                              }
+                            }
+                          }
                         }
-                      };
-                    }
-                  });
+                      }
+                    });
                 </script>
 
               {%- when 'inventory' -%}
