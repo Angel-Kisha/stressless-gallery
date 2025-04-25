@@ -260,6 +260,9 @@
       // Track which options have been selected
       const selectedOptions = {};
 
+      // Debounce timer for price updates
+      let priceUpdateTimer = null;
+
       // Initialize elements and set up events
       function init() {
         const variantSections = document.querySelectorAll('variant-selects');
@@ -268,12 +271,24 @@
           const sectionId = section.dataset.section;
           if (!sectionId) return;
 
-          // Set up price range container immediately
-          updatePriceDisplay(sectionId);
+          // Set up price range container immediately but don't update yet
+          const priceContainer = document.getElementById(`price-${sectionId}`);
+          const priceRangeContainer = document.getElementById(`price-range-container-${sectionId}`);
+
+          if (priceContainer && priceRangeContainer && !priceRangeContainer.dataset.initialized) {
+            // Clone the price range content for reference
+            priceRangeContainer.dataset.initialized = 'true';
+            priceRangeContainer.dataset.priceRange = priceRangeContainer.innerHTML;
+          }
 
           // Initialize all selects in this section
           const selects = section.querySelectorAll('select[data-required="true"]');
           selects.forEach(setupSelect);
+
+          // Initial price update
+          requestAnimationFrame(() => {
+            updatePriceDisplay(sectionId);
+          });
         });
 
         // Add event listeners for variant changes
@@ -353,8 +368,10 @@
             localStorage.setItem(`variant-${selectId}`, value);
           }
 
-          // Update price display
-          updatePriceDisplay(sectionId);
+          // Schedule price update with debounce
+          requestAnimationFrame(() => {
+            updatePriceDisplay(sectionId);
+          });
 
           // Hide any warning
           hideVariantWarning(sectionId);
@@ -375,8 +392,12 @@
           delete selectedOptions[selectId];
           localStorage.removeItem(`variant-${selectId}`);
 
-          // Update price and dispatch events
-          updatePriceDisplay(sectionId, true);
+          // Schedule price update
+          requestAnimationFrame(() => {
+            updatePriceDisplay(sectionId, true);
+          });
+
+          // Dispatch change event
           select.dispatchEvent(new Event('change', { bubbles: true }));
         });
       }
@@ -415,67 +436,113 @@
           sectionId = e.detail.sectionId;
         }
 
-        // Update all sections if no specific section found
+        // Update price display in next animation frame
         if (sectionId) {
-          updatePriceDisplay(sectionId);
+          requestAnimationFrame(() => {
+            updatePriceDisplay(sectionId);
+          });
         } else {
-          document.querySelectorAll('variant-selects').forEach((section) => {
-            if (section.dataset.section) {
-              updatePriceDisplay(section.dataset.section);
-            }
+          requestAnimationFrame(() => {
+            document.querySelectorAll('variant-selects').forEach((section) => {
+              if (section.dataset.section) {
+                updatePriceDisplay(section.dataset.section);
+              }
+            });
           });
         }
       }
 
+      // Cache for variant prices
+      const variantPriceCache = {};
+
       // Update price display based on selections
       function updatePriceDisplay(sectionId, forceRange = false) {
+        // Clear any pending update
+        if (priceUpdateTimer) {
+          clearTimeout(priceUpdateTimer);
+        }
+
         const priceContainer = document.getElementById(`price-${sectionId}`);
         const priceRangeContainer = document.getElementById(`price-range-container-${sectionId}`);
 
         if (!priceContainer || !priceRangeContainer) return;
 
-        // Show price range if not all variants selected or force range is true
-        if (forceRange || !areAllVariantsSelected(sectionId)) {
-          // Use the price range when not all variants are selected
-          if (!priceContainer.innerHTML.includes('~')) {
-            priceContainer.innerHTML = priceRangeContainer.innerHTML;
+        // Get price range content
+        const priceRangeContent = priceRangeContainer.dataset.priceRange || priceRangeContainer.innerHTML;
+
+        // Check if all variants are selected
+        const allSelected = areAllVariantsSelected(sectionId);
+
+        if (forceRange || !allSelected) {
+          // For range price, use the stored content
+          const currentContent = priceContainer.innerHTML;
+          const hasRange = currentContent.includes('~');
+
+          // Only update if needed
+          if (!hasRange) {
+            // Store current price display to avoid flicker
+            if (currentContent) {
+              priceContainer.dataset.previousContent = currentContent;
+            }
+
+            // Update to range price
+            priceContainer.innerHTML = priceRangeContent;
           }
         } else {
-          // All variants selected - check if we need to update the single variant price
+          // All variants selected - get variant price
           const variantSelects = document.getElementById(`variant-selects-${sectionId}`);
-          if (variantSelects) {
-            // Get currently selected variant data
-            try {
-              const variantDataElement = variantSelects.querySelector('[data-selected-variant]');
-              if (variantDataElement) {
-                const variantData = JSON.parse(variantDataElement.textContent);
+          if (!variantSelects) return;
 
-                // Only update if the price is still showing as a range
-                if (priceContainer.innerHTML.includes('~') && variantData && variantData.price) {
-                  // Format price - keep existing formatting pattern
-                  const formatter = new Intl.NumberFormat('ja-JP', {
-                    style: 'currency',
-                    currency: 'JPY',
-                    minimumFractionDigits: 0,
-                  });
-                  const formattedPrice = formatter.format(variantData.price / 100).replace('JP¥', '¥');
+          try {
+            const variantDataElement = variantSelects.querySelector('[data-selected-variant]');
+            if (!variantDataElement) return;
 
-                  // Update price display with single price (maintain existing style)
-                  const priceHTML = `<div class="price price--large">
-                <span class="price-item price-item--regular">${formattedPrice} </span>
-              </div>`;
+            const variantData = JSON.parse(variantDataElement.textContent);
+            if (!variantData || !variantData.price) return;
 
-                  // Update without flickering
-                  if (priceContainer.innerHTML !== priceHTML) {
-                    priceContainer.innerHTML = priceHTML;
-                  }
-                }
+            // Create cache key based on variant ID
+            const cacheKey = `variant-${variantData.id}`;
+
+            // Check cache first
+            if (variantPriceCache[cacheKey]) {
+              const cachedHTML = variantPriceCache[cacheKey];
+
+              // Only update if different
+              if (priceContainer.innerHTML !== cachedHTML) {
+                priceContainer.innerHTML = cachedHTML;
               }
-            } catch (e) {
-              console.error('Error updating variant price:', e);
+            } else {
+              // Format price
+              const formattedPrice = formatPrice(variantData.price);
+
+              // Create HTML
+              const priceHTML = `<div class="price price--large">
+            <span class="price-item price-item--regular">${formattedPrice} <span class="tax-note">(税込)</span></span>
+          </div>`;
+
+              // Cache the result
+              variantPriceCache[cacheKey] = priceHTML;
+
+              // Update the DOM
+              if (priceContainer.innerHTML !== priceHTML) {
+                priceContainer.innerHTML = priceHTML;
+              }
             }
+          } catch (e) {
+            console.error('Error updating variant price:', e);
           }
         }
+      }
+
+      // Format price consistently
+      function formatPrice(price) {
+        return new Intl.NumberFormat('ja-JP', {
+          style: 'currency',
+          currency: 'JPY',
+          minimumFractionDigits: 0,
+        })
+          .format(price / 100)
+          .replace('JP¥', '¥');
       }
 
       // Check if all required variants are selected
