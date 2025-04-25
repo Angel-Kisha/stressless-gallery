@@ -436,49 +436,43 @@
 
         // Show price range if not all variants selected or force range is true
         if (forceRange || !areAllVariantsSelected(sectionId)) {
-          priceContainer.innerHTML = priceRangeContainer.innerHTML;
+          // Use the price range when not all variants are selected
+          if (!priceContainer.innerHTML.includes('~')) {
+            priceContainer.innerHTML = priceRangeContainer.innerHTML;
+          }
         } else {
-          // FIX: We need to ensure the variant-specific price is displayed
-          // When all variants are selected, we don't need to do anything here
-          // Let Shopify's default price handling take over, but we need to make sure
-          // we're not overriding it with the range price
+          // All variants selected - check if we need to update the single variant price
+          const variantSelects = document.getElementById(`variant-selects-${sectionId}`);
+          if (variantSelects) {
+            // Get currently selected variant data
+            try {
+              const variantDataElement = variantSelects.querySelector('[data-selected-variant]');
+              if (variantDataElement) {
+                const variantData = JSON.parse(variantDataElement.textContent);
 
-          // Check if we need to trigger a variant selection event
-          const variantSelect = document.querySelector(`#variant-selects-${sectionId}`);
-          if (variantSelect) {
-            // Create and dispatch a custom event to notify that all variants are selected
-            const event = new CustomEvent('variants:complete', {
-              bubbles: true,
-              detail: { sectionId: sectionId },
-            });
-            variantSelect.dispatchEvent(event);
+                // Only update if the price is still showing as a range
+                if (priceContainer.innerHTML.includes('~') && variantData && variantData.price) {
+                  // Format price - keep existing formatting pattern
+                  const formatter = new Intl.NumberFormat('ja-JP', {
+                    style: 'currency',
+                    currency: 'JPY',
+                    minimumFractionDigits: 0,
+                  });
+                  const formattedPrice = formatter.format(variantData.price / 100).replace('JP¥', '¥');
 
-            // Make sure we're not showing the range price when all options selected
-            if (priceContainer.querySelector('.price-item--regular').textContent.includes('~')) {
-              // Try to find the currently selected variant price from hidden variant data
-              const variantData = variantSelect.querySelector('[data-selected-variant]');
-              if (variantData) {
-                try {
-                  const variant = JSON.parse(variantData.textContent);
-                  if (variant && variant.price) {
-                    // Format price correctly with currency
-                    const formatter = new Intl.NumberFormat('ja-JP', {
-                      style: 'currency',
-                      currency: 'JPY',
-                      minimumFractionDigits: 0,
-                    });
-                    const formattedPrice = formatter.format(variant.price / 100).replace('JP¥', '¥');
+                  // Update price display with single price (maintain existing style)
+                  const priceHTML = `<div class="price price--large">
+                <span class="price-item price-item--regular">${formattedPrice} <span class="tax-note">(税込)</span></span>
+              </div>`;
 
-                    // Update the price display
-                    const priceHTML = `<div class="price price--large">
-                  <span class="price-item price-item--regular">${formattedPrice}</span>
-                </div>`;
+                  // Update without flickering
+                  if (priceContainer.innerHTML !== priceHTML) {
                     priceContainer.innerHTML = priceHTML;
                   }
-                } catch (e) {
-                  console.error('Error parsing variant data:', e);
                 }
               }
+            } catch (e) {
+              console.error('Error updating variant price:', e);
             }
           }
         }
