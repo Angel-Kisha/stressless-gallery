@@ -234,6 +234,27 @@
     .warning-shake {
       animation: warning-shake 0.5s ease-in-out;
     }
+    
+    /* Price Range Styles */
+    .price-range {
+      display: none;
+    }
+    
+    .price-range.active {
+      display: block;
+    }
+    
+    .variant-price {
+      display: block;
+    }
+    
+    .variant-price.hidden {
+      display: none;
+    }
+    
+    .price-range-separator {
+      margin: 0 5px;
+    }
   </style>
 
   <script>
@@ -241,6 +262,111 @@
       // Maintain state of which options have been manually selected
       const selectedOptions = new Map();
       const PLACEHOLDER_TEXT = '選択してください';
+      
+      // Store the original price data for product
+      let productPriceData = null;
+      
+      // Function to initialize product price data
+      function initializeProductPriceData(sectionId) {
+        if (productPriceData) return;
+        
+        const priceContainer = document.getElementById(`price-${sectionId}`);
+        if (!priceContainer) return;
+        
+        // Store original price HTML content
+        productPriceData = {
+          originalHTML: priceContainer.innerHTML,
+          sectionId: sectionId
+        };
+        
+        // Create price range elements if they don't exist already
+        if (!document.getElementById(`price-range-${sectionId}`)) {
+          createPriceRangeElement(sectionId);
+        }
+      }
+      
+      // Create price range element
+      function createPriceRangeElement(sectionId) {
+        // Get all available variants
+        const variantSelects = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
+        if (!variantSelects) return;
+        
+        const variantDataElem = variantSelects.querySelector('script[data-selected-variant]');
+        if (!variantDataElem) return;
+        
+        try {
+          // Get all product variants through Shopify's product object in window
+          const productJSON = window.ShopifyAnalytics && window.ShopifyAnalytics.meta && window.ShopifyAnalytics.meta.product;
+          if (!productJSON) return;
+          
+          // Find min and max prices
+          let minPrice = Infinity;
+          let maxPrice = 0;
+          
+          for (const variant of productJSON.variants) {
+            if (variant.available) {
+              minPrice = Math.min(minPrice, variant.price);
+              maxPrice = Math.max(maxPrice, variant.price);
+            }
+          }
+          
+          // Format prices
+          const priceContainer = document.getElementById(`price-${sectionId}`);
+          if (!priceContainer) return;
+          
+          // Store formatted prices in data attributes
+          priceContainer.setAttribute('data-min-price', formatMoney(minPrice));
+          priceContainer.setAttribute('data-max-price', formatMoney(maxPrice));
+          priceContainer.setAttribute('data-has-price-range', minPrice < maxPrice ? 'true' : 'false');
+        } catch (e) {
+          console.error("Error creating price range:", e);
+        }
+      }
+      
+      // Format money value
+      function formatMoney(price) {
+        // Use Shopify's money format or a basic format
+        return price.toFixed(2);
+      }
+      
+      // Update price display based on variant selection
+      function updatePriceDisplay(sectionId, showRange = false) {
+        const priceContainer = document.getElementById(`price-${sectionId}`);
+        if (!priceContainer) return;
+        
+        const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
+        const allSelected = Array.from(selects).every(select => select.selectedIndex !== 0 && select.value !== '');
+        
+        // If we should show price range (no variant selected or deselect button clicked)
+        if (showRange || !allSelected) {
+          // Check if we have a price range
+          const hasRange = priceContainer.getAttribute('data-has-price-range') === 'true';
+          
+          // If we have a range, show min - max price
+          if (hasRange) {
+            const minPrice = priceContainer.getAttribute('data-min-price');
+            const maxPrice = priceContainer.getAttribute('data-max-price');
+            
+            // Find the actual price elements
+            const priceElements = priceContainer.querySelectorAll('.price');
+            priceElements.forEach(el => {
+              // Keep original format but modify to show range
+              if (minPrice && maxPrice) {
+                const originalPriceFormat = el.innerHTML;
+                const currencySymbol = originalPriceFormat.match(/[^\d,.]+/)?.[0] || '';
+                el.innerHTML = `${currencySymbol}${minPrice} - ${currencySymbol}${maxPrice}`;
+              }
+            });
+          }
+          
+          // Store state that we're showing range
+          priceContainer.setAttribute('data-showing-range', 'true');
+        } else {
+          // If variant is selected, let Shopify's normal price update mechanism work
+          // We don't need to modify anything as Shopify will update the price
+          priceContainer.setAttribute('data-showing-range', 'false');
+        }
+      }
 
       // Custom event for when placeholder is chosen
       const pleaseSelectEvent = new CustomEvent('please-select-chosen', { bubbles: true });
@@ -268,6 +394,9 @@
           // Get the section and option index for this select
           const sectionId = select.id.split('-')[1];
           const optionIndex = select.dataset.optionIndex;
+          
+          // Initialize price data
+          initializeProductPriceData(sectionId);
 
           // Check if we already have a placeholder option
           let placeholderOption = null;
@@ -298,6 +427,11 @@
             deselectButton.disabled = true;
             select.classList.remove('user-selected');
             selectContainer.classList.remove('text-mode');
+            
+            // Check if all variants are unselected and show price range if needed
+            setTimeout(() => {
+              checkSelectionsAndUpdatePrice(sectionId);
+            }, 10);
           } else {
             // Find the option with the saved value
             for (let i = 0; i < select.options.length; i++) {
@@ -343,6 +477,11 @@
 
             // Hide warning if shown
             hideVariantWarning(sectionId);
+            
+            // Update price display based on selection
+            setTimeout(() => {
+              checkSelectionsAndUpdatePrice(sectionId);
+            }, 10);
 
             // Dispatch custom event if placeholder is chosen
             if (isDefaultOption) {
@@ -371,6 +510,11 @@
             const changeEvent = new Event('change', { bubbles: true });
             select.dispatchEvent(changeEvent);
             select.dispatchEvent(pleaseSelectEvent);
+            
+            // Update price to show range
+            setTimeout(() => {
+              updatePriceDisplay(sectionId, true);
+            }, 10);
           });
 
           // Override Shopify's variant selection to respect our placeholder settings
@@ -394,6 +538,9 @@
                 } else {
                   selectContainer.classList.remove('text-mode');
                 }
+                
+                // Update price display
+                checkSelectionsAndUpdatePrice(sectionId);
               }, 10);
             };
 
@@ -414,9 +561,20 @@
                   selectedTextElement.textContent = selectedText;
                 }
               }
+              
+              // Keep price display updated
+              checkSelectionsAndUpdatePrice(sectionId);
             }, 500);
           }
         });
+      }
+      
+      // Check if all options are selected and update price accordingly
+      function checkSelectionsAndUpdatePrice(sectionId) {
+        const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
+        const allSelected = Array.from(selects).every(select => select.selectedIndex !== 0 && select.value !== '');
+        
+        updatePriceDisplay(sectionId, !allSelected);
       }
 
       // Override Shopify's variant selection code
@@ -440,8 +598,9 @@
               // Then apply our custom logic
               setTimeout(() => {
                 const selects = this.querySelectorAll('select');
+                const sectionId = this.dataset.section;
+                
                 selects.forEach((select, index) => {
-                  const sectionId = this.dataset.section;
                   const optionIndex = select.dataset.optionIndex;
                   const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
 
@@ -466,9 +625,22 @@
                     }
                   }
                 });
+                
+                // Update price display
+                checkSelectionsAndUpdatePrice(sectionId);
               }, 10);
             };
           }
+          
+          // Also catch the variant changed event specifically
+          variantSelect.addEventListener('variant:changed', (event) => {
+            const sectionId = variantSelect.dataset.section;
+            if (sectionId) {
+              setTimeout(() => {
+                checkSelectionsAndUpdatePrice(sectionId);
+              }, 10);
+            }
+          });
         });
       }
 
@@ -545,12 +717,39 @@
         setTimeout(() => {
           initializeVariantSelectors();
           overrideVariantSelection();
+          
+          // Initialize price display for all sections
+          document.querySelectorAll('variant-selects').forEach(vs => {
+            const sectionId = vs.dataset.section;
+            if (sectionId) {
+              initializeProductPriceData(sectionId);
+              checkSelectionsAndUpdatePrice(sectionId);
+            }
+          });
         }, 500);
 
         // Also watch for DOM changes
-        const observer = new MutationObserver(function () {
+        const observer = new MutationObserver(function (mutations) {
+          let priceChanged = false;
+          
+          mutations.forEach(mutation => {
+            if (mutation.target.id && mutation.target.id.startsWith('price-')) {
+              priceChanged = true;
+            }
+          });
+          
           initializeVariantSelectors();
           overrideVariantSelection();
+          
+          // If price was changed in DOM, check all selections
+          if (priceChanged) {
+            document.querySelectorAll('variant-selects').forEach(vs => {
+              const sectionId = vs.dataset.section;
+              if (sectionId) {
+                checkSelectionsAndUpdatePrice(sectionId);
+              }
+            });
+          }
         });
 
         observer.observe(document.body, {
@@ -558,13 +757,22 @@
           subtree: true,
           attributes: true,
           attributeFilter: ['selected', 'data-variant'],
+          characterData: true
         });
       });
 
       // Re-run when variants change
-      document.addEventListener('variant:changed', function () {
+      document.addEventListener('variant:changed', function (event) {
         setTimeout(() => {
           initializeVariantSelectors();
+          
+          // Update all price displays
+          document.querySelectorAll('variant-selects').forEach(vs => {
+            const sectionId = vs.dataset.section;
+            if (sectionId) {
+              checkSelectionsAndUpdatePrice(sectionId);
+            }
+          });
         }, 50);
       });
     })();
