@@ -53,28 +53,30 @@
           %}
         </fieldset>
       {%- else -%}
-        <div class="product-form__input product-form__input--dropdown product-label-dropdown">
+        <div class="product-form__input product-form__input--dropdown">
           <label
-            class="w-30 form__label product-label-dropdown-text"
+            class="product-label-dropdown-text"
             for="Option-{{ section.id }}-{{ forloop.index0 }}"
           >
             {{ option.name }}
           </label>
 
-          <!-- Original select dropdown -->
-          <div class="select-container w-55">
-            <div class="select select-dropdown-container">
+          <div class="select-container {% if option.selected_value != blank %}text-mode{% endif %}">
+            <!-- Original select dropdown -->
+            <div
+              class="select-dropdown-container"
+              {% if option.selected_value != blank %}
+                style="display: none;"
+              {% endif %}
+            >
               {%- if picker_type == 'swatch_dropdown' -%}
-                <span
-                  data-selected-value
-                  class="dropdown-swatch"
-                >
+                <span data-selected-value class="dropdown-swatch">
                   {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
                 </span>
               {%- endif -%}
               <select
                 id="Option-{{ section.id }}-{{ forloop.index0 }}"
-                class="select__select please-select-enabled"
+                class="select__select {% if option.selected_value != blank %}user-selected{% endif %}"
                 name="options[{{ option.name | escape }}]"
                 form="{{ product_form_id }}"
                 data-option-index="{{ forloop.index0 }}"
@@ -94,14 +96,26 @@
             </div>
 
             <!-- Plain text display for selected value -->
-            <div class="selected-value-display">
-              <span class="selected-text"></span>
+            <div
+              class="selected-value-display"
+              {% if option.selected_value == blank %}
+                style="display: none;"
+              {% endif %}
+            >
+              <span class="selected-text">{{ option.selected_value | default: '' }}</span>
             </div>
           </div>
 
-          <div class="divider"></div>
           <div class="w-15">
-            <button type="button" disabled class="deselect-button" disabled>選択解除</button>
+            <button
+              type="button"
+              class="deselect-button"
+              {% if option.selected_value == blank %}
+                disabled
+              {% endif %}
+            >
+              選択解除
+            </button>
           </div>
         </div>
       {%- endif -%}
