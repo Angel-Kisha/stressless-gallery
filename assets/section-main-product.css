@@ -274,7 +274,7 @@ product-info {
   cursor: pointer;
 }
 
-.product-label-dropdown:last-child {
+.product-label-dropdown:last {
   border-bottom: 1px solid #dfe5ea;
   background-color: yellow;
   padding-bottom: 16px;
