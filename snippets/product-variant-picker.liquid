@@ -81,6 +81,7 @@
                 data-default-unselected="true"
                 data-required="true"
               >
+                <option value="" selected class="placeholder-option">選択してください</option>
                 {% render 'product-variant-options',
                   product: product,
                   option: option,
@@ -150,9 +151,9 @@
       border-color: #4a90e2;
     }
 
-    /* Hide the default option from dropdown list */
+    /* Show the placeholder option in the select when selected */
     .select__select option.placeholder-option {
-      display: none;
+      display: block;
     }
 
     /* Styles for the text display mode */
@@ -270,36 +271,29 @@
           const optionIndex = select.dataset.optionIndex;
 
           // Check if we already have a placeholder option
-          let placeholderOption = null;
-          for (let i = 0; i < select.options.length; i++) {
-            if (select.options[i].value === '' || select.options[i].classList.contains('placeholder-option')) {
-              placeholderOption = select.options[i];
-              break;
-            }
-          }
-
-          // Create or modify placeholder option
+          let placeholderOption = select.querySelector('option.placeholder-option');
+          
+          // If no placeholder exists, create one
           if (!placeholderOption) {
-            // Add a placeholder option that will be hidden from dropdown but visible when selected
             placeholderOption = new Option(PLACEHOLDER_TEXT, '', true, false);
             placeholderOption.classList.add('placeholder-option');
             select.insertBefore(placeholderOption, select.firstChild);
-          } else {
-            // Update existing placeholder
-            placeholderOption.text = PLACEHOLDER_TEXT;
-            placeholderOption.classList.add('placeholder-option');
           }
+
+          // Ensure the placeholder text is correct
+          placeholderOption.text = PLACEHOLDER_TEXT;
 
           // Set correct initial select and button state
           const selectedOption = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
           if (selectedOption === null || selectedOption === '') {
             // No saved selection or placeholder was saved
-            select.selectedIndex = 0;
+            select.value = '';
             deselectButton.disabled = true;
             select.classList.remove('user-selected');
             selectContainer.classList.remove('text-mode');
           } else {
             // Find the option with the saved value
+            let found = false;
             for (let i = 0; i < select.options.length; i++) {
               if (select.options[i].value === selectedOption) {
                 // Set selected option
@@ -310,8 +304,18 @@
                 // Show as text
                 selectContainer.classList.add('text-mode');
                 selectedTextElement.textContent = select.options[i].text;
+                found = true;
                 break;
               }
+            }
+            
+            // If saved option not found, reset to placeholder
+            if (!found) {
+              select.value = '';
+              deselectButton.disabled = true;
+              select.classList.remove('user-selected');
+              selectContainer.classList.remove('text-mode');
+              localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
             }
           }
 
@@ -321,8 +325,8 @@
           select.addEventListener('change', function (e) {
             // Store the selection in both Map and localStorage
             const value = this.value;
-            const isDefaultOption = value === '' || this.selectedIndex === 0;
-            const selectedText = this.options[this.selectedIndex].text;
+            const isDefaultOption = value === '';
+            const selectedText = isDefaultOption ? PLACEHOLDER_TEXT : this.options[this.selectedIndex].text;
 
             // Update button state
             deselectButton.disabled = isDefaultOption;
@@ -356,7 +360,7 @@
             e.stopPropagation();
 
             // Reset to placeholder
-            select.selectedIndex = 0;
+            select.value = '';
             this.disabled = true;
             select.classList.remove('user-selected');
 
@@ -381,13 +385,13 @@
               setTimeout(() => {
                 // Only override if we want this to stay at placeholder
                 const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
-                if (savedValue === '' && select.selectedIndex !== 0) {
-                  select.selectedIndex = 0;
+                if (savedValue === '') {
+                  select.value = '';
                   select.dispatchEvent(new Event('change', { bubbles: true }));
                 }
 
                 // Update text mode
-                const isDefaultOption = select.value === '' || select.selectedIndex === 0;
+                const isDefaultOption = select.value === '';
                 if (!isDefaultOption) {
                   selectContainer.classList.add('text-mode');
                   selectedTextElement.textContent = select.options[select.selectedIndex].text;
@@ -403,10 +407,10 @@
             // Also check periodically
             setInterval(() => {
               const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
-              if (savedValue === '' && select.selectedIndex !== 0) {
-                select.selectedIndex = 0;
+              if (savedValue === '' && select.value !== '') {
+                select.value = '';
                 selectContainer.classList.remove('text-mode');
-              } else if (savedValue && savedValue !== '' && select.selectedIndex > 0) {
+              } else if (savedValue && savedValue !== '' && select.value === savedValue) {
                 // Make sure text is showing
                 selectContainer.classList.add('text-mode');
                 const selectedText = select.options[select.selectedIndex].text;
@@ -446,7 +450,7 @@
                   const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
 
                   if (savedValue === '') {
-                    select.selectedIndex = 0;
+                    select.value = '';
                     const changeEvent = new Event('change', { bubbles: true });
                     select.dispatchEvent(changeEvent);
                   }
@@ -457,7 +461,7 @@
                     const selectedValueDisplay = selectContainer.querySelector('.selected-value-display');
                     const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
 
-                    const isDefaultOption = select.value === '' || select.selectedIndex === 0;
+                    const isDefaultOption = select.value === '';
                     if (!isDefaultOption) {
                       selectContainer.classList.add('text-mode');
                       selectedTextElement.textContent = select.options[select.selectedIndex].text;
@@ -502,7 +506,7 @@
         const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
         for (let i = 0; i < selects.length; i++) {
           const select = selects[i];
-          if (select.selectedIndex === 0 || select.value === '') {
+          if (select.value === '') {
             return false;
           }
         }
