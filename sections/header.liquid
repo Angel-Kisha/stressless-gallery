@@ -53,6 +53,8 @@
 
   .list-menu__item {
     display: flex;
+    font-family: 'Hiragino';
+    letter-spacing: 2px;
     align-items: center;
     line-height: calc(1 + 0.3 / var(--font-body-scale));
   }
@@ -114,7 +116,7 @@
   endif
 %}
 
-<{{ header_tag }} {% if header_tag == 'sticky-header' %}data-sticky-type="{{ section.settings.sticky_header_type }}"{% endif %} class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header-wrapper--border-bottom{% endif %}">
+<{{ header_tag }} {% if header_tag == 'sticky-header' %}data-sticky-type="{{ section.settings.sticky_header_type }}"{% endif %} class="header-wrapper color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} header__line {% endif %}">
   {%- liquid
     assign social_links = false
     assign localization_forms = false
