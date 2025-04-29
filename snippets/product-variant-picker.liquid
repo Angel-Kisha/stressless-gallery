@@ -390,11 +390,6 @@
             if (isDefaultOption) {
               this.dispatchEvent(pleaseSelectEvent);
             }
-
-            // Update price display after selection changes
-            setTimeout(() => {
-              checkVariantsAndUpdatePrice(sectionId);
-            }, 10);
           });
 
           // Handle deselect button click
@@ -418,11 +413,6 @@
             const changeEvent = new Event('change', { bubbles: true });
             select.dispatchEvent(changeEvent);
             select.dispatchEvent(pleaseSelectEvent);
-
-            // Update price to show price range when option is deselected
-            setTimeout(() => {
-              showPriceRange(sectionId);
-            }, 10);
           });
 
           // Override Shopify's variant selection to respect our placeholder settings
@@ -446,9 +436,6 @@
                 } else {
                   selectContainer.classList.remove('text-mode');
                 }
-
-                // Update price display based on selection state
-                checkVariantsAndUpdatePrice(sectionId);
               }, 10);
             };
 
@@ -461,8 +448,6 @@
               if ((savedValue === null || savedValue === '') && select.selectedIndex !== 0) {
                 select.selectedIndex = 0;
                 selectContainer.classList.remove('text-mode');
-                // Update price to show range when default option is selected
-                showPriceRange(sectionId);
               } else if (savedValue && savedValue !== '') {
                 // Find matching option for saved value (skip first option which is placeholder)
                 let found = false;
@@ -487,8 +472,6 @@
                   select.selectedIndex = 0;
                   selectContainer.classList.remove('text-mode');
                   localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
-                  // Show price range when resetting to default
-                  showPriceRange(sectionId);
                 }
               }
             }, 500);
@@ -543,42 +526,21 @@
                     }
                   }
                 });
-
-                // Always check variant selections and update price
-                checkVariantsAndUpdatePrice(this.dataset.section);
               }, 10);
             };
           }
 
           // Add handlers for variant:changed event to update price
           variantSelect.addEventListener('variant:changed', function(event) {
-            // Check if all options are selected
+            // Only update to specific variant price if all options are selected
             if (allOptionsSelected(this.dataset.section)) {
-              // Only update to specific variant price if all options are selected
               updatePriceDisplay(this.dataset.section, event.detail.variant);
             } else {
               // Reset to price range if any option is still at default
-              showPriceRange(this.dataset.section);
+              checkVariantsAndUpdatePrice(this.dataset.section);
             }
           });
         });
-      }
-
-      // Function to specifically show the price range
-      function showPriceRange(sectionId) {
-        const priceDisplay = document.getElementById(`price-display-${sectionId}`);
-        const priceElement = document.getElementById(`price-${sectionId}`);
-        
-        if (!priceDisplay || !priceElement) return;
-
-        const minPrice = priceDisplay.dataset.minPrice;
-        const maxPrice = priceDisplay.dataset.maxPrice;
-        
-        if (minPrice === maxPrice) {
-          priceElement.textContent = minPrice;
-        } else {
-          priceElement.innerHTML = `${minPrice} <span class="price-range-separator">~</span> ${maxPrice}`;
-        }
       }
 
       // Function to update price display based on variant selection
@@ -589,13 +551,20 @@
         if (!priceDisplay || !priceElement) return;
 
         // Check if we have a valid variant with price and if ALL options are selected
-        if (variant && variant.price !== undefined && allOptionsSelected(sectionId)) {
+        if (variant && variant.price && allOptionsSelected(sectionId)) {
           // Format price with Shopify money format
           const formattedPrice = formatMoney(variant.price);
           priceElement.textContent = formattedPrice;
         } else {
           // Reset to price range if any option is still at default
-          showPriceRange(sectionId);
+          const minPrice = priceDisplay.dataset.minPrice;
+          const maxPrice = priceDisplay.dataset.maxPrice;
+          
+          if (minPrice === maxPrice) {
+            priceElement.textContent = minPrice;
+          } else {
+            priceElement.innerHTML = `${minPrice} <span class="price-range-separator">~</span> ${maxPrice}`;
+          }
         }
       }
 
@@ -611,16 +580,28 @@
           cents = parseInt(cents, 10) || 0;
         }
         
-        const value = (cents / 100).toFixed(0);
-        return '¥' + value;
+        const value = (cents / 100).toFixed(2);
+        return '¥' + value.replace(/\.00$/, '');
       }
 
       // Function to check if all variants are selected and update price accordingly
       function checkVariantsAndUpdatePrice(sectionId) {
-        // Check if all options are selected
+        // Always show price range if any option is at default
         if (!allOptionsSelected(sectionId)) {
-          // Show price range if any option is at default
-          showPriceRange(sectionId);
+          // Reset to price range
+          const priceDisplay = document.getElementById(`price-display-${sectionId}`);
+          const priceElement = document.getElementById(`price-${sectionId}`);
+          
+          if (priceDisplay && priceElement) {
+            const minPrice = priceDisplay.dataset.minPrice;
+            const maxPrice = priceDisplay.dataset.maxPrice;
+            
+            if (minPrice === maxPrice) {
+              priceElement.textContent = minPrice;
+            } else {
+              priceElement.innerHTML = `${minPrice} <span class="price-range-separator">~</span> ${maxPrice}`;
+            }
+          }
           return;
         }
         
@@ -628,9 +609,6 @@
         const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
         if (variantSelectsElement && variantSelectsElement.currentVariant) {
           updatePriceDisplay(sectionId, variantSelectsElement.currentVariant);
-        } else {
-          // If no variant is selected but all options are chosen, still show price range
-          showPriceRange(sectionId);
         }
       }
 
@@ -714,21 +692,12 @@
           true
         );
 
-        // Initialize price displays for all sections
-        document.querySelectorAll('variant-selects').forEach(variantSelect => {
-          const sectionId = variantSelect.dataset.section;
-          if (sectionId) {
-            // Set initial price display - should be range if any options are default
-            checkVariantsAndUpdatePrice(sectionId);
-          }
-        });
-
         // Re-run after a short delay to catch any late loading elements
         setTimeout(() => {
           initializeVariantSelectors();
           overrideVariantSelection();
           
-          // Initialize price displays again
+          // Initialize price displays
           document.querySelectorAll('variant-selects').forEach(variantSelect => {
             const sectionId = variantSelect.dataset.section;
             if (sectionId) {
@@ -756,18 +725,16 @@
         setTimeout(() => {
           initializeVariantSelectors();
           
-          // Update price based on the variant
+          // Update price based on the variant - only show specific price if all options selected
           if (event.detail && event.detail.variant) {
             const variantSelect = event.target;
             if (variantSelect && variantSelect.dataset && variantSelect.dataset.section) {
               const sectionId = variantSelect.dataset.section;
-              
-              // Only show specific price if ALL options are selected
               if (allOptionsSelected(sectionId)) {
                 updatePriceDisplay(sectionId, event.detail.variant);
               } else {
                 // Reset to price range
-                showPriceRange(sectionId);
+                checkVariantsAndUpdatePrice(sectionId);
               }
             }
           }
