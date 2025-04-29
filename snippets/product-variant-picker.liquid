@@ -9,13 +9,6 @@
   {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
 {% endcomment %}
 {%- unless product.has_only_default_variant -%}
-  {%- liquid
-    # Calculate price range
-    assign min_price = product.price_min
-    assign max_price = product.price_max
-    assign price_varies = product.price_varies
-  -%}
-
   <variant-selects
     id="variant-selects-{{ section.id }}"
     data-section="{{ section.id }}"
@@ -137,19 +130,6 @@
       </div>
     </div>
 
-    <!-- Price display container -->
-    <div id="price-display-{{ section.id }}" class="price-display" data-min-price="{{ min_price | money }}" data-max-price="{{ max_price | money }}">
-      <span class="price__regular">
-        <span id="price-{{ section.id }}" class="price-item price-item--regular">
-          {%- if price_varies -%}
-            {{ min_price | money }} <span class="price-range-separator">~</span> {{ max_price | money }}
-          {%- else -%}
-            {{ product.price | money }}
-          {%- endif -%}
-        </span>
-      </span>
-    </div>
-
     <script type="application/json" data-selected-variant>
       {{ product.selected_or_first_available_variant | json }}
     </script>
@@ -170,10 +150,9 @@
       border-color: #4a90e2;
     }
 
-    /* Handle the placeholder option in dropdown */
+    /* Hide the default option from dropdown list */
     .select__select option.placeholder-option {
-      display: block;
-      color: #757575;
+      display: none;
     }
 
     /* Styles for the text display mode */
@@ -231,18 +210,6 @@
     .variant-selection-warning p {
       margin: 0;
       font-size: 14px;
-    }
-
-    /* Price display styles */
-    .price-display {
-      margin-top: 15px;
-      font-weight: bold;
-      font-size: 1.25rem;
-    }
-    
-    .price-range-separator {
-      margin: 0 5px;
-      display: inline-block;
     }
 
     /* Add a shake animation for the warning */
@@ -303,31 +270,37 @@
           const optionIndex = select.dataset.optionIndex;
 
           // Check if we already have a placeholder option
-          let placeholderOption = select.querySelector('option.placeholder-option');
-          
-          // If no placeholder exists, create one
-          if (!placeholderOption) {
-            placeholderOption = new Option(PLACEHOLDER_TEXT, '', true, true);
-            placeholderOption.classList.add('placeholder-option');
-            select.insertBefore(placeholderOption, select.firstChild);
+          let placeholderOption = null;
+          for (let i = 0; i < select.options.length; i++) {
+            if (select.options[i].value === '' || select.options[i].classList.contains('placeholder-option')) {
+              placeholderOption = select.options[i];
+              break;
+            }
           }
 
-          // Ensure the placeholder text is correct
-          placeholderOption.text = PLACEHOLDER_TEXT;
+          // Create or modify placeholder option
+          if (!placeholderOption) {
+            // Add a placeholder option that will be hidden from dropdown but visible when selected
+            placeholderOption = new Option(PLACEHOLDER_TEXT, '', true, false);
+            placeholderOption.classList.add('placeholder-option');
+            select.insertBefore(placeholderOption, select.firstChild);
+          } else {
+            // Update existing placeholder
+            placeholderOption.text = PLACEHOLDER_TEXT;
+            placeholderOption.classList.add('placeholder-option');
+          }
 
           // Set correct initial select and button state
           const selectedOption = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
           if (selectedOption === null || selectedOption === '') {
             // No saved selection or placeholder was saved
-            // Reset to placeholder (first option)
             select.selectedIndex = 0;
             deselectButton.disabled = true;
             select.classList.remove('user-selected');
             selectContainer.classList.remove('text-mode');
           } else {
-            // Find the option with the saved value (skip first option which is placeholder)
-            let found = false;
-            for (let i = 1; i < select.options.length; i++) {
+            // Find the option with the saved value
+            for (let i = 0; i < select.options.length; i++) {
               if (select.options[i].value === selectedOption) {
                 // Set selected option
                 select.selectedIndex = i;
@@ -337,18 +310,8 @@
                 // Show as text
                 selectContainer.classList.add('text-mode');
                 selectedTextElement.textContent = select.options[i].text;
-                found = true;
                 break;
               }
-            }
-            
-            // If saved option not found, reset to placeholder
-            if (!found) {
-              select.selectedIndex = 0;
-              deselectButton.disabled = true;
-              select.classList.remove('user-selected');
-              selectContainer.classList.remove('text-mode');
-              localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
             }
           }
 
@@ -358,8 +321,8 @@
           select.addEventListener('change', function (e) {
             // Store the selection in both Map and localStorage
             const value = this.value;
-            const isDefaultOption = this.selectedIndex === 0;
-            const selectedText = isDefaultOption ? PLACEHOLDER_TEXT : this.options[this.selectedIndex].text;
+            const isDefaultOption = value === '' || this.selectedIndex === 0;
+            const selectedText = this.options[this.selectedIndex].text;
 
             // Update button state
             deselectButton.disabled = isDefaultOption;
@@ -375,13 +338,8 @@
             }
 
             // Save selection
-            if (isDefaultOption) {
-              selectedOptions.delete(`${sectionId}-${optionIndex}`);
-              localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
-            } else {
-              selectedOptions.set(`${sectionId}-${optionIndex}`, value);
-              localStorage.setItem(`variant-${sectionId}-${optionIndex}`, value);
-            }
+            selectedOptions.set(`${sectionId}-${optionIndex}`, value);
+            localStorage.setItem(`variant-${sectionId}-${optionIndex}`, value);
 
             // Hide warning if shown
             hideVariantWarning(sectionId);
@@ -397,7 +355,7 @@
             e.preventDefault();
             e.stopPropagation();
 
-            // Reset to placeholder (first option)
+            // Reset to placeholder
             select.selectedIndex = 0;
             this.disabled = true;
             select.classList.remove('user-selected');
@@ -423,13 +381,13 @@
               setTimeout(() => {
                 // Only override if we want this to stay at placeholder
                 const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
-                if (savedValue === null || savedValue === '') {
+                if (savedValue === '' && select.selectedIndex !== 0) {
                   select.selectedIndex = 0;
                   select.dispatchEvent(new Event('change', { bubbles: true }));
                 }
 
                 // Update text mode
-                const isDefaultOption = select.selectedIndex === 0;
+                const isDefaultOption = select.value === '' || select.selectedIndex === 0;
                 if (!isDefaultOption) {
                   selectContainer.classList.add('text-mode');
                   selectedTextElement.textContent = select.options[select.selectedIndex].text;
@@ -445,33 +403,15 @@
             // Also check periodically
             setInterval(() => {
               const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
-              if ((savedValue === null || savedValue === '') && select.selectedIndex !== 0) {
+              if (savedValue === '' && select.selectedIndex !== 0) {
                 select.selectedIndex = 0;
                 selectContainer.classList.remove('text-mode');
-              } else if (savedValue && savedValue !== '') {
-                // Find matching option for saved value (skip first option which is placeholder)
-                let found = false;
-                for (let i = 1; i < select.options.length; i++) {
-                  if (select.options[i].value === savedValue) {
-                    if (select.selectedIndex !== i) {
-                      select.selectedIndex = i;
-                    }
-                    // Make sure text is showing
-                    selectContainer.classList.add('text-mode');
-                    const selectedText = select.options[i].text;
-                    if (selectedTextElement.textContent !== selectedText) {
-                      selectedTextElement.textContent = selectedText;
-                    }
-                    found = true;
-                    break;
-                  }
-                }
-                
-                // If saved value is not found, reset to placeholder
-                if (!found) {
-                  select.selectedIndex = 0;
-                  selectContainer.classList.remove('text-mode');
-                  localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
+              } else if (savedValue && savedValue !== '' && select.selectedIndex > 0) {
+                // Make sure text is showing
+                selectContainer.classList.add('text-mode');
+                const selectedText = select.options[select.selectedIndex].text;
+                if (selectedTextElement.textContent !== selectedText) {
+                  selectedTextElement.textContent = selectedText;
                 }
               }
             }, 500);
@@ -505,7 +445,7 @@
                   const optionIndex = select.dataset.optionIndex;
                   const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
 
-                  if (savedValue === null || savedValue === '') {
+                  if (savedValue === '') {
                     select.selectedIndex = 0;
                     const changeEvent = new Event('change', { bubbles: true });
                     select.dispatchEvent(changeEvent);
@@ -517,7 +457,7 @@
                     const selectedValueDisplay = selectContainer.querySelector('.selected-value-display');
                     const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
 
-                    const isDefaultOption = select.selectedIndex === 0;
+                    const isDefaultOption = select.value === '' || select.selectedIndex === 0;
                     if (!isDefaultOption) {
                       selectContainer.classList.add('text-mode');
                       selectedTextElement.textContent = select.options[select.selectedIndex].text;
@@ -529,77 +469,7 @@
               }, 10);
             };
           }
-
-          // Add handlers for variant:changed event to update price
-          variantSelect.addEventListener('variant:changed', function(event) {
-            updatePriceDisplay(this.dataset.section, event.detail.variant);
-          });
         });
-      }
-
-      // Function to update price display based on variant selection
-      function updatePriceDisplay(sectionId, variant) {
-        const priceDisplay = document.getElementById(`price-display-${sectionId}`);
-        const priceElement = document.getElementById(`price-${sectionId}`);
-        
-        if (!priceDisplay || !priceElement) return;
-
-        // Check if we have a valid variant with price
-        if (variant && variant.price) {
-          // Format price with Shopify money format
-          const formattedPrice = formatMoney(variant.price);
-          priceElement.textContent = formattedPrice;
-        } else {
-          // Reset to price range
-          const minPrice = priceDisplay.dataset.minPrice;
-          const maxPrice = priceDisplay.dataset.maxPrice;
-          
-          if (minPrice === maxPrice) {
-            priceElement.textContent = minPrice;
-          } else {
-            priceElement.innerHTML = `${minPrice} <span class="price-range-separator">~</span> ${maxPrice}`;
-          }
-        }
-      }
-
-      // Simple money formatter function (would use Shopify's money format in production)
-      function formatMoney(cents) {
-        if (typeof cents !== 'number') {
-          cents = parseInt(cents, 10) || 0;
-        }
-        
-        const value = (cents / 100).toFixed(2);
-        return '¥' + value.replace(/\.00$/, '');
-      }
-
-      // Function to check if all variants are selected and update price accordingly
-      function checkVariantsAndUpdatePrice(sectionId) {
-        // Get all required selects
-        const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
-        const allSelected = Array.from(selects).every(select => select.selectedIndex !== 0);
-        
-        // If all selections are made, find the variant and update price
-        if (allSelected) {
-          const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
-          if (variantSelectsElement && variantSelectsElement.currentVariant) {
-            updatePriceDisplay(sectionId, variantSelectsElement.currentVariant);
-          }
-        } else {
-          // Reset to price range if not all are selected
-          const priceDisplay = document.getElementById(`price-display-${sectionId}`);
-          const priceElement = document.getElementById(`price-${sectionId}`);
-          
-          if (priceDisplay && priceElement) {
-            const minPrice = priceDisplay.dataset.minPrice;
-            const maxPrice = priceDisplay.dataset.maxPrice;
-            
-            if (minPrice === maxPrice) {
-              priceElement.textContent = minPrice;
-            } else {
-              priceElement.innerHTML = `${minPrice} <span class="price-range-separator">~</span> ${maxPrice}`;
-            }
-          }
-        }
       }
 
       // Function to show variant warning
@@ -632,7 +502,7 @@
         const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
         for (let i = 0; i < selects.length; i++) {
           const select = selects[i];
-          if (select.selectedIndex === 0) {
+          if (select.selectedIndex === 0 || select.value === '') {
             return false;
           }
         }
@@ -643,17 +513,6 @@
       document.addEventListener('DOMContentLoaded', function () {
         initializeVariantSelectors();
         overrideVariantSelection();
-
-        // Set up price display updating for all selects
-        document.addEventListener('change', function(e) {
-          if (e.target.tagName === 'SELECT' && e.target.classList.contains('select__select')) {
-            const sectionId = e.target.id.split('-')[1];
-            if (sectionId) {
-              // Check all variants and update price
-              checkVariantsAndUpdatePrice(sectionId);
-            }
-          }
-        });
 
         // Intercept the add to cart button click
         document.addEventListener(
@@ -686,14 +545,6 @@
         setTimeout(() => {
           initializeVariantSelectors();
           overrideVariantSelection();
-          
-          // Initialize price displays
-          document.querySelectorAll('variant-selects').forEach(variantSelect => {
-            const sectionId = variantSelect.dataset.section;
-            if (sectionId) {
-              checkVariantsAndUpdatePrice(sectionId);
-            }
-          });
         }, 500);
 
         // Also watch for DOM changes
@@ -711,17 +562,9 @@
       });
 
       // Re-run when variants change
-      document.addEventListener('variant:changed', function (event) {
+      document.addEventListener('variant:changed', function () {
         setTimeout(() => {
           initializeVariantSelectors();
-          
-          // Update price based on the variant
-          if (event.detail && event.detail.variant) {
-            const variantSelect = event.target;
-            if (variantSelect && variantSelect.dataset && variantSelect.dataset.section) {
-              updatePriceDisplay(variantSelect.dataset.section, event.detail.variant);
-            }
-          }
         }, 50);
       });
     })();
