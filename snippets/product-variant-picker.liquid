@@ -108,7 +108,7 @@
 
           <div class="divider"></div>
           <div class="w-15">
-            <button type="button" disabled class="deselect-button" disabled>選択解除</button>
+            <button type="button" class="deselect-button" disabled>選択解除</button>
           </div>
         </div>
       {%- endif -%}
@@ -378,6 +378,9 @@
             if (isDefaultOption) {
               selectedOptions.delete(`${sectionId}-${optionIndex}`);
               localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
+              
+              // Show price range when option is reset to default
+              showPriceRange(sectionId);
             } else {
               selectedOptions.set(`${sectionId}-${optionIndex}`, value);
               localStorage.setItem(`variant-${sectionId}-${optionIndex}`, value);
@@ -390,6 +393,9 @@
             if (isDefaultOption) {
               this.dispatchEvent(pleaseSelectEvent);
             }
+            
+            // Always update price display after any change
+            checkVariantsAndUpdatePrice(sectionId);
           });
 
           // Handle deselect button click
@@ -409,10 +415,16 @@
             selectedOptions.delete(`${sectionId}-${optionIndex}`);
             localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
 
+            // Show price range when option is deselected
+            showPriceRange(sectionId);
+
             // Dispatch events
             const changeEvent = new Event('change', { bubbles: true });
             select.dispatchEvent(changeEvent);
             select.dispatchEvent(pleaseSelectEvent);
+            
+            // Ensure price range is shown immediately after deselection
+            setTimeout(() => checkVariantsAndUpdatePrice(sectionId), 0);
           });
 
           // Override Shopify's variant selection to respect our placeholder settings
@@ -436,6 +448,9 @@
                 } else {
                   selectContainer.classList.remove('text-mode');
                 }
+                
+                // Update price display
+                checkVariantsAndUpdatePrice(sectionId);
               }, 10);
             };
 
@@ -448,6 +463,7 @@
               if ((savedValue === null || savedValue === '') && select.selectedIndex !== 0) {
                 select.selectedIndex = 0;
                 selectContainer.classList.remove('text-mode');
+                showPriceRange(sectionId);
               } else if (savedValue && savedValue !== '') {
                 // Find matching option for saved value (skip first option which is placeholder)
                 let found = false;
@@ -472,8 +488,12 @@
                   select.selectedIndex = 0;
                   selectContainer.classList.remove('text-mode');
                   localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
+                  showPriceRange(sectionId);
                 }
               }
+              
+              // Always check price display
+              checkVariantsAndUpdatePrice(sectionId);
             }, 500);
           }
         });
@@ -509,6 +529,9 @@
                     select.selectedIndex = 0;
                     const changeEvent = new Event('change', { bubbles: true });
                     select.dispatchEvent(changeEvent);
+                    
+                    // Ensure price range is shown for default selections
+                    showPriceRange(sectionId);
                   }
 
                   // Update text mode state
@@ -525,6 +548,9 @@
                       selectContainer.classList.remove('text-mode');
                     }
                   }
+                  
+                  // Always update price display
+                  checkVariantsAndUpdatePrice(sectionId);
                 });
               }, 10);
             };
@@ -537,10 +563,27 @@
               updatePriceDisplay(this.dataset.section, event.detail.variant);
             } else {
               // Reset to price range if any option is still at default
-              checkVariantsAndUpdatePrice(this.dataset.section);
+              showPriceRange(this.dataset.section);
             }
           });
         });
+      }
+
+      // Function to show price range
+      function showPriceRange(sectionId) {
+        const priceDisplay = document.getElementById(`price-display-${sectionId}`);
+        const priceElement = document.getElementById(`price-${sectionId}`);
+        
+        if (!priceDisplay || !priceElement) return;
+        
+        const minPrice = priceDisplay.dataset.minPrice;
+        const maxPrice = priceDisplay.dataset.maxPrice;
+        
+        if (minPrice === maxPrice) {
+          priceElement.textContent = minPrice;
+        } else {
+          priceElement.innerHTML = `${minPrice} <span class="price-range-separator">~</span> ${maxPrice}`;
+        }
       }
 
       // Function to update price display based on variant selection
@@ -557,14 +600,7 @@
           priceElement.textContent = formattedPrice;
         } else {
           // Reset to price range if any option is still at default
-          const minPrice = priceDisplay.dataset.minPrice;
-          const maxPrice = priceDisplay.dataset.maxPrice;
-          
-          if (minPrice === maxPrice) {
-            priceElement.textContent = minPrice;
-          } else {
-            priceElement.innerHTML = `${minPrice} <span class="price-range-separator">~</span> ${maxPrice}`;
-          }
+          showPriceRange(sectionId);
         }
       }
 
@@ -589,19 +625,7 @@
         // Always show price range if any option is at default
         if (!allOptionsSelected(sectionId)) {
           // Reset to price range
-          const priceDisplay = document.getElementById(`price-display-${sectionId}`);
-          const priceElement = document.getElementById(`price-${sectionId}`);
-          
-          if (priceDisplay && priceElement) {
-            const minPrice = priceDisplay.dataset.minPrice;
-            const maxPrice = priceDisplay.dataset.maxPrice;
-            
-            if (minPrice === maxPrice) {
-              priceElement.textContent = minPrice;
-            } else {
-              priceElement.innerHTML = `${minPrice} <span class="price-range-separator">~</span> ${maxPrice}`;
-            }
-          }
+          showPriceRange(sectionId);
           return;
         }
         
@@ -659,8 +683,8 @@
           if (e.target.tagName === 'SELECT' && e.target.classList.contains('select__select')) {
             const sectionId = e.target.id.split('-')[1];
             if (sectionId) {
-              // Check all variants and update price
-              checkVariantsAndUpdatePrice(sectionId);
+              // Always check and update price immediately
+              setTimeout(() => checkVariantsAndUpdatePrice(sectionId), 0);
             }
           }
         });
@@ -692,6 +716,19 @@
           true
         );
 
+        // Initialize all price displays on page load
+        document.querySelectorAll('variant-selects').forEach(variantSelect => {
+          const sectionId = variantSelect.dataset.section;
+          if (sectionId) {
+            // Check if any option is at default
+            if (!allOptionsSelected(sectionId)) {
+              showPriceRange(sectionId);
+            } else {
+              checkVariantsAndUpdatePrice(sectionId);
+            }
+          }
+        });
+
         // Re-run after a short delay to catch any late loading elements
         setTimeout(() => {
           initializeVariantSelectors();
@@ -710,6 +747,14 @@
         const observer = new MutationObserver(function () {
           initializeVariantSelectors();
           overrideVariantSelection();
+          
+          // Check all price displays after DOM changes
+          document.querySelectorAll('variant-selects').forEach(variantSelect => {
+            const sectionId = variantSelect.dataset.section;
+            if (sectionId) {
+              checkVariantsAndUpdatePrice(sectionId);
+            }
+          });
         });
 
         observer.observe(document.body, {
@@ -730,15 +775,28 @@
             const variantSelect = event.target;
             if (variantSelect && variantSelect.dataset && variantSelect.dataset.section) {
               const sectionId = variantSelect.dataset.section;
+              
+              // Force immediate price update
               if (allOptionsSelected(sectionId)) {
                 updatePriceDisplay(sectionId, event.detail.variant);
               } else {
                 // Reset to price range
-                checkVariantsAndUpdatePrice(sectionId);
+                showPriceRange(sectionId);
               }
             }
           }
         }, 50);
+      });
+      
+      // Listen for please-select events to ensure price range is shown
+      document.addEventListener('please-select-chosen', function(event) {
+        if (event.target && event.target.id) {
+          const sectionId = event.target.id.split('-')[1];
+          if (sectionId) {
+            // Ensure price range is displayed when default option is chosen
+            setTimeout(() => showPriceRange(sectionId), 0);
+          }
+        }
       });
     })();
   </script>
