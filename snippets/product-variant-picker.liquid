@@ -9,6 +9,13 @@
   {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
 {% endcomment %}
 {%- unless product.has_only_default_variant -%}
+  {%- liquid
+    # Calculate price range
+    assign min_price = product.price_min
+    assign max_price = product.price_max
+    assign price_varies = product.price_varies
+  -%}
+
   <variant-selects
     id="variant-selects-{{ section.id }}"
     data-section="{{ section.id }}"
@@ -130,6 +137,19 @@
       </div>
     </div>
 
+    <!-- Price display container -->
+    <div id="price-display-{{ section.id }}" class="price-display" data-min-price="{{ min_price | money }}" data-max-price="{{ max_price | money }}">
+      <span class="price__regular">
+        <span id="price-{{ section.id }}" class="price-item price-item--regular">
+          {%- if price_varies -%}
+            {{ min_price | money }} <span class="price-range-separator">~</span> {{ max_price | money }}
+          {%- else -%}
+            {{ product.price | money }}
+          {%- endif -%}
+        </span>
+      </span>
+    </div>
+
     <script type="application/json" data-selected-variant>
       {{ product.selected_or_first_available_variant | json }}
     </script>
@@ -211,6 +231,18 @@
     .variant-selection-warning p {
       margin: 0;
       font-size: 14px;
+    }
+
+    /* Price display styles */
+    .price-display {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 1.25rem;
+    }
+    
+    .price-range-separator {
+      margin: 0 5px;
+      display: inline-block;
     }
 
     /* Add a shake animation for the warning */
@@ -497,7 +529,77 @@
               }, 10);
             };
           }
+
+          // Add handlers for variant:changed event to update price
+          variantSelect.addEventListener('variant:changed', function(event) {
+            updatePriceDisplay(this.dataset.section, event.detail.variant);
+          });
         });
+      }
+
+      // Function to update price display based on variant selection
+      function updatePriceDisplay(sectionId, variant) {
+        const priceDisplay = document.getElementById(`price-display-${sectionId}`);
+        const priceElement = document.getElementById(`price-${sectionId}`);
+        
+        if (!priceDisplay || !priceElement) return;
+
+        // Check if we have a valid variant with price
+        if (variant && variant.price) {
+          // Format price with Shopify money format
+          const formattedPrice = formatMoney(variant.price);
+          priceElement.textContent = formattedPrice;
+        } else {
+          // Reset to price range
+          const minPrice = priceDisplay.dataset.minPrice;
+          const maxPrice = priceDisplay.dataset.maxPrice;
+          
+          if (minPrice === maxPrice) {
+            priceElement.textContent = minPrice;
+          } else {
+            priceElement.innerHTML = `${minPrice} <span class="price-range-separator">~</span> ${maxPrice}`;
+          }
+        }
+      }
+
+      // Simple money formatter function (would use Shopify's money format in production)
+      function formatMoney(cents) {
+        if (typeof cents !== 'number') {
+          cents = parseInt(cents, 10) || 0;
+        }
+        
+        const value = (cents / 100).toFixed(2);
+        return '¥' + value.replace(/\.00$/, '');
+      }
+
+      // Function to check if all variants are selected and update price accordingly
+      function checkVariantsAndUpdatePrice(sectionId) {
+        // Get all required selects
+        const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
+        const allSelected = Array.from(selects).every(select => select.selectedIndex !== 0);
+        
+        // If all selections are made, find the variant and update price
+        if (allSelected) {
+          const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
+          if (variantSelectsElement && variantSelectsElement.currentVariant) {
+            updatePriceDisplay(sectionId, variantSelectsElement.currentVariant);
+          }
+        } else {
+          // Reset to price range if not all are selected
+          const priceDisplay = document.getElementById(`price-display-${sectionId}`);
+          const priceElement = document.getElementById(`price-${sectionId}`);
+          
+          if (priceDisplay && priceElement) {
+            const minPrice = priceDisplay.dataset.minPrice;
+            const maxPrice = priceDisplay.dataset.maxPrice;
+            
+            if (minPrice === maxPrice) {
+              priceElement.textContent = minPrice;
+            } else {
+              priceElement.innerHTML = `${minPrice} <span class="price-range-separator">~</span> ${maxPrice}`;
+            }
+          }
+        }
       }
 
       // Function to show variant warning
@@ -542,6 +644,17 @@
         initializeVariantSelectors();
         overrideVariantSelection();
 
+        // Set up price display updating for all selects
+        document.addEventListener('change', function(e) {
+          if (e.target.tagName === 'SELECT' && e.target.classList.contains('select__select')) {
+            const sectionId = e.target.id.split('-')[1];
+            if (sectionId) {
+              // Check all variants and update price
+              checkVariantsAndUpdatePrice(sectionId);
+            }
+          }
+        });
+
         // Intercept the add to cart button click
         document.addEventListener(
           'click',
@@ -573,6 +686,14 @@
         setTimeout(() => {
           initializeVariantSelectors();
           overrideVariantSelection();
+          
+          // Initialize price displays
+          document.querySelectorAll('variant-selects').forEach(variantSelect => {
+            const sectionId = variantSelect.dataset.section;
+            if (sectionId) {
+              checkVariantsAndUpdatePrice(sectionId);
+            }
+          });
         }, 500);
 
         // Also watch for DOM changes
@@ -590,9 +711,17 @@
       });
 
       // Re-run when variants change
-      document.addEventListener('variant:changed', function () {
+      document.addEventListener('variant:changed', function (event) {
         setTimeout(() => {
           initializeVariantSelectors();
+          
+          // Update price based on the variant
+          if (event.detail && event.detail.variant) {
+            const variantSelect = event.target;
+            if (variantSelect && variantSelect.dataset && variantSelect.dataset.section) {
+              updatePriceDisplay(variantSelect.dataset.section, event.detail.variant);
+            }
+          }
         }, 50);
       });
     })();
