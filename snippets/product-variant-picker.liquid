@@ -532,7 +532,13 @@
 
           // Add handlers for variant:changed event to update price
           variantSelect.addEventListener('variant:changed', function(event) {
-            updatePriceDisplay(this.dataset.section, event.detail.variant);
+            // Only update to specific variant price if all options are selected
+            if (allOptionsSelected(this.dataset.section)) {
+              updatePriceDisplay(this.dataset.section, event.detail.variant);
+            } else {
+              // Reset to price range if any option is still at default
+              checkVariantsAndUpdatePrice(this.dataset.section);
+            }
           });
         });
       }
@@ -544,13 +550,13 @@
         
         if (!priceDisplay || !priceElement) return;
 
-        // Check if we have a valid variant with price
-        if (variant && variant.price) {
+        // Check if we have a valid variant with price and if ALL options are selected
+        if (variant && variant.price && allOptionsSelected(sectionId)) {
           // Format price with Shopify money format
           const formattedPrice = formatMoney(variant.price);
           priceElement.textContent = formattedPrice;
         } else {
-          // Reset to price range
+          // Reset to price range if any option is still at default
           const minPrice = priceDisplay.dataset.minPrice;
           const maxPrice = priceDisplay.dataset.maxPrice;
           
@@ -560,6 +566,12 @@
             priceElement.innerHTML = `${minPrice} <span class="price-range-separator">~</span> ${maxPrice}`;
           }
         }
+      }
+
+      // Check if all options are selected (no default options)
+      function allOptionsSelected(sectionId) {
+        const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
+        return Array.from(selects).every(select => select.selectedIndex !== 0);
       }
 
       // Simple money formatter function (would use Shopify's money format in production)
@@ -574,18 +586,9 @@
 
       // Function to check if all variants are selected and update price accordingly
       function checkVariantsAndUpdatePrice(sectionId) {
-        // Get all required selects
-        const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
-        const allSelected = Array.from(selects).every(select => select.selectedIndex !== 0);
-        
-        // If all selections are made, find the variant and update price
-        if (allSelected) {
-          const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
-          if (variantSelectsElement && variantSelectsElement.currentVariant) {
-            updatePriceDisplay(sectionId, variantSelectsElement.currentVariant);
-          }
-        } else {
-          // Reset to price range if not all are selected
+        // Always show price range if any option is at default
+        if (!allOptionsSelected(sectionId)) {
+          // Reset to price range
           const priceDisplay = document.getElementById(`price-display-${sectionId}`);
           const priceElement = document.getElementById(`price-${sectionId}`);
           
@@ -599,6 +602,13 @@
               priceElement.innerHTML = `${minPrice} <span class="price-range-separator">~</span> ${maxPrice}`;
             }
           }
+          return;
+        }
+        
+        // Only update to specific variant price if all options are selected
+        const variantSelectsElement = document.querySelector(`variant-selects#variant-selects-${sectionId}`);
+        if (variantSelectsElement && variantSelectsElement.currentVariant) {
+          updatePriceDisplay(sectionId, variantSelectsElement.currentVariant);
         }
       }
 
@@ -715,11 +725,17 @@
         setTimeout(() => {
           initializeVariantSelectors();
           
-          // Update price based on the variant
+          // Update price based on the variant - only show specific price if all options selected
           if (event.detail && event.detail.variant) {
             const variantSelect = event.target;
             if (variantSelect && variantSelect.dataset && variantSelect.dataset.section) {
-              updatePriceDisplay(variantSelect.dataset.section, event.detail.variant);
+              const sectionId = variantSelect.dataset.section;
+              if (allOptionsSelected(sectionId)) {
+                updatePriceDisplay(sectionId, event.detail.variant);
+              } else {
+                // Reset to price range
+                checkVariantsAndUpdatePrice(sectionId);
+              }
             }
           }
         }, 50);
