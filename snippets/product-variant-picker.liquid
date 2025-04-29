@@ -133,6 +133,19 @@
     <script type="application/json" data-selected-variant>
       {{ product.selected_or_first_available_variant | json }}
     </script>
+
+    <!-- Add price range data for JavaScript -->
+    <script type="application/json" data-product-price-range>
+      {
+        "min_price": {{ product.price_min | money_without_currency | json }},
+        "max_price": {{ product.price_max | money_without_currency | json }},
+        "min_compare_price": {{ product.compare_at_price_min | money_without_currency | json }},
+        "max_compare_price": {{ product.compare_at_price_max | money_without_currency | json }},
+        "currency": {{ shop.currency | json }},
+        "price_varies": {{ product.price_varies | json }},
+        "compare_varies": {{ product.compare_at_price_varies | json }}
+      }
+    </script>
   </variant-selects>
 
   <style>
@@ -234,6 +247,16 @@
     .warning-shake {
       animation: warning-shake 0.5s ease-in-out;
     }
+
+    /* Price range style */
+    .price-range {
+      font-size: 1.2em;
+      font-weight: 600;
+    }
+
+    .price-range-dash {
+      margin: 0 5px;
+    }
   </style>
 
   <script>
@@ -244,6 +267,75 @@
 
       // Custom event for when placeholder is chosen
       const pleaseSelectEvent = new CustomEvent('please-select-chosen', { bubbles: true });
+
+      // Function to format money values
+      function formatMoney(cents, currency = 'JPY') {
+        if (typeof cents === 'string') {
+          cents = cents.replace(/[^0-9]/g, '');
+        }
+        
+        const value = parseInt(cents);
+        const formatter = new Intl.NumberFormat(navigator.language || 'ja-JP', {
+          style: 'currency',
+          currency: currency,
+          minimumFractionDigits: 0
+        });
+        
+        return formatter.format(value);
+      }
+
+      // Function to show the price range instead of a specific price
+      function showPriceRange(sectionId) {
+        const priceContainer = document.getElementById(`price-${sectionId}`);
+        if (!priceContainer) return;
+
+        // Get the price range data
+        const priceRangeData = document.querySelector(`#variant-selects-${sectionId} [data-product-price-range]`);
+        if (!priceRangeData) return;
+
+        try {
+          const priceRange = JSON.parse(priceRangeData.textContent);
+          const priceElement = priceContainer.querySelector('.price');
+          
+          if (!priceElement) return;
+
+          // Find the regular price element
+          const regularPriceElement = priceElement.querySelector('.price__regular .price-item--regular') || 
+                                     priceElement.querySelector('.price-item--regular');
+          
+          if (regularPriceElement) {
+            if (priceRange.price_varies) {
+              regularPriceElement.innerHTML = `${formatMoney(priceRange.min_price, priceRange.currency)}<span class="price-range-dash">-</span>${formatMoney(priceRange.max_price, priceRange.currency)}`;
+            } else {
+              regularPriceElement.textContent = formatMoney(priceRange.min_price, priceRange.currency);
+            }
+          }
+
+          // Handle sale price if it exists
+          const salePriceElement = priceElement.querySelector('.price__sale .price-item--sale');
+          const compareElement = priceElement.querySelector('.price__sale .price-item--regular') || 
+                               priceElement.querySelector('.price__compare .price-item--regular');
+          
+          if (salePriceElement && compareElement) {
+            if (priceRange.price_varies) {
+              salePriceElement.innerHTML = `${formatMoney(priceRange.min_price, priceRange.currency)}<span class="price-range-dash">-</span>${formatMoney(priceRange.max_price, priceRange.currency)}`;
+            } else {
+              salePriceElement.textContent = formatMoney(priceRange.min_price, priceRange.currency);
+            }
+            
+            if (priceRange.compare_varies) {
+              compareElement.innerHTML = `${formatMoney(priceRange.min_compare_price, priceRange.currency)}<span class="price-range-dash">-</span>${formatMoney(priceRange.max_compare_price, priceRange.currency)}`;
+            } else {
+              compareElement.textContent = formatMoney(priceRange.min_compare_price, priceRange.currency);
+            }
+          }
+
+          // Mark price as showing range
+          priceContainer.setAttribute('data-showing-range', 'true');
+        } catch (e) {
+          console.error('Error parsing price range data:', e);
+        }
+      }
 
       function initializeVariantSelectors() {
         const variantSelects = document.querySelectorAll('.select__select');
@@ -298,6 +390,11 @@
             deselectButton.disabled = true;
             select.classList.remove('user-selected');
             selectContainer.classList.remove('text-mode');
+            
+            // Show price range if this is the first option and it's not selected
+            if (optionIndex === '0') {
+              showPriceRange(sectionId);
+            }
           } else {
             // Find the option with the saved value
             for (let i = 0; i < select.options.length; i++) {
@@ -331,6 +428,11 @@
             if (isDefaultOption) {
               this.classList.remove('user-selected');
               selectContainer.classList.remove('text-mode');
+              
+              // If this is the first option and it's reset to default, show price range
+              if (optionIndex === '0') {
+                showPriceRange(sectionId);
+              }
             } else {
               this.classList.add('user-selected');
               selectContainer.classList.add('text-mode');
@@ -366,6 +468,11 @@
             // Update stored values
             selectedOptions.delete(`${sectionId}-${optionIndex}`);
             localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
+
+            // If this is the first option, show price range
+            if (optionIndex === '0') {
+              showPriceRange(sectionId);
+            }
 
             // Dispatch events
             const changeEvent = new Event('change', { bubbles: true });
@@ -406,6 +513,11 @@
               if (savedValue === '' && select.selectedIndex !== 0) {
                 select.selectedIndex = 0;
                 selectContainer.classList.remove('text-mode');
+                
+                // If this is the first option, show price range
+                if (optionIndex === '0') {
+                  showPriceRange(sectionId);
+                }
               } else if (savedValue && savedValue !== '' && select.selectedIndex > 0) {
                 // Make sure text is showing
                 selectContainer.classList.add('text-mode');
@@ -428,6 +540,15 @@
           // Skip if already processed
           if (variantSelect.hasAttribute('data-override')) return;
           variantSelect.setAttribute('data-override', 'true');
+          
+          // Get the section ID
+          const sectionId = variantSelect.dataset.section;
+
+          // Check if first option is in default state, if so show price range
+          const firstSelect = variantSelect.querySelector('select[data-option-index="0"]');
+          if (firstSelect && (firstSelect.selectedIndex === 0 || firstSelect.value === '')) {
+            showPriceRange(sectionId);
+          }
 
           // Get the original updateOptions function
           const originalUpdateOptions = variantSelect.updateOptions;
@@ -440,6 +561,8 @@
               // Then apply our custom logic
               setTimeout(() => {
                 const selects = this.querySelectorAll('select');
+                let allDefaultOptions = true;
+                
                 selects.forEach((select, index) => {
                   const sectionId = this.dataset.section;
                   const optionIndex = select.dataset.optionIndex;
@@ -449,6 +572,11 @@
                     select.selectedIndex = 0;
                     const changeEvent = new Event('change', { bubbles: true });
                     select.dispatchEvent(changeEvent);
+                  } else {
+                    // If any option is selected, remember that
+                    if (optionIndex === '0') {
+                      allDefaultOptions = false;
+                    }
                   }
 
                   // Update text mode state
@@ -466,9 +594,28 @@
                     }
                   }
                 });
+                
+                // If first option is in default state, show price range
+                if (allDefaultOptions) {
+                  showPriceRange(sectionId);
+                }
               }, 10);
             };
           }
+          
+          // Intercept variant:changed event to update price display
+          variantSelect.addEventListener('variant:changed', function(event) {
+            const variant = event.detail.variant;
+            const sectionId = this.dataset.section;
+            
+            // Find the first select
+            const firstSelect = this.querySelector('select[data-option-index="0"]');
+            
+            // If the first option is at default state, show price range
+            if (firstSelect && (firstSelect.selectedIndex === 0 || firstSelect.value === '')) {
+              showPriceRange(sectionId);
+            }
+          });
         });
       }
 
@@ -513,6 +660,16 @@
       document.addEventListener('DOMContentLoaded', function () {
         initializeVariantSelectors();
         overrideVariantSelection();
+
+        // Check all variant-selects elements to show price range if needed
+        document.querySelectorAll('variant-selects').forEach(variantSelect => {
+          const sectionId = variantSelect.dataset.section;
+          const firstSelect = variantSelect.querySelector('select[data-option-index="0"]');
+          
+          if (firstSelect && (firstSelect.selectedIndex === 0 || firstSelect.value === '')) {
+            showPriceRange(sectionId);
+          }
+        });
 
         // Intercept the add to cart button click
         document.addEventListener(
