@@ -81,7 +81,6 @@
                 data-default-unselected="true"
                 data-required="true"
               >
-                <option value="" selected class="placeholder-option">選択してください</option>
                 {% render 'product-variant-options',
                   product: product,
                   option: option,
@@ -151,9 +150,10 @@
       border-color: #4a90e2;
     }
 
-    /* Show the placeholder option in the select when selected */
+    /* Handle the placeholder option in dropdown */
     .select__select option.placeholder-option {
       display: block;
+      color: #757575;
     }
 
     /* Styles for the text display mode */
@@ -275,7 +275,7 @@
           
           // If no placeholder exists, create one
           if (!placeholderOption) {
-            placeholderOption = new Option(PLACEHOLDER_TEXT, '', true, false);
+            placeholderOption = new Option(PLACEHOLDER_TEXT, '', true, true);
             placeholderOption.classList.add('placeholder-option');
             select.insertBefore(placeholderOption, select.firstChild);
           }
@@ -287,14 +287,15 @@
           const selectedOption = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
           if (selectedOption === null || selectedOption === '') {
             // No saved selection or placeholder was saved
-            select.value = '';
+            // Reset to placeholder (first option)
+            select.selectedIndex = 0;
             deselectButton.disabled = true;
             select.classList.remove('user-selected');
             selectContainer.classList.remove('text-mode');
           } else {
-            // Find the option with the saved value
+            // Find the option with the saved value (skip first option which is placeholder)
             let found = false;
-            for (let i = 0; i < select.options.length; i++) {
+            for (let i = 1; i < select.options.length; i++) {
               if (select.options[i].value === selectedOption) {
                 // Set selected option
                 select.selectedIndex = i;
@@ -311,7 +312,7 @@
             
             // If saved option not found, reset to placeholder
             if (!found) {
-              select.value = '';
+              select.selectedIndex = 0;
               deselectButton.disabled = true;
               select.classList.remove('user-selected');
               selectContainer.classList.remove('text-mode');
@@ -325,7 +326,7 @@
           select.addEventListener('change', function (e) {
             // Store the selection in both Map and localStorage
             const value = this.value;
-            const isDefaultOption = value === '';
+            const isDefaultOption = this.selectedIndex === 0;
             const selectedText = isDefaultOption ? PLACEHOLDER_TEXT : this.options[this.selectedIndex].text;
 
             // Update button state
@@ -342,8 +343,13 @@
             }
 
             // Save selection
-            selectedOptions.set(`${sectionId}-${optionIndex}`, value);
-            localStorage.setItem(`variant-${sectionId}-${optionIndex}`, value);
+            if (isDefaultOption) {
+              selectedOptions.delete(`${sectionId}-${optionIndex}`);
+              localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
+            } else {
+              selectedOptions.set(`${sectionId}-${optionIndex}`, value);
+              localStorage.setItem(`variant-${sectionId}-${optionIndex}`, value);
+            }
 
             // Hide warning if shown
             hideVariantWarning(sectionId);
@@ -359,8 +365,8 @@
             e.preventDefault();
             e.stopPropagation();
 
-            // Reset to placeholder
-            select.value = '';
+            // Reset to placeholder (first option)
+            select.selectedIndex = 0;
             this.disabled = true;
             select.classList.remove('user-selected');
 
@@ -385,13 +391,13 @@
               setTimeout(() => {
                 // Only override if we want this to stay at placeholder
                 const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
-                if (savedValue === '') {
-                  select.value = '';
+                if (savedValue === null || savedValue === '') {
+                  select.selectedIndex = 0;
                   select.dispatchEvent(new Event('change', { bubbles: true }));
                 }
 
                 // Update text mode
-                const isDefaultOption = select.value === '';
+                const isDefaultOption = select.selectedIndex === 0;
                 if (!isDefaultOption) {
                   selectContainer.classList.add('text-mode');
                   selectedTextElement.textContent = select.options[select.selectedIndex].text;
@@ -407,15 +413,33 @@
             // Also check periodically
             setInterval(() => {
               const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
-              if (savedValue === '' && select.value !== '') {
-                select.value = '';
+              if ((savedValue === null || savedValue === '') && select.selectedIndex !== 0) {
+                select.selectedIndex = 0;
                 selectContainer.classList.remove('text-mode');
-              } else if (savedValue && savedValue !== '' && select.value === savedValue) {
-                // Make sure text is showing
-                selectContainer.classList.add('text-mode');
-                const selectedText = select.options[select.selectedIndex].text;
-                if (selectedTextElement.textContent !== selectedText) {
-                  selectedTextElement.textContent = selectedText;
+              } else if (savedValue && savedValue !== '') {
+                // Find matching option for saved value (skip first option which is placeholder)
+                let found = false;
+                for (let i = 1; i < select.options.length; i++) {
+                  if (select.options[i].value === savedValue) {
+                    if (select.selectedIndex !== i) {
+                      select.selectedIndex = i;
+                    }
+                    // Make sure text is showing
+                    selectContainer.classList.add('text-mode');
+                    const selectedText = select.options[i].text;
+                    if (selectedTextElement.textContent !== selectedText) {
+                      selectedTextElement.textContent = selectedText;
+                    }
+                    found = true;
+                    break;
+                  }
+                }
+                
+                // If saved value is not found, reset to placeholder
+                if (!found) {
+                  select.selectedIndex = 0;
+                  selectContainer.classList.remove('text-mode');
+                  localStorage.removeItem(`variant-${sectionId}-${optionIndex}`);
                 }
               }
             }, 500);
@@ -449,8 +473,8 @@
                   const optionIndex = select.dataset.optionIndex;
                   const savedValue = localStorage.getItem(`variant-${sectionId}-${optionIndex}`);
 
-                  if (savedValue === '') {
-                    select.value = '';
+                  if (savedValue === null || savedValue === '') {
+                    select.selectedIndex = 0;
                     const changeEvent = new Event('change', { bubbles: true });
                     select.dispatchEvent(changeEvent);
                   }
@@ -461,7 +485,7 @@
                     const selectedValueDisplay = selectContainer.querySelector('.selected-value-display');
                     const selectedTextElement = selectedValueDisplay.querySelector('.selected-text');
 
-                    const isDefaultOption = select.value === '';
+                    const isDefaultOption = select.selectedIndex === 0;
                     if (!isDefaultOption) {
                       selectContainer.classList.add('text-mode');
                       selectedTextElement.textContent = select.options[select.selectedIndex].text;
@@ -506,7 +530,7 @@
         const selects = document.querySelectorAll(`#variant-selects-${sectionId} select[data-required="true"]`);
         for (let i = 0; i < selects.length; i++) {
           const select = selects[i];
-          if (select.value === '') {
+          if (select.selectedIndex === 0) {
             return false;
           }
         }
