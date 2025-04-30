@@ -258,15 +258,6 @@ product-info {
   padding-top: 16px;
 }
 
-.divider {
-  width: 1px;
-  height: 24px;
-  background-color: #ccc;
-  margin: 0 10px;
-  border: 1px solid #dfe5ea;
-  padding-left: 10px;
-}
-
 .deselect-button {
   background: none;
   color: #ffffff;
