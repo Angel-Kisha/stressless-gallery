@@ -258,11 +258,12 @@ product-info {
 }
 
 .product-label-dropdown {
-  display: flex;
-  gap: 2rem;
-  align-items: center;
-  border-top: 1px solid #dfe5ea;
+  display: flex; 
+  gap: 1rem; /* Reduced gap to allow for divider */
+  align-items: center; 
+  border-top: 1px solid #dfe5ea; 
   padding-top: 16px;
+  margin-top: 12px; /* Added margin-top */
 }
 
 .deselect-button {
