@@ -260,7 +260,7 @@ product-info {
   border-top: 1px dotted #dfe5ea;
 }
 
-.product-option-table tr:first-child {
+.product-option-table tr:not(:first-child) {
   border-top: none;
 }
 .product-option-table td:nth-child(1) {
