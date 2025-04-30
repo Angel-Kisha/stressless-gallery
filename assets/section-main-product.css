@@ -259,6 +259,10 @@ product-info {
   border-top: 1px solid #dfe5ea;
   border-bottom: none;
 }
+.product-option-table:nth-last-child {
+  border-top: 1px solid #dfe5ea;
+  border-bottom: none;
+}
 .product-option-table td:nth-child(1) {
   width: 27%;
 }
