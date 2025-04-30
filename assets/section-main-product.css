@@ -249,27 +249,22 @@ product-info {
   cursor: not-allowed;
   opacity: 0.5;
 }
-.product-form__input--dropdown table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.product-form__input--dropdown tr {
-  display: flex;
-  align-items: center;
-  padding: 15px 0;
-  border-bottom: 1px solid #e8e8e8;
-}
-.product-option-table {
-  width: 100%;
-  border: solid 1px #a1a1a1;
-}
 
 .product-label-dropdown {
   display: flex;
+  gap: 2rem;
   align-items: center;
   border-top: 1px solid #dfe5ea;
   padding-top: 16px;
+}
+
+.divider {
+  width: 1px;
+  height: 24px;
+  background-color: #ccc;
+  margin: 0 10px;
+  border: 1px solid #dfe5ea;
+  padding-left: 10px;
 }
 
 .deselect-button {
