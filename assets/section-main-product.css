@@ -261,8 +261,9 @@ product-info {
 }
 
 .product-option-table tr:not(:first-child) {
-  border-top: none;
+  border-top: 0px;
 }
+
 .product-option-table td:nth-child(1) {
   width: 27%;
 }
