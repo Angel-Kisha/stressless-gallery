@@ -260,7 +260,7 @@ product-info {
   /* border-top: 1px dotted #dfe5ea; */
 }
 
-.product-option-table tr:first-child {
+.product-option-table tr:nth-child(1) {
   border-top: none;
   border-bottom: none;
   background-color: yellow;
