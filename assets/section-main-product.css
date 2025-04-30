@@ -268,12 +268,13 @@ product-info {
 .product-option-table tr td:nth-child(2) {
   width: 55%;
   border-right: 1px solid #dfe5ea;
-  margin-right: 10px;
+  padding-right: 20px;
 }
 
 .product-option-table tr td:nth-child(3) {
   width: 30%;
   border-left: 1px solid #dfe5ea;
+  padding-right: 20px;
 }
 
 .deselect-button {
