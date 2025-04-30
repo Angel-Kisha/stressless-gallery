@@ -252,12 +252,12 @@ product-info {
 .product-option-table {
   width: 100%;
   border-collapse: collapse;
-  /* border-top: 1px dotted #dfe5ea; */
+  border-top: 1px dotted #dfe5ea;
   border-bottom: 1px solid #dfe5ea;
 }
 
 .product-option-table tr {
-  /* border-top: 1px dotted #dfe5ea; */
+  border-top: 1px dotted #dfe5ea;
 }
 
 .product-option-table tr:nth-child(1) {
