@@ -260,10 +260,9 @@ product-info {
   border-top: 1px dotted #dfe5ea;
 }
 
-.product-option-table tr:nth-child(1) {
+.product-option-table tr:first-of-type {
   border-top: none;
   border-bottom: none;
-  background-color: yellow;
 }
 .product-option-table td:nth-child(1) {
   width: 27%;
