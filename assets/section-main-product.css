@@ -249,7 +249,10 @@ product-info {
   cursor: not-allowed;
   opacity: 0.5;
 }
-
+.product-option-table{
+  width: 100%;
+  
+}
 .product-label-dropdown {
   display: flex;
   gap: 2rem;
