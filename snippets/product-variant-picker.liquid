@@ -53,57 +53,57 @@
           %}
         </fieldset>
       {%- else -%}
-        <div class="product-form__input product-form__input--dropdown product-label-dropdown">
-          <label
-            class="w-30 form__label product-label-dropdown-text"
-            for="Option-{{ section.id }}-{{ forloop.index0 }}"
-          >
-            {{ option.name }}
-          </label>
-
-          <!-- Original select dropdown -->
-          <div class="select-container w-55">
-            <div class="select select-dropdown-container">
-              {%- if picker_type == 'swatch_dropdown' -%}
-                <span
-                  data-selected-value
-                  class="dropdown-swatch"
-                >
-                  {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
-                </span>
-              {%- endif -%}
-              <select
-                id="Option-{{ section.id }}-{{ forloop.index0 }}"
-                class="select__select please-select-enabled"
-                name="options[{{ option.name | escape }}]"
-                form="{{ product_form_id }}"
-                data-option-index="{{ forloop.index0 }}"
-                data-default-unselected="true"
-                data-required="true"
-              >
-                {% render 'product-variant-options',
-                  product: product,
-                  option: option,
-                  block: block,
-                  picker_type: picker_type
-                %}
-              </select>
-              <span class="svg-wrapper">
-                {{- 'icon-caret.svg' | inline_asset_content -}}
-              </span>
-            </div>
-
-            <!-- Plain text display for selected value -->
-            <div class="selected-value-display">
-              <span class="selected-text"></span>
-            </div>
-          </div>
-
-          <div class="divider"></div>
-          <div class="w-15">
-            <button type="button" disabled class="deselect-button" disabled>選択解除</button>
-          </div>
+      <div class="product-form__input product-form__input--dropdown product-label-dropdown"> 
+        <label 
+          class="w-30 form__label product-label-dropdown-text" 
+          for="Option-{{ section.id }}-{{ forloop.index0 }}" 
+        > 
+          {{ option.name }} 
+        </label> 
+      
+        <!-- Original select dropdown --> 
+        <div class="select-container w-55"> 
+          <div class="select select-dropdown-container"> 
+            {%- if picker_type == 'swatch_dropdown' -%} 
+              <span 
+                data-selected-value 
+                class="dropdown-swatch" 
+              > 
+                {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %} 
+              </span> 
+            {%- endif -%} 
+            <select 
+              id="Option-{{ section.id }}-{{ forloop.index0 }}" 
+              class="select__select please-select-enabled" 
+              name="options[{{ option.name | escape }}]" 
+              form="{{ product_form_id }}" 
+              data-option-index="{{ forloop.index0 }}" 
+              data-default-unselected="true" 
+              data-required="true" 
+            > 
+              {% render 'product-variant-options', 
+                product: product, 
+                option: option, 
+                block: block, 
+                picker_type: picker_type 
+              %} 
+            </select> 
+            <span class="svg-wrapper"> 
+              {{- 'icon-caret.svg' | inline_asset_content -}} 
+            </span> 
+          </div> 
+      
+          <!-- Plain text display for selected value --> 
+          <div class="selected-value-display"> 
+            <span class="selected-text"></span> 
+          </div> 
         </div>
+      
+        <div class="divider"></div>
+        <div class="w-15">
+          <button type="button" disabled class="deselect-button" disabled>選択解除</button>
+        </div>
+      </div>
       {%- endif -%}
     {%- endfor -%}
 
@@ -273,14 +273,14 @@
         if (typeof cents === 'string') {
           cents = cents.replace(/[^0-9]/g, '');
         }
-
+        
         const value = parseInt(cents);
         const formatter = new Intl.NumberFormat(navigator.language || 'ja-JP', {
           style: 'currency',
           currency: currency,
-          minimumFractionDigits: 0,
+          minimumFractionDigits: 0
         });
-
+        
         return formatter.format(value);
       }
 
@@ -296,20 +296,16 @@
         try {
           const priceRange = JSON.parse(priceRangeData.textContent);
           const priceElement = priceContainer.querySelector('.price');
-
+          
           if (!priceElement) return;
 
           // Find the regular price element
-          const regularPriceElement =
-            priceElement.querySelector('.price__regular .price-item--regular') ||
-            priceElement.querySelector('.price-item--regular');
-
+          const regularPriceElement = priceElement.querySelector('.price__regular .price-item--regular') || 
+                                     priceElement.querySelector('.price-item--regular');
+          
           if (regularPriceElement) {
             if (priceRange.price_varies) {
-              regularPriceElement.innerHTML = `${formatMoney(
-                priceRange.min_price,
-                priceRange.currency
-              )}<span class="price-range-dash">~</span>${formatMoney(priceRange.max_price, priceRange.currency)}`;
+              regularPriceElement.innerHTML = `${formatMoney(priceRange.min_price, priceRange.currency)}<span class="price-range-dash">~</span>${formatMoney(priceRange.max_price, priceRange.currency)}`;
             } else {
               regularPriceElement.textContent = formatMoney(priceRange.min_price, priceRange.currency);
             }
@@ -317,28 +313,18 @@
 
           // Handle sale price if it exists
           const salePriceElement = priceElement.querySelector('.price__sale .price-item--sale');
-          const compareElement =
-            priceElement.querySelector('.price__sale .price-item--regular') ||
-            priceElement.querySelector('.price__compare .price-item--regular');
-
+          const compareElement = priceElement.querySelector('.price__sale .price-item--regular') || 
+                               priceElement.querySelector('.price__compare .price-item--regular');
+          
           if (salePriceElement && compareElement) {
             if (priceRange.price_varies) {
-              salePriceElement.innerHTML = `${formatMoney(
-                priceRange.min_price,
-                priceRange.currency
-              )}<span class="price-range-dash">-</span>${formatMoney(priceRange.max_price, priceRange.currency)}`;
+              salePriceElement.innerHTML = `${formatMoney(priceRange.min_price, priceRange.currency)}<span class="price-range-dash">-</span>${formatMoney(priceRange.max_price, priceRange.currency)}`;
             } else {
               salePriceElement.textContent = formatMoney(priceRange.min_price, priceRange.currency);
             }
-
+            
             if (priceRange.compare_varies) {
-              compareElement.innerHTML = `${formatMoney(
-                priceRange.min_compare_price,
-                priceRange.currency
-              )}<span class="price-range-dash">-</span>${formatMoney(
-                priceRange.max_compare_price,
-                priceRange.currency
-              )}`;
+              compareElement.innerHTML = `${formatMoney(priceRange.min_compare_price, priceRange.currency)}<span class="price-range-dash">-</span>${formatMoney(priceRange.max_compare_price, priceRange.currency)}`;
             } else {
               compareElement.textContent = formatMoney(priceRange.min_compare_price, priceRange.currency);
             }
@@ -404,7 +390,7 @@
             deselectButton.disabled = true;
             select.classList.remove('user-selected');
             selectContainer.classList.remove('text-mode');
-
+            
             // Show price range if this is the first option and it's not selected
             if (optionIndex === '0') {
               showPriceRange(sectionId);
@@ -442,7 +428,7 @@
             if (isDefaultOption) {
               this.classList.remove('user-selected');
               selectContainer.classList.remove('text-mode');
-
+              
               // If this is the first option and it's reset to default, show price range
               if (optionIndex === '0') {
                 showPriceRange(sectionId);
@@ -527,7 +513,7 @@
               if (savedValue === '' && select.selectedIndex !== 0) {
                 select.selectedIndex = 0;
                 selectContainer.classList.remove('text-mode');
-
+                
                 // If this is the first option, show price range
                 if (optionIndex === '0') {
                   showPriceRange(sectionId);
@@ -554,7 +540,7 @@
           // Skip if already processed
           if (variantSelect.hasAttribute('data-override')) return;
           variantSelect.setAttribute('data-override', 'true');
-
+          
           // Get the section ID
           const sectionId = variantSelect.dataset.section;
 
@@ -576,7 +562,7 @@
               setTimeout(() => {
                 const selects = this.querySelectorAll('select');
                 let allDefaultOptions = true;
-
+                
                 selects.forEach((select, index) => {
                   const sectionId = this.dataset.section;
                   const optionIndex = select.dataset.optionIndex;
@@ -608,7 +594,7 @@
                     }
                   }
                 });
-
+                
                 // If first option is in default state, show price range
                 if (allDefaultOptions) {
                   showPriceRange(sectionId);
@@ -616,15 +602,15 @@
               }, 10);
             };
           }
-
+          
           // Intercept variant:changed event to update price display
-          variantSelect.addEventListener('variant:changed', function (event) {
+          variantSelect.addEventListener('variant:changed', function(event) {
             const variant = event.detail.variant;
             const sectionId = this.dataset.section;
-
+            
             // Find the first select
             const firstSelect = this.querySelector('select[data-option-index="0"]');
-
+            
             // If the first option is at default state, show price range
             if (firstSelect && (firstSelect.selectedIndex === 0 || firstSelect.value === '')) {
               showPriceRange(sectionId);
@@ -676,10 +662,10 @@
         overrideVariantSelection();
 
         // Check all variant-selects elements to show price range if needed
-        document.querySelectorAll('variant-selects').forEach((variantSelect) => {
+        document.querySelectorAll('variant-selects').forEach(variantSelect => {
           const sectionId = variantSelect.dataset.section;
           const firstSelect = variantSelect.querySelector('select[data-option-index="0"]');
-
+          
           if (firstSelect && (firstSelect.selectedIndex === 0 || firstSelect.value === '')) {
             showPriceRange(sectionId);
           }
