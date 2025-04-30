@@ -252,7 +252,7 @@ product-info {
 .product-option-table {
   width: 100%;
   border-collapse: collapse;
-  border-top: 1px dotted #dfe5ea;
+  /* border-top: 1px dotted #dfe5ea; */
   border-bottom: 1px solid #dfe5ea;
 }
 
