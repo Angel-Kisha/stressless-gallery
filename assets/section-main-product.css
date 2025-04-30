@@ -252,6 +252,7 @@ product-info {
 
 .product-option-table {
   width: 100%;
+  border: solid 1px #a1a1a1;
 }
 
 .product-label-dropdown {
