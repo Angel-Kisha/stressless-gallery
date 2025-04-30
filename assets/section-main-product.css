@@ -251,8 +251,9 @@ product-info {
 }
 .product-option-table{
   width: 100%;
-  
+  border-collapse: collapse;
 }
+
 .product-label-dropdown {
   display: flex;
   gap: 2rem;
