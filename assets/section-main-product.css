@@ -255,19 +255,19 @@ product-info {
 }
 
 .product-option-table tr {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #dfe5ea;
 }
 
 .product-option-table tr:first-child {
-  border-top: 1px solid #ccc;
+  border-top: 1px solid #dfe5ea;
 }
 
 .product-option-table tr td:nth-child(2) {
-  border-right: 1px solid #ccc;
+  border-right: 1px solid #dfe5ea;
 }
 
 .product-option-table tr td:nth-child(3) {
-  border-left: 1px solid #ccc;
+  border-left: 1px solid #dfe5ea;
 }
 
 .deselect-button {
