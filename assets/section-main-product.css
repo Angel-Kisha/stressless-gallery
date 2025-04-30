@@ -254,6 +254,12 @@ product-info {
   border-collapse: collapse;
 }
 
+.product-form__input--dropdown tr {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #e8e8e8;
+}
 .product-option-table {
   width: 100%;
   border: solid 1px #a1a1a1;
