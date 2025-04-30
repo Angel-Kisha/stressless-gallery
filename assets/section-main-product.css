@@ -258,7 +258,7 @@ product-info {
 
 .product-option-table:nth-child(1) {
   border-top: 1px solid #dfe5ea;
-  border-top: 1px solid #dfe5ea;
+  border-bottom: none;
 }
 .product-option-table td:nth-child(1) {
   width: 27%;
