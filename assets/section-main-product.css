@@ -262,7 +262,7 @@ product-info {
   border-top: 1px solid #dfe5ea;
 }
 .product-option-table td:nth-child(1) {
-  width: 30%;
+  width: 25%;
 }
 
 .product-option-table tr td:nth-child(2) {
