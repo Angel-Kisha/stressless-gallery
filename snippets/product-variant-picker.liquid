@@ -54,12 +54,14 @@
         </fieldset>
       {%- else -%}
         <div class="product-form__input product-form__input--dropdown product-label-dropdown">
-          <label
-            class="w-30 form__label product-label-dropdown-text"
-            for="Option-{{ section.id }}-{{ forloop.index0 }}"
-          >
-            {{ option.name }}
-          </label>
+          <td>
+            <label
+              class="w-30 form__label product-label-dropdown-text"
+              for="Option-{{ section.id }}-{{ forloop.index0 }}"
+            >
+              {{ option.name }}
+            </label>
+          </td>
 
           <!-- Original select dropdown -->
           <div class="select-container w-55">
