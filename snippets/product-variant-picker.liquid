@@ -305,7 +305,7 @@
           
           if (regularPriceElement) {
             if (priceRange.price_varies) {
-              regularPriceElement.innerHTML = `${formatMoney(priceRange.min_price, priceRange.currency)}<span class="price-range-dash">-</span>${formatMoney(priceRange.max_price, priceRange.currency)}`;
+              regularPriceElement.innerHTML = `${formatMoney(priceRange.min_price, priceRange.currency)}<span class="price-range-dash">~</span>${formatMoney(priceRange.max_price, priceRange.currency)}`;
             } else {
               regularPriceElement.textContent = formatMoney(priceRange.min_price, priceRange.currency);
             }
