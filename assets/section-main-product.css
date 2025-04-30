@@ -252,6 +252,7 @@ product-info {
 
 .product-option-table {
   width: 100%;
+  border-collapse: collapse;
 }
 
 .product-label-dropdown {
