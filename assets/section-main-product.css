@@ -257,7 +257,7 @@ product-info {
 }
 
 .product-option-table tr {
-  border-top: 1px dotted #dfe5ea;
+  /* border-top: 1px dotted #dfe5ea; */
 }
 
 .product-option-table tr:first-child {
