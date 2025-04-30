@@ -254,8 +254,8 @@ product-info {
   border-collapse: collapse;
 }
 
-.product-option-table tr{
-  
+.product-option-table tr {
+  border-bottom: 1px solid #ccc;
 }
 
 .product-label-dropdown {
