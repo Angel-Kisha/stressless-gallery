@@ -262,9 +262,7 @@ product-info {
   gap: 2rem;
   align-items: center;
   border-top: 1px solid #dfe5ea;
-  border-bottom: 1px solid #dfe5ea;
   padding-top: 16px;
-  padding-bottom: 16px;
 }
 
 .deselect-button {
