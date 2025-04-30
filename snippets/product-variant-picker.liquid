@@ -53,41 +53,55 @@
           %}
         </fieldset>
       {%- else -%}
-      <table class="product-option-table">
-  <tr class="product-label-dropdown">
-    <td class="option-label">
-      <label class="form__label product-label-dropdown-text" for="Option-{{ section.id }}-{{ forloop.index0 }}">
-        {{ option.name }}
-      </label>
-    </td>
-    <td class="option-selector">
-      <div class="select-container">
-        <div class="select select-dropdown-container">
-          {%- if picker_type == 'swatch_dropdown' -%}
-            <span data-selected-value class="dropdown-swatch">
-              {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
-            </span>
-          {%- endif -%}
-          <select id="Option-{{ section.id }}-{{ forloop.index0 }}" class="select__select please-select-enabled" 
-                  name="options[{{ option.name | escape }}]" form="{{ product_form_id }}" 
-                  data-option-index="{{ forloop.index0 }}" data-default-unselected="true" data-required="true">
-            {% render 'product-variant-options', product: product, option: option, block: block, picker_type: picker_type %}
-          </select>
-          <span class="svg-wrapper">
-            {{- 'icon-caret.svg' | inline_asset_content -}}
-          </span>
+        <div class="product-form__input product-form__input--dropdown product-label-dropdown">
+          <label
+            class="w-30 form__label product-label-dropdown-text"
+            for="Option-{{ section.id }}-{{ forloop.index0 }}"
+          >
+            {{ option.name }}
+          </label>
+
+          <!-- Original select dropdown -->
+          <div class="select-container w-55">
+            <div class="select select-dropdown-container">
+              {%- if picker_type == 'swatch_dropdown' -%}
+                <span
+                  data-selected-value
+                  class="dropdown-swatch"
+                >
+                  {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+                </span>
+              {%- endif -%}
+              <select
+                id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                class="select__select please-select-enabled"
+                name="options[{{ option.name | escape }}]"
+                form="{{ product_form_id }}"
+                data-option-index="{{ forloop.index0 }}"
+                data-default-unselected="true"
+                data-required="true"
+              >
+                {% render 'product-variant-options',
+                  product: product,
+                  option: option,
+                  block: block,
+                  picker_type: picker_type
+                %}
+              </select>
+              <span class="svg-wrapper">
+                {{- 'icon-caret.svg' | inline_asset_content -}}
+              </span>
+            </div>
+
+            <!-- Plain text display for selected value -->
+            <div class="selected-value-display">
+              <span class="selected-text"></span>
+            </div>
+          </div>
+          <div class="w-15">
+            <button type="button" disabled class="deselect-button" disabled>選択解除</button>
+          </div>
         </div>
-        <div class="selected-value-display">
-          <span class="selected-text"></span>
-        </div>
-      </div>
-    </td>
-    <td class="option-deselect">
-      <button type="button" disabled class="deselect-button">選択解除</button>
-    </td>
-  </tr>
-  <!-- Repeat for each option -->
-</table>
       {%- endif -%}
     {%- endfor -%}
 
