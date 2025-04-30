@@ -71,15 +71,15 @@ variant-selects {
 }
 
 .w-55 {
-  max-width: 55%;
+  width: 55%;
 }
 
 .w-30 {
-  max-width: 30%;
+  width: 30%;
 }
 
 .w-15 {
-  max-width: 30%;
+  width: 30%;
 }
 
 /* Custom styles for Pill display type */
