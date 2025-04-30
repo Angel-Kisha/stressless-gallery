@@ -262,7 +262,7 @@ product-info {
   border-right: 1px solid #ccc;
 }
 
-td:nth-child(3) {
+.product-option-table tr td:nth-child(3) {
   border-left: 1px solid #ccc;
 }
 
