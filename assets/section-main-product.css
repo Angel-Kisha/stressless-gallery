@@ -249,9 +249,13 @@ product-info {
   cursor: not-allowed;
   opacity: 0.5;
 }
-.product-option-table{
+.product-option-table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.product-option-table tr{
+  
 }
 
 .product-label-dropdown {
