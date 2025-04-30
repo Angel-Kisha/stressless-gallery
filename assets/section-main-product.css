@@ -258,11 +258,13 @@ product-info {
 
 .product-option-table tr {
   border-top: 1px dotted #dfe5ea;
+  background-color: yellow;
 }
 
 .product-option-table tr:first-of-type {
   border-top: none;
   border-bottom: none;
+  background-color: red;
 }
 .product-option-table td:nth-child(1) {
   width: 27%;
