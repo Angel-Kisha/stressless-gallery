@@ -261,7 +261,7 @@ product-info {
   background-color: yellow;
 }
 
-.product-option-table tbody tr:first-of-type {
+.product-option-table tbody tr:first-child {
   border-top: none;
   border-bottom: none;
   background-color: red;
