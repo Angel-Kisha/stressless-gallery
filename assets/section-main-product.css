@@ -262,6 +262,8 @@ product-info {
 
 .product-option-table tr:first-child {
   border-top: none;
+  border-bottom: none;
+  background-color: yellow;
 }
 .product-option-table td:nth-child(1) {
   width: 27%;
