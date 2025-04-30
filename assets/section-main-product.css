@@ -258,6 +258,10 @@ product-info {
   border-bottom: 1px solid #ccc;
 }
 
+.product-option-table tr:first-child {
+  border-top: 1px solid #ccc;
+}
+
 .product-option-table tr td:nth-child(2) {
   border-right: 1px solid #ccc;
 }
