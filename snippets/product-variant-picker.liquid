@@ -54,59 +54,61 @@
         </fieldset>
       {%- else -%}
         <div class="product-form__input product-form__input--dropdown product-label-dropdown">
-          <tr>
-            <td>
-              <label
-                class="w-30 form__label product-label-dropdown-text"
-                for="Option-{{ section.id }}-{{ forloop.index0 }}"
-              >
-                {{ option.name }}
-              </label>
-            </td>
-            <!-- Original select dropdown -->
-            <td>
-              <div class="select-container w-55">
-                <div class="select select-dropdown-container">
-                  {%- if picker_type == 'swatch_dropdown' -%}
-                    <span
-                      data-selected-value
-                      class="dropdown-swatch"
+          <table>
+            <tr>
+              <td>
+                <label
+                  class="w-30 form__label product-label-dropdown-text"
+                  for="Option-{{ section.id }}-{{ forloop.index0 }}"
+                >
+                  {{ option.name }}
+                </label>
+              </td>
+              <!-- Original select dropdown -->
+              <td>
+                <div class="select-container w-55">
+                  <div class="select select-dropdown-container">
+                    {%- if picker_type == 'swatch_dropdown' -%}
+                      <span
+                        data-selected-value
+                        class="dropdown-swatch"
+                      >
+                        {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+                      </span>
+                    {%- endif -%}
+                    <select
+                      id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                      class="select__select please-select-enabled"
+                      name="options[{{ option.name | escape }}]"
+                      form="{{ product_form_id }}"
+                      data-option-index="{{ forloop.index0 }}"
+                      data-default-unselected="true"
+                      data-required="true"
                     >
-                      {% render 'swatch', swatch: option.selected_value.swatch, shape: block.settings.swatch_shape %}
+                      {% render 'product-variant-options',
+                        product: product,
+                        option: option,
+                        block: block,
+                        picker_type: picker_type
+                      %}
+                    </select>
+                    <span class="svg-wrapper">
+                      {{- 'icon-caret.svg' | inline_asset_content -}}
                     </span>
-                  {%- endif -%}
-                  <select
-                    id="Option-{{ section.id }}-{{ forloop.index0 }}"
-                    class="select__select please-select-enabled"
-                    name="options[{{ option.name | escape }}]"
-                    form="{{ product_form_id }}"
-                    data-option-index="{{ forloop.index0 }}"
-                    data-default-unselected="true"
-                    data-required="true"
-                  >
-                    {% render 'product-variant-options',
-                      product: product,
-                      option: option,
-                      block: block,
-                      picker_type: picker_type
-                    %}
-                  </select>
-                  <span class="svg-wrapper">
-                    {{- 'icon-caret.svg' | inline_asset_content -}}
-                  </span>
+                  </div>
+                  <!-- Plain text display for selected value -->
+                  <div class="selected-value-display">
+                    <span class="selected-text"></span>
+                  </div>
                 </div>
-                <!-- Plain text display for selected value -->
-                <div class="selected-value-display">
-                  <span class="selected-text"></span>
+              </td>
+              <td>
+                <div class="w-15">
+                  <button type="button" disabled class="deselect-button" disabled>選択解除</button>
                 </div>
-              </div>
-            </td>
-            <td>
-              <div class="w-15">
-                <button type="button" disabled class="deselect-button" disabled>選択解除</button>
-              </div>
-            </td>
-          </tr>
+              </td>
+            </tr>
+          </table>
         </div>
       {%- endif -%}
     {%- endfor -%}
