@@ -250,41 +250,70 @@ product-info {
   opacity: 0.5;
 }
 
+.product-option-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+/* Row styling */
 .product-label-dropdown {
-  display: flex;
-  gap: 2rem;
-  align-items: center;
   border-top: 1px solid #dfe5ea;
-  padding-top: 16px;
-}
-
-.divider {
-  width: 1px;
-  height: 24px;
-  background-color: #ccc;
-  margin: 0 10px;
-  border: 1px solid #dfe5ea;
-  padding-left: 10px;
-}
-
-.deselect-button {
-  background: none;
-  color: #ffffff;
-  border: none;
-  cursor: pointer;
 }
 
 .product-label-dropdown:last-child {
   border-bottom: 1px solid #dfe5ea;
-  padding-bottom: 16px;
 }
 
+/* Cell styling */
+.option-label, .option-selector, .option-deselect {
+  padding: 16px 0;
+  vertical-align: middle;
+}
+
+.option-label {
+  width: 25%;
+}
+
+.option-selector {
+  width: 60%;
+  border-right: 1px solid #dfe5ea;
+  padding-right: 12px;
+}
+
+.option-deselect {
+  width: 15%;
+  padding-left: 12px;
+  text-align: center;
+}
+
+/* Label text styling */
 .product-label-dropdown-text {
   font-size: 12px;
   color: #ffffff;
   letter-spacing: 2px;
   font-family: "Hiragino";
   font-weight: 600;
+  display: block;
+}
+
+/* Select container styling */
+.select-container {
+  width: 100%;
+}
+
+.select-dropdown-container {
+  position: relative;
+}
+
+/* Deselect button styling */
+.deselect-button {
+  background: none;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  width: 100%;
 }
 
 @media screen and (forced-colors: active) {
