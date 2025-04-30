@@ -255,6 +255,7 @@ product-info {
 }
 
 .product-option-table tr {
+  border-top: 1px dotted #dfe5ea;
   border-bottom: 1px solid #dfe5ea;
 }
 
