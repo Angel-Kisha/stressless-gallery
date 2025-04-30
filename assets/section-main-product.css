@@ -266,6 +266,13 @@ product-info {
   border-left: 1px solid #ccc;
 }
 
+.deselect-button {
+  background: none;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
+
 /* .product-label-dropdown {
   display: flex;
   gap: 2rem;
