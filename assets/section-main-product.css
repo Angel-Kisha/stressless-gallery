@@ -267,15 +267,26 @@ product-info {
 }
 
 .deselect-button {
-  background: none;
-  color: #ffffff;
-  border: none;
+  background: none; 
+  color: #ffffff; 
+  border: none; 
   cursor: pointer;
+  padding: 0;
+  position: relative;
+  width: 100%;
+  text-align: center;
 }
 
 .product-label-dropdown:last-child {
-  border-bottom: 1px solid #dfe5ea;
+  border-bottom: 1px solid #dfe5ea; 
   padding-bottom: 16px;
+  margin-bottom: 12px; /* Added margin-bottom to the last child */
+}
+.divider {
+  width: 1px;
+  height: 40px; /* Match the height of the select box */
+  background-color: #dfe5ea;
+  margin: 0 8px;
 }
 
 .product-label-dropdown-text {
